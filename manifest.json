@@ -1,0 +1,147 @@
+{
+  "manifest_version": 3,
+  "name": "Shadow AI Prompt Guardian — SENTINEL",
+  "version": "5.0.0",
+  "description": "SENTINEL: The world's most advanced AI prompt security guardian. Detects and blocks secrets, PII, and confidential data before they reach any AI — with cinematic real-time protection.",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://*.openai.com/*",
+    "https://*.chatgpt.com/*",
+    "https://*.claude.ai/*",
+    "https://*.google.com/*",
+    "https://*.gemini.google.com/*",
+    "https://*.perplexity.ai/*",
+    "https://*.cohere.ai/*",
+    "https://*.anthropic.com/*",
+    "https://*.mistral.ai/*",
+    "https://*.groq.com/*",
+    "https://*.together.ai/*",
+    "https://*.replicate.com/*",
+    "https://*.huggingface.co/*",
+    "https://*.poe.com/*",
+    "https://*.character.ai/*",
+    "https://*.meta.ai/*",
+    "https://*.you.com/*",
+    "https://*.phind.com/*",
+    "https://*.grok.com/*",
+    "https://*.x.ai/*",
+    "https://copilot.microsoft.com/*",
+    "https://*.bing.com/*",
+    "https://*.github.com/*",
+    "https://*.kagi.com/*",
+    "https://*.cursor.sh/*",
+    "https://*.amazon.com/*"
+  ],
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://*.chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://*.claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://*.gemini.google.com/*",
+        "https://*.google.com/gemini*",
+        "https://www.perplexity.ai/*",
+        "https://perplexity.ai/*",
+        "https://cohere.ai/*",
+        "https://*.anthropic.com/*",
+        "https://console.anthropic.com/*",
+        "https://chat.mistral.ai/*",
+        "https://*.mistral.ai/*",
+        "https://console.groq.com/*",
+        "https://*.groq.com/*",
+        "https://*.together.ai/*",
+        "https://*.replicate.com/*",
+        "https://huggingface.co/chat/*",
+        "https://*.poe.com/*",
+        "https://character.ai/*",
+        "https://*.character.ai/*",
+        "https://meta.ai/*",
+        "https://*.meta.ai/*",
+        "https://you.com/*",
+        "https://www.phind.com/*",
+        "https://grok.com/*",
+        "https://*.grok.com/*",
+        "https://x.ai/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.bing.com/chat*",
+        "https://github.com/copilot*",
+        "https://kagi.com/*",
+        "https://*.kagi.com/*",
+        "https://*.cursor.sh/*",
+        "https://q.aws.amazon.com/*"
+      ],
+      "js": [
+        "js/detection-engine.js",
+        "js/content.js"
+      ],
+      "css": [
+        "css/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SENTINEL — AI Prompt Guardian",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["js/main-world-intercept.js"],
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://*.chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://*.claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://*.gemini.google.com/*",
+        "https://*.google.com/*",
+        "https://www.perplexity.ai/*",
+        "https://perplexity.ai/*",
+        "https://cohere.ai/*",
+        "https://*.anthropic.com/*",
+        "https://console.anthropic.com/*",
+        "https://*.mistral.ai/*",
+        "https://*.groq.com/*",
+        "https://*.together.ai/*",
+        "https://*.replicate.com/*",
+        "https://huggingface.co/*",
+        "https://*.poe.com/*",
+        "https://character.ai/*",
+        "https://*.character.ai/*",
+        "https://meta.ai/*",
+        "https://*.meta.ai/*",
+        "https://you.com/*",
+        "https://www.phind.com/*",
+        "https://grok.com/*",
+        "https://*.grok.com/*",
+        "https://x.ai/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.bing.com/*",
+        "https://github.com/*",
+        "https://kagi.com/*",
+        "https://*.kagi.com/*",
+        "https://*.cursor.sh/*",
+        "https://q.aws.amazon.com/*"
+      ]
+    }
+  ]
+}

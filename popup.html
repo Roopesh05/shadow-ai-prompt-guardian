@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTINEL — AI Prompt Guardian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-0: #060611;
+      --bg-1: #0d0d1a;
+      --bg-2: #12122a;
+      --bg-3: #1a1a35;
+      --border: rgba(99, 102, 241, 0.18);
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --critical: #f43f5e;
+      --warning: #f59e0b;
+      --safe: #10b981;
+      --text-1: #f1f5f9;
+      --text-2: #94a3b8;
+      --text-3: #475569;
+      --font: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-0);
+      color: var(--text-1);
+      width: 380px;
+      min-height: 300px;
+      overflow: hidden;
+    }
+
+    /* ── Header ────────────────────────────────────────────────────── */
+    .header {
+      padding: 14px 16px 12px;
+      background: linear-gradient(135deg, #0d0d1a 0%, #12122a 100%);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 0% 50%, rgba(99,102,241,0.08) 0%, transparent 60%);
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; z-index: 1; }
+    .sentinel-logo {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 16px var(--accent-glow);
+      animation: logo-pulse 3s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes logo-pulse {
+      0%, 100% { box-shadow: 0 0 12px var(--accent-glow); }
+      50% { box-shadow: 0 0 24px rgba(99,102,241,0.5); }
+    }
+    .sentinel-logo.danger { background: linear-gradient(135deg, #f43f5e, #dc2626); animation: danger-pulse 0.8s ease-in-out infinite; }
+    @keyframes danger-pulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(244,63,94,0.4); }
+      50% { box-shadow: 0 0 32px rgba(244,63,94,0.8); }
+    }
+    .header-title { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+    .header-sub { font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 1px; }
+    .header-right { display: flex; align-items: center; gap: 8px; z-index: 1; }
+    .settings-link {
+      font-size: 11px; color: var(--accent); text-decoration: none;
+      padding: 4px 8px; border-radius: 6px;
+      border: 1px solid rgba(99,102,241,0.25);
+      transition: all 0.2s;
+    }
+    .settings-link:hover { background: rgba(99,102,241,0.12); border-color: var(--accent); }
+
+    /* ── Protection Toggle ─────────────────────────────────────────── */
+    .protection-bar {
+      padding: 10px 16px;
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .protection-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 500;
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      transition: all 0.3s;
+    }
+    .status-dot.active { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
+    .status-dot.paused { background: var(--text-3); }
+    .toggle {
+      position: relative; width: 38px; height: 21px; appearance: none;
+      background: var(--bg-3); border-radius: 11px; cursor: pointer;
+      transition: background 0.3s; outline: none; border: 1px solid var(--border);
+    }
+    .toggle:checked { background: var(--accent); border-color: var(--accent); }
+    .toggle::before {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 15px; height: 15px; background: var(--text-1); border-radius: 50%;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .toggle:checked::before { transform: translateX(17px); }
+
+    /* ── AI Exposure Score ─────────────────────────────────────────── */
+    .exposure-panel {
+      padding: 14px 16px;
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .gauge-wrap { position: relative; flex-shrink: 0; }
+    .gauge-svg { display: block; }
+    .gauge-track { fill: none; stroke: var(--bg-3); stroke-width: 5; }
+    .gauge-fill {
+      fill: none; stroke-width: 5;
+      stroke-linecap: round;
+      transform: rotate(-220deg);
+      transform-origin: 36px 36px;
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.34,1.56,0.64,1), stroke 0.5s;
+    }
+    .gauge-number {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .gauge-value { font-size: 18px; font-weight: 800; font-family: var(--font-mono); line-height: 1; }
+    .gauge-unit { font-size: 8px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+    .exposure-info { flex: 1; min-width: 0; }
+    .exposure-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .exposure-desc { font-size: 11px; color: var(--text-2); line-height: 1.4; }
+    .exposure-stat-row { display: flex; gap: 12px; margin-top: 8px; }
+    .exposure-stat { text-align: center; }
+    .exposure-stat-val { font-size: 15px; font-weight: 700; font-family: var(--font-mono); }
+    .exposure-stat-lbl { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── Risk Sparkline ────────────────────────────────────────────── */
+    .sparkline-panel {
+      padding: 10px 16px;
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--border);
+    }
+    .sparkline-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--text-3);
+    }
+    .sparkline-svg { display: block; width: 100%; }
+
+    /* ── Recent Blocks ─────────────────────────────────────────────── */
+    .blocks-panel { padding: 12px 16px; }
+    .blocks-header {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 8px;
+    }
+    .block-entry {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; background: var(--bg-2); border-radius: 8px;
+      margin-bottom: 5px; border: 1px solid transparent;
+      transition: all 0.2s;
+      cursor: default;
+    }
+    .block-entry:hover { border-color: var(--border); background: var(--bg-3); }
+    .block-sev-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .block-sev-dot.critical { background: var(--critical); box-shadow: 0 0 6px var(--critical); }
+    .block-sev-dot.warning { background: var(--warning); box-shadow: 0 0 6px var(--warning); }
+    .block-sev-dot.info { background: var(--accent); }
+    .block-cats { flex: 1; font-size: 11px; font-weight: 500; }
+    .block-meta { text-align: right; flex-shrink: 0; }
+    .block-score { font-size: 11px; font-family: var(--font-mono); font-weight: 600; }
+    .block-score.critical { color: var(--critical); }
+    .block-score.warning { color: var(--warning); }
+    .block-time { font-size: 9px; color: var(--text-3); margin-top: 1px; }
+    .cat-badge {
+      display: inline-block; font-size: 9px; font-weight: 600;
+      padding: 2px 6px; border-radius: 4px; margin-right: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .cat-badge.api_key { background: rgba(244,63,94,0.15); color: #f43f5e; }
+    .cat-badge.password { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .cat-badge.pii { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .cat-badge.confidential { background: rgba(16,185,129,0.1); color: #6ee7b7; }
+    .cat-badge.company { background: rgba(139,92,246,0.15); color: #a78bfa; }
+    .no-blocks {
+      text-align: center; color: var(--text-3); font-size: 12px;
+      padding: 16px 0;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .no-blocks-icon { font-size: 24px; opacity: 0.5; }
+
+    /* ── Footer ────────────────────────────────────────────────────── */
+    .footer {
+      padding: 8px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-0);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 10px; color: var(--text-3);
+    }
+    .footer-version { font-family: var(--font-mono); color: var(--accent); }
+    .footer-reset {
+      font-size: 10px; color: var(--text-3); cursor: pointer;
+      padding: 3px 8px; border-radius: 4px; border: 1px solid transparent;
+      background: none; font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .footer-reset:hover { border-color: var(--border); color: var(--text-1); background: var(--bg-2); }
+
+    /* ── Animations ────────────────────────────────────────────────── */
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .block-entry { animation: slide-in 0.2s ease; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="sentinel-logo" id="sentinel-logo">🛡️</div>
+      <div>
+        <div class="header-title">SENTINEL</div>
+        <div class="header-sub">AI Prompt Guardian · v5.0</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="options.html" target="_blank" class="settings-link" id="settings-link">⚙ Settings</a>
+    </div>
+  </div>
+
+  <!-- Protection Toggle -->
+  <div class="protection-bar">
+    <label class="protection-label">
+      <span class="status-dot active" id="status-dot"></span>
+      <span id="status-text">Protection Active</span>
+    </label>
+    <input type="checkbox" class="toggle" id="toggle-protection" checked>
+  </div>
+
+  <!-- AI Exposure Score -->
+  <div class="exposure-panel">
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" width="72" height="72" viewBox="0 0 72 72">
+        <!-- Track arc: 240deg sweep from -210deg to 30deg -->
+        <circle class="gauge-track" cx="36" cy="36" r="28"
+          stroke-dasharray="117 176" stroke-dashoffset="-29" />
+        <circle class="gauge-fill" id="gauge-fill" cx="36" cy="36" r="28"
+          stroke="#10b981"
+          stroke-dasharray="0 176"
+          stroke-dashoffset="0" />
+      </svg>
+      <div class="gauge-number">
+        <div class="gauge-value" id="gauge-value">0</div>
+        <div class="gauge-unit">risk</div>
+      </div>
+    </div>
+    <div class="exposure-info">
+      <div class="exposure-title">Session Exposure Score</div>
+      <div class="exposure-desc" id="exposure-desc">No sensitive data detected this session.</div>
+      <div class="exposure-stat-row">
+        <div class="exposure-stat">
+          <div class="exposure-stat-val" id="stat-checked">0</div>
+          <div class="exposure-stat-lbl">Scanned</div>
+        </div>
+        <div class="exposure-stat">
+          <div class="exposure-stat-val" id="stat-blocked" style="color: var(--critical)">0</div>
+          <div class="exposure-stat-lbl">Blocked</div>
+        </div>
+        <div class="exposure-stat">
+          <div class="exposure-stat-val" id="stat-platforms">25+</div>
+          <div class="exposure-stat-lbl">Platforms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Sparkline -->
+  <div class="sparkline-panel">
+    <div class="sparkline-header">
+      <span>Risk History (last 20 prompts)</span>
+      <span id="sparkline-max" style="color: var(--text-2)"></span>
+    </div>
+    <svg class="sparkline-svg" id="sparkline-svg" height="32" viewBox="0 0 348 32" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6366f1" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path id="spark-area" fill="url(#spark-grad)" />
+      <path id="spark-line" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- Recent Blocks -->
+  <div class="blocks-panel">
+    <div class="blocks-header">Recent Detections</div>
+    <div id="log-list">
+      <div class="no-blocks">
+        <div class="no-blocks-icon">✅</div>
+        <div>No blocked attempts yet</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span class="footer-version">SENTINEL v5.0</span>
+    <button class="footer-reset" id="btn-clear-log">Clear Log</button>
+  </div>
+
+  <script src="js/detection-engine.js"></script>
+  <script src="js/popup.js"></script>
+</body>
+</html>

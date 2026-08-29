@@ -1,0 +1,1274 @@
+{
+  "generated_at": "2026-08-29T10:49:34.212Z",
+  "threshold_used": 30,
+  "total_tests": 95,
+  "metrics": {
+    "total": 95,
+    "tp": 61,
+    "tn": 34,
+    "fp": 0,
+    "fn": 0,
+    "accuracy": 1,
+    "precision": 1,
+    "recall": 1,
+    "fpr": 0,
+    "f1": 1,
+    "confusionMatrix": {
+      "tp": 61,
+      "tn": 34,
+      "fp": 0,
+      "fn": 0
+    },
+    "perCategory": {
+      "clean": {
+        "total": 34,
+        "tp": 0,
+        "tn": 34,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1,
+        "precision": 0,
+        "recall": 0,
+        "fpr": 0
+      },
+      "api_key": {
+        "total": 18,
+        "tp": 18,
+        "tn": 0,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "fpr": 0
+      },
+      "password": {
+        "total": 11,
+        "tp": 11,
+        "tn": 0,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "fpr": 0
+      },
+      "pii": {
+        "total": 19,
+        "tp": 19,
+        "tn": 0,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "fpr": 0
+      },
+      "confidential": {
+        "total": 13,
+        "tp": 13,
+        "tn": 0,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "fpr": 0
+      }
+    }
+  },
+  "detailed_results": [
+    {
+      "id": 1,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Basic programming question, no sensitive data."
+    },
+    {
+      "id": 2,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Science explanation, safe."
+    },
+    {
+      "id": 3,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "General best practices question."
+    },
+    {
+      "id": 4,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Creative writing, no sensitive content."
+    },
+    {
+      "id": 5,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Generic debugging request."
+    },
+    {
+      "id": 6,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "General knowledge question."
+    },
+    {
+      "id": 7,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Educational content about blockchain."
+    },
+    {
+      "id": 8,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Travel planning, no PII."
+    },
+    {
+      "id": 9,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Generic SQL example, no real data."
+    },
+    {
+      "id": 10,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Language learning request."
+    },
+    {
+      "id": 11,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 85,
+      "findings_count": 2,
+      "detected_categories": [
+        "api_key",
+        "company"
+      ],
+      "notes": "AWS access key pattern (AKIA prefix)."
+    },
+    {
+      "id": 12,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "GitHub personal access token."
+    },
+    {
+      "id": 13,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "OpenAI API key pattern."
+    },
+    {
+      "id": 14,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key",
+        "pii"
+      ],
+      "notes": "Stripe test secret key."
+    },
+    {
+      "id": 15,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "GitLab personal access token."
+    },
+    {
+      "id": 16,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 85,
+      "findings_count": 2,
+      "detected_categories": [
+        "api_key",
+        "company",
+        "pii"
+      ],
+      "notes": "Slack bot token pattern."
+    },
+    {
+      "id": 17,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Google OAuth access token."
+    },
+    {
+      "id": 18,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 85,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "api_key"
+      ],
+      "notes": "High-entropy generic token (entropy-based detection)."
+    },
+    {
+      "id": 19,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Asking about key generation best practices — no actual key present."
+    },
+    {
+      "id": 20,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Educational question about auth types."
+    },
+    {
+      "id": 21,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Explicit password assignment."
+    },
+    {
+      "id": 22,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Password assignment pattern."
+    },
+    {
+      "id": 23,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key",
+        "password"
+      ],
+      "notes": "Bearer token pattern (JWT-like)."
+    },
+    {
+      "id": 24,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Basic auth header pattern."
+    },
+    {
+      "id": 25,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Security best practices question — no actual password."
+    },
+    {
+      "id": 26,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Email address present."
+    },
+    {
+      "id": 27,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "US phone number with name context."
+    },
+    {
+      "id": 28,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 70,
+      "findings_count": 2,
+      "detected_categories": [
+        "pii",
+        "confidential"
+      ],
+      "notes": "Social Security Number."
+    },
+    {
+      "id": 29,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 80,
+      "findings_count": 2,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Email + phone (healthcare PII context)."
+    },
+    {
+      "id": 30,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Corporate email address."
+    },
+    {
+      "id": 31,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "General knowledge — no PII."
+    },
+    {
+      "id": 32,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Legal writing help — no actual PII."
+    },
+    {
+      "id": 33,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 95,
+      "findings_count": 3,
+      "detected_categories": [
+        "company",
+        "confidential"
+      ],
+      "notes": "Contains 'confidential' and 'NDA' terms."
+    },
+    {
+      "id": 34,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 3,
+      "detected_categories": [
+        "company",
+        "confidential"
+      ],
+      "notes": "Contains 'confidential', 'top secret', project codename."
+    },
+    {
+      "id": 35,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'proprietary' and merger details."
+    },
+    {
+      "id": 36,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'internal use only' and salary data."
+    },
+    {
+      "id": 37,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Generic business writing, no confidential terms."
+    },
+    {
+      "id": 38,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Educational question about data classification."
+    },
+    {
+      "id": 39,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 85,
+      "findings_count": 2,
+      "detected_categories": [
+        "api_key",
+        "company"
+      ],
+      "notes": "AWS access key + secret key in same prompt."
+    },
+    {
+      "id": 40,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Password explicitly stated."
+    },
+    {
+      "id": 41,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "IP address (classified as PII in this context)."
+    },
+    {
+      "id": 42,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'confidential' term."
+    },
+    {
+      "id": 43,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Generic writing request."
+    },
+    {
+      "id": 44,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Stripe publishable key."
+    },
+    {
+      "id": 45,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Credential file path pattern."
+    },
+    {
+      "id": 46,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 70,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "pii",
+        "confidential"
+      ],
+      "notes": "Email + confidential term 'GDPR'."
+    },
+    {
+      "id": 47,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'GDPR' which is in confidential terms list."
+    },
+    {
+      "id": 48,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii",
+        "api_key"
+      ],
+      "notes": "Twilio Account SID."
+    },
+    {
+      "id": 49,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Recipe, completely benign."
+    },
+    {
+      "id": 50,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key",
+        "pii"
+      ],
+      "notes": "Heroku API key (UUID-like pattern matched)."
+    },
+    {
+      "id": 51,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "US phone number."
+    },
+    {
+      "id": 52,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Technical summary request."
+    },
+    {
+      "id": 53,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 3,
+      "detected_categories": [
+        "company",
+        "confidential"
+      ],
+      "notes": "Contains 'project' pattern + 'restricted' term."
+    },
+    {
+      "id": 54,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Asking to generate a key, not sharing one."
+    },
+    {
+      "id": 55,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "VPN password explicitly stated."
+    },
+    {
+      "id": 56,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "International phone number."
+    },
+    {
+      "id": 57,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Code review request, no sensitive data."
+    },
+    {
+      "id": 58,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 90,
+      "findings_count": 3,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'privileged' and 'attorney-client' terms."
+    },
+    {
+      "id": 59,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 70,
+      "findings_count": 2,
+      "detected_categories": [
+        "pii",
+        "confidential"
+      ],
+      "notes": "SSN explicitly provided."
+    },
+    {
+      "id": 60,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Asking to generate a password, not sharing one."
+    },
+    {
+      "id": 61,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 3,
+      "detected_categories": [
+        "company",
+        "pii"
+      ],
+      "notes": "Azure API key (32-char hex pattern)."
+    },
+    {
+      "id": 62,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Educational cryptography question."
+    },
+    {
+      "id": 63,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'confidential' and 'acquisition'."
+    },
+    {
+      "id": 64,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'HIPAA' and 'patient records'."
+    },
+    {
+      "id": 65,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Corporate email address."
+    },
+    {
+      "id": 66,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Generic testing question."
+    },
+    {
+      "id": 67,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key",
+        "pii"
+      ],
+      "notes": "OpenAI-style key pattern (sk- prefix)."
+    },
+    {
+      "id": 68,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Password assignment."
+    },
+    {
+      "id": 69,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "General geography question."
+    },
+    {
+      "id": 70,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 95,
+      "findings_count": 3,
+      "detected_categories": [
+        "company",
+        "confidential"
+      ],
+      "notes": "Contains 'unreleased product', 'proprietary', project codename."
+    },
+    {
+      "id": 71,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 80,
+      "findings_count": 2,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Email + phone in same prompt."
+    },
+    {
+      "id": 72,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Translation request."
+    },
+    {
+      "id": 73,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 85,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "pii",
+        "api_key"
+      ],
+      "notes": "Slack user token pattern."
+    },
+    {
+      "id": 74,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Technical implementation question."
+    },
+    {
+      "id": 75,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'compensation' and 'internal use only'."
+    },
+    {
+      "id": 76,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key",
+        "password"
+      ],
+      "notes": "Bearer token with JWT-like payload."
+    },
+    {
+      "id": 77,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "General technology question."
+    },
+    {
+      "id": 78,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Contains 'performance review' and 'privileged'."
+    },
+    {
+      "id": 79,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "US phone number with name."
+    },
+    {
+      "id": 80,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Generic scripting request."
+    },
+    {
+      "id": 81,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Paraphrased password (secret word)."
+    },
+    {
+      "id": 82,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Paraphrased password (passcode)."
+    },
+    {
+      "id": 83,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Split/obfuscated OpenAI key."
+    },
+    {
+      "id": 84,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Spaced out OpenAI key."
+    },
+    {
+      "id": 85,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Spaced out AWS key."
+    },
+    {
+      "id": 86,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 7,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Feature 2: 6 emails — bulk data export, must block."
+    },
+    {
+      "id": 87,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 8,
+      "detected_categories": [
+        "company",
+        "pii"
+      ],
+      "notes": "Feature 2: 7 emails — bulk customer list, must block."
+    },
+    {
+      "id": 88,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 6,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Feature 2: 5 phone numbers — bulk phone list, must block."
+    },
+    {
+      "id": 89,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 7,
+      "detected_categories": [
+        "pii",
+        "confidential"
+      ],
+      "notes": "Feature 2: 5 SSNs — critical bulk PII, must block."
+    },
+    {
+      "id": 90,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 13,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Feature 2: 11 mixed PII items — bulk mixed, must block."
+    },
+    {
+      "id": 91,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Feature 2 TN: mentions a count but no actual PII — should not block."
+    },
+    {
+      "id": 92,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 100,
+      "findings_count": 3,
+      "detected_categories": [
+        "company",
+        "pii"
+      ],
+      "notes": "Feature 2 TN for bulk: only 3 emails — NOT bulk, but IS PII so still blocks via normal scoring."
+    },
+    {
+      "id": 93,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Feature 2 TN: template placeholders, no real PII."
+    },
+    {
+      "id": 94,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Feature 2 TN: aggregate stats, no individual PII."
+    },
+    {
+      "id": 95,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Feature 2 TN: aggregate business metrics, no PII."
+    }
+  ]
+}

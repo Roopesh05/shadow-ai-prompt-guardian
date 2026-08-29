@@ -1,0 +1,691 @@
+{
+  "meta": {
+    "description": "Synthetic test dataset for Shadow AI Prompt Guardian detection engine evaluation",
+    "total_prompts": 95,
+    "categories": {
+      "clean": "Prompts with no sensitive content — should not trigger blocks",
+      "api_key": "Prompts containing API keys or secrets",
+      "password": "Prompts containing passwords or credentials",
+      "pii": "Prompts containing personally identifiable information",
+      "confidential": "Prompts containing confidential terms"
+    }
+  },
+  "prompts": [
+    {
+      "id": 1,
+      "text": "Write a function that sorts an array using quicksort in Python.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Basic programming question, no sensitive data."
+    },
+    {
+      "id": 2,
+      "text": "Explain the theory of general relativity in simple terms.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Science explanation, safe."
+    },
+    {
+      "id": 3,
+      "text": "What are the best practices for writing unit tests?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "General best practices question."
+    },
+    {
+      "id": 4,
+      "text": "Generate a poem about autumn leaves falling in a forest.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Creative writing, no sensitive content."
+    },
+    {
+      "id": 5,
+      "text": "Help me debug this React component that won't render.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Generic debugging request."
+    },
+    {
+      "id": 6,
+      "text": "What's the capital of France and what's its population?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "General knowledge question."
+    },
+    {
+      "id": 7,
+      "text": "Explain how blockchain consensus mechanisms work.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Educational content about blockchain."
+    },
+    {
+      "id": 8,
+      "text": "Suggest a 5-day itinerary for a trip to Tokyo.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Travel planning, no PII."
+    },
+    {
+      "id": 9,
+      "text": "Write a SQL query to find duplicate emails in a users table.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Generic SQL example, no real data."
+    },
+    {
+      "id": 10,
+      "text": "Can you help me learn Japanese from scratch?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Language learning request."
+    },
+    {
+      "id": 11,
+      "text": "Here's my AWS access key: AKIAIOSFODNN7EXAMPLE. Can you help me configure S3?",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "AWS access key pattern (AKIA prefix)."
+    },
+    {
+      "id": 12,
+      "text": "My GitHub token is ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgh and I need to use it in a script.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "GitHub personal access token."
+    },
+    {
+      "id": 13,
+      "text": "I have this OpenAI key: sk-abc123def456ghi789jkl012mno345. Help me call the API.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "OpenAI API key pattern."
+    },
+    {
+      "id": 14,
+      "text": "Use my Stripe secret key sk_test_511234567890abcdefghijklmnopqrstuvwx to process a payment.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Stripe test secret key."
+    },
+    {
+      "id": 15,
+      "text": "My GitLab PAT is glpat-xYz123AbC456DeF789GhI and I want to automate CI/CD.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "GitLab personal access token."
+    },
+    {
+      "id": 16,
+      "text": "The Slack bot token is xoxb-mock-1234567890-abcdefghijklmnopqrstuvwxyz. How do I use it?",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Slack bot token pattern."
+    },
+    {
+      "id": 17,
+      "text": "My Google OAuth token is ya29.a0AfH6SMBxyz123abc456def. Help me access Drive API.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Google OAuth access token."
+    },
+    {
+      "id": 18,
+      "text": "The project has a high-entropy config token: aB3$xK9@mN2&pQ5!tU8*wZ1. Don't commit it.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "High-entropy generic token (entropy-based detection)."
+    },
+    {
+      "id": 19,
+      "text": "I need to generate a secure random API key for my microservice. What length should it be?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Asking about key generation best practices — no actual key present."
+    },
+    {
+      "id": 20,
+      "text": "What's the difference between Bearer and Basic authentication?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Educational question about auth types."
+    },
+    {
+      "id": 21,
+      "text": "My password for the production database is: Pr0d!DB#Sec2024. Please store it securely.",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Explicit password assignment."
+    },
+    {
+      "id": 22,
+      "text": "Use password = MyS3cretP@ssw0rd! to connect to the legacy system.",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Password assignment pattern."
+    },
+    {
+      "id": 23,
+      "text": "The bearer token is Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U. How do I use it?",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Bearer token pattern (JWT-like)."
+    },
+    {
+      "id": 24,
+      "text": "Basic dXNlcjpwYXNzd29yZDEyMw== contains my credentials. Decode this.",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Basic auth header pattern."
+    },
+    {
+      "id": 25,
+      "text": "How do I securely store passwords in a Node.js application?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Security best practices question — no actual password."
+    },
+    {
+      "id": 26,
+      "text": "Send me an email to john.doe@example.com with the quarterly report.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Email address present."
+    },
+    {
+      "id": 27,
+      "text": "Call Sarah at +1-555-234-5678 and tell her the meeting is at 3pm.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "US phone number with name context."
+    },
+    {
+      "id": 28,
+      "text": "My SSN is 123-45-6789. Please verify my identity.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Social Security Number."
+    },
+    {
+      "id": 29,
+      "text": "The patient's email is jane.smith@hospital.org and phone is (555) 987-6543.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Email + phone (healthcare PII context)."
+    },
+    {
+      "id": 30,
+      "text": "Contact the team lead at mike.chen@acmecorp.com for access.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Corporate email address."
+    },
+    {
+      "id": 31,
+      "text": "What is the population of New York City?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "General knowledge — no PII."
+    },
+    {
+      "id": 32,
+      "text": "How do I write a privacy policy for my SaaS product?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Legal writing help — no actual PII."
+    },
+    {
+      "id": 33,
+      "text": "This project is CONFIDENTIAL and under NDA. Do not share the details.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'confidential' and 'NDA' terms."
+    },
+    {
+      "id": 34,
+      "text": "The internal codename for Project Phoenix is TOP SECRET. Share only with the board.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'confidential', 'top secret', project codename."
+    },
+    {
+      "id": 35,
+      "text": "Here's the merger plan: we will acquire StartupX for $500M. This is proprietary information.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'proprietary' and merger details."
+    },
+    {
+      "id": 36,
+      "text": "The employee salary data shows that John earns $150,000 annually. This is internal use only.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'internal use only' and salary data."
+    },
+    {
+      "id": 37,
+      "text": "Write a generic business proposal for a new SaaS product.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Generic business writing, no confidential terms."
+    },
+    {
+      "id": 38,
+      "text": "What are the best practices for data classification in enterprises?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Educational question about data classification."
+    },
+    {
+      "id": 39,
+      "text": "My AWS key is AKIAIOSFODNN7EXAMPLE and my secret is wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY. Use these to list S3 buckets.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "AWS access key + secret key in same prompt."
+    },
+    {
+      "id": 40,
+      "text": "I forgot my password: P@ssw0rd123!. Can you help me reset it?",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Password explicitly stated."
+    },
+    {
+      "id": 41,
+      "text": "The IP address 192.168.1.100 is the internal dev server. Access it via SSH.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "IP address (classified as PII in this context)."
+    },
+    {
+      "id": 42,
+      "text": "Please analyze this confidential document: [redacted internal strategy document].",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'confidential' term."
+    },
+    {
+      "id": 43,
+      "text": "Hey, can you help me write a cover letter for a job application?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Generic writing request."
+    },
+    {
+      "id": 44,
+      "text": "My Stripe publishable key is pk_test_abc123def456ghi789jklmnop. Where should I put it?",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Stripe publishable key."
+    },
+    {
+      "id": 45,
+      "text": "The server's SSH key is at ~/.ssh/id_rsa. Can you help me configure it?",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Credential file path pattern."
+    },
+    {
+      "id": 46,
+      "text": "Send a message to alice.johnson@company.com about the GDPR compliance review.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Email + confidential term 'GDPR'."
+    },
+    {
+      "id": 47,
+      "text": "Can you explain what GDPR stands for and why it matters?",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'GDPR' which is in confidential terms list."
+    },
+    {
+      "id": 48,
+      "text": "My Twilio SID is ACdummyaccountid00112233445566778. Help me send an SMS.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Twilio Account SID."
+    },
+    {
+      "id": 49,
+      "text": "Here's a recipe for chocolate chip cookies: 2 cups flour, 1 cup sugar...",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Recipe, completely benign."
+    },
+    {
+      "id": 50,
+      "text": "The Heroku API key is 12345678-1234-1234-1234-123456789abc. Configure the app.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Heroku API key (UUID-like pattern matched)."
+    },
+    {
+      "id": 51,
+      "text": "My phone number is 555.123.4567 and I'd like to set up two-factor authentication.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "US phone number."
+    },
+    {
+      "id": 52,
+      "text": "Write a summary of the latest Kubernetes release notes.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Technical summary request."
+    },
+    {
+      "id": 53,
+      "text": "The project codename is 'Operation Nightingale'. This is restricted information.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'project' pattern + 'restricted' term."
+    },
+    {
+      "id": 54,
+      "text": "I need to rotate my API keys. Can you generate a new one for me?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Asking to generate a key, not sharing one."
+    },
+    {
+      "id": 55,
+      "text": "My password for the VPN is Company#2024!Secure. Please remember it.",
+      "category": "password",
+      "expected_block": true,
+      "notes": "VPN password explicitly stated."
+    },
+    {
+      "id": 56,
+      "text": "Call +44 20 7946 0958 to schedule the interview.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "International phone number."
+    },
+    {
+      "id": 57,
+      "text": "Can you help me refactor this Python code to be more efficient?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Code review request, no sensitive data."
+    },
+    {
+      "id": 58,
+      "text": "The board meeting notes are privileged and attorney-client protected. Summarize them.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'privileged' and 'attorney-client' terms."
+    },
+    {
+      "id": 59,
+      "text": "My SSN is 987-65-4321 and my date of birth is 01/15/1990. Verify my identity.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "SSN explicitly provided."
+    },
+    {
+      "id": 60,
+      "text": "Generate a random strong password for me to use.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Asking to generate a password, not sharing one."
+    },
+    {
+      "id": 61,
+      "text": "Use this Azure key: 1234567890abcdef1234567890abcdef to deploy the resource group.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Azure API key (32-char hex pattern)."
+    },
+    {
+      "id": 62,
+      "text": "What's the difference between symmetric and asymmetric encryption?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Educational cryptography question."
+    },
+    {
+      "id": 63,
+      "text": "The acquisition terms are confidential. Share only with the executive team.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'confidential' and 'acquisition'."
+    },
+    {
+      "id": 64,
+      "text": "My patient records include HIPAA-protected data. Help me anonymize them.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'HIPAA' and 'patient records'."
+    },
+    {
+      "id": 65,
+      "text": "Send the report to bob.williams@techcorp.io before Friday.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Corporate email address."
+    },
+    {
+      "id": 66,
+      "text": "I need to write a test plan for our new feature. Can you help outline it?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Generic testing question."
+    },
+    {
+      "id": 67,
+      "text": "The OpenAI key sk-test1234567890abcdefghijklmnop is for the staging environment only.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "OpenAI-style key pattern (sk- prefix)."
+    },
+    {
+      "id": 68,
+      "text": "Password: TempPass123! Set this for the new dev account.",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Password assignment."
+    },
+    {
+      "id": 69,
+      "text": "What are the time zone differences between New York and London?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "General geography question."
+    },
+    {
+      "id": 70,
+      "text": "The unreleased product 'Project Stardust' has a critical vulnerability. This is proprietary.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'unreleased product', 'proprietary', project codename."
+    },
+    {
+      "id": 71,
+      "text": "My email is test@example.com and my phone is 555-123-4567. Here are my details.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Email + phone in same prompt."
+    },
+    {
+      "id": 72,
+      "text": "Can you translate this paragraph from English to Spanish?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Translation request."
+    },
+    {
+      "id": 73,
+      "text": "The Slack token xoxp-123456789012-123456789012-ABCDEFGHIJKLMNOPQRSTUVWXYZ is for my personal bot.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Slack user token pattern."
+    },
+    {
+      "id": 74,
+      "text": "How do I implement rate limiting in Express.js?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Technical implementation question."
+    },
+    {
+      "id": 75,
+      "text": "The compensation data for employees is sensitive. This is internal use only.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'compensation' and 'internal use only'."
+    },
+    {
+      "id": 76,
+      "text": "My bearer token: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.abc123def456. Use it for the API call.",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Bearer token with JWT-like payload."
+    },
+    {
+      "id": 77,
+      "text": "What are the top 10 programming languages in 2024?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "General technology question."
+    },
+    {
+      "id": 78,
+      "text": "The performance review for team member #47 is on page 3. This is privileged.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Contains 'performance review' and 'privileged'."
+    },
+    {
+      "id": 79,
+      "text": "Call this number: +1 (555) 867-5309 and ask for Jennifer.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "US phone number with name."
+    },
+    {
+      "id": 80,
+      "text": "Help me write a bash script to back up my database every night.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Generic scripting request."
+    },
+    {
+      "id": 81,
+      "text": "My secret word for the production db is P@ssw0rd123!",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Paraphrased password (secret word)."
+    },
+    {
+      "id": 82,
+      "text": "The passcode is: S3cur3P@ss!",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Paraphrased password (passcode)."
+    },
+    {
+      "id": 83,
+      "text": "My open AI key starts with sk-abc123def456 and ends with ghi789jkl012mno345. Please use it.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Split/obfuscated OpenAI key."
+    },
+    {
+      "id": 84,
+      "text": "Here is the key: sk - abc123def456ghi789jkl012mno345",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Spaced out OpenAI key."
+    },
+    {
+      "id": 85,
+      "text": "My access key is AKIA IOSF ODNN 7EXA MPLE.",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Spaced out AWS key."
+    },
+
+    {
+      "id": 86,
+      "text": "Export: user1@example.com, user2@example.com, user3@example.com, user4@example.com, user5@example.com, user6@example.com",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Feature 2: 6 emails — bulk data export, must block.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 87,
+      "text": "Leads list: john.smith@corp.com, jane.doe@corp.com, bob.jones@corp.com, alice.brown@corp.com, charlie.davis@corp.com, eve.miller@corp.com, frank.wilson@corp.com",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Feature 2: 7 emails — bulk customer list, must block.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 88,
+      "text": "Phone numbers: 555-100-0001, 555-200-0002, 555-300-0003, 555-400-0004, 555-500-0005",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Feature 2: 5 phone numbers — bulk phone list, must block.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 89,
+      "text": "Here are the employee SSNs: 123-45-6789, 234-56-7890, 345-67-8901, 456-78-9012, 567-89-0123",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Feature 2: 5 SSNs — critical bulk PII, must block.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 90,
+      "text": "Contacts: a@b.com, c@d.com, e@f.com, 555-111-1111, 555-222-2222, 555-333-3333, g@h.com, 555-444-4444, i@j.com, 555-555-5555, k@l.com",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Feature 2: 11 mixed PII items — bulk mixed, must block.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 91,
+      "text": "Imported 12345 records. Please analyze the pattern of account_id, email, and region combinations.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Feature 2 TN: mentions a count but no actual PII — should not block.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 92,
+      "text": "Our customer support team can be reached at support@company.com. For billing, contact billing@company.com. The CEO is reachable at ceo@company.com.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Feature 2 TN for bulk: only 3 emails — NOT bulk, but IS PII so still blocks via normal scoring.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 93,
+      "text": "Can you help me write an email template? Something like: Dear [customer_name], your order #[order_id] has shipped to [address].",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Feature 2 TN: template placeholders, no real PII.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 94,
+      "text": "Analyze marketing performance: campaign A reached 2000 users, campaign B reached 1500 users, CTR was 4.2% and 3.8% respectively.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Feature 2 TN: aggregate stats, no individual PII.",
+      "feature": "bulk_data"
+    },
+    {
+      "id": 95,
+      "text": "Please help me summarize this data: we have customers from 15 countries, over 50,000 accounts created, and an average NPS score of 72.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Feature 2 TN: aggregate business metrics, no PII.",
+      "feature": "bulk_data"
+    }
+  ]
+}

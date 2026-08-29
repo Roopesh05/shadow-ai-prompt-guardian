@@ -1,0 +1,522 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTINEL — Guardian Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-0: #06060f;
+      --bg-1: #0d0d1c;
+      --bg-2: #12122a;
+      --bg-3: #1a1a38;
+      --border: rgba(99,102,241,0.18);
+      --accent: #6366f1;
+      --accent-glow: rgba(99,102,241,0.25);
+      --critical: #f43f5e;
+      --warning: #f59e0b;
+      --safe: #10b981;
+      --text-1: #f1f5f9;
+      --text-2: #94a3b8;
+      --text-3: #475569;
+      --font: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-0);
+      color: var(--text-1);
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--bg-1);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 20px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .logo-name { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+    .logo-ver { font-size: 10px; color: var(--text-3); }
+    .nav-section { padding: 8px 12px 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; border-radius: 0;
+      color: var(--text-2);
+    }
+    .nav-item:hover { background: rgba(99,102,241,0.08); color: var(--text-1); }
+    .nav-item.active { background: rgba(99,102,241,0.12); color: var(--text-1); border-right: 2px solid var(--accent); }
+    .nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    /* ── Main ── */
+    .main {
+      padding: 32px 40px;
+      max-width: 860px;
+    }
+
+    /* ── Page sections ── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ── Section title ── */
+    .section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .section-desc { font-size: 13px; color: var(--text-2); margin-bottom: 28px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px; margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: rgba(99,102,241,0.3); }
+    .card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .card-desc { font-size: 12px; color: var(--text-2); margin-bottom: 14px; line-height: 1.5; }
+
+    /* ── Toggle row ── */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info { flex: 1; }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .toggle-hint { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+    .toggle {
+      position: relative; width: 42px; height: 23px; appearance: none;
+      background: var(--bg-3); border-radius: 12px; cursor: pointer;
+      transition: background 0.3s; border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .toggle:checked { background: var(--accent); border-color: var(--accent); }
+    .toggle::before {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 17px; height: 17px; background: white; border-radius: 50%;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .toggle:checked::before { transform: translateX(19px); }
+
+    /* ── Sensitivity Slider ── */
+    .slider-row { margin-top: 12px; }
+    .slider-label { font-size: 12px; color: var(--text-2); margin-bottom: 6px; display: flex; justify-content: space-between; }
+    input[type=range] {
+      width: 100%; appearance: none; height: 4px;
+      background: var(--bg-3); border-radius: 2px; cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); cursor: pointer;
+    }
+
+    /* ── Compliance Presets ── */
+    .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .preset-card {
+      padding: 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-3); cursor: pointer; transition: all 0.2s;
+    }
+    .preset-card:hover { border-color: rgba(99,102,241,0.4); background: var(--bg-2); }
+    .preset-card.active { border-color: var(--accent); background: rgba(99,102,241,0.08); }
+    .preset-name { font-size: 13px; font-weight: 700; }
+    .preset-desc { font-size: 11px; color: var(--text-2); margin-top: 3px; }
+    .preset-badge {
+      display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 4px; margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+    .preset-badge.hipaa { background: rgba(244,63,94,0.15); color: #f43f5e; }
+    .preset-badge.pci_dss { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .preset-badge.gdpr { background: rgba(99,102,241,0.15); color: #818cf8; }
+    .preset-badge.soc2 { background: rgba(16,185,129,0.1); color: #34d399; }
+
+    /* ── Custom Terms ── */
+    .terms-input {
+      width: 100%; padding: 10px 14px; border-radius: 8px;
+      background: var(--bg-3); border: 1px solid var(--border);
+      color: var(--text-1); font-family: var(--font-mono); font-size: 12px;
+      resize: vertical; min-height: 100px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .terms-input:focus { border-color: var(--accent); }
+
+    /* ── Audit Log ── */
+    .log-entry {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 14px; background: var(--bg-3); border-radius: 8px;
+      margin-bottom: 6px; border: 1px solid transparent; transition: all 0.2s;
+    }
+    .log-entry:hover { border-color: var(--border); }
+    .log-sev { font-size: 13px; flex-shrink: 0; }
+    .log-detail { flex: 1; min-width: 0; }
+    .log-cats { font-size: 12px; font-weight: 600; }
+    .log-meta { font-size: 11px; color: var(--text-2); margin-top: 2px; font-family: var(--font-mono); }
+    .log-hash { font-size: 9px; color: var(--text-3); font-family: var(--font-mono); margin-top: 2px; word-break: break-all; }
+    .log-score { font-size: 18px; font-weight: 800; font-family: var(--font-mono); }
+    .log-score.critical { color: var(--critical); }
+    .log-score.warning { color: var(--warning); }
+    .log-score.info { color: var(--accent); }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      color: white; border-color: rgba(99,102,241,0.4);
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.04); color: var(--text-2);
+      border-color: rgba(255,255,255,0.08);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+    .btn-danger { background: rgba(244,63,94,0.1); color: var(--critical); border-color: rgba(244,63,94,0.25); }
+    .btn-danger:hover { background: rgba(244,63,94,0.2); }
+
+    .btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+    /* ── Save toast ── */
+    #options-toast {
+      position: fixed; bottom: 24px; right: 24px;
+      padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);
+      backdrop-filter: blur(12px);
+      transform: translateY(20px) scale(0.95); opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+    }
+    #options-toast.show { transform: translateY(0) scale(1); opacity: 1; }
+
+    /* ── Badge counts ── */
+    .nav-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 10px;
+      background: rgba(244,63,94,0.15); color: var(--critical);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🛡️</div>
+        <div>
+          <div class="logo-name">SENTINEL</div>
+          <div class="logo-ver">Guardian Center · v5.0</div>
+        </div>
+      </div>
+
+      <div class="nav-section">Detection</div>
+      <div class="nav-item active" data-section="detection">
+        <span class="nav-icon">🔍</span> Detection Settings
+      </div>
+      <div class="nav-item" data-section="compliance">
+        <span class="nav-icon">📋</span> Compliance Presets
+      </div>
+      <div class="nav-item" data-section="custom">
+        <span class="nav-icon">✏️</span> Custom Rules
+      </div>
+
+      <div class="nav-section">Security</div>
+      <div class="nav-item" data-section="audit">
+        <span class="nav-icon">📜</span> Audit Log
+        <span class="nav-badge" id="nav-log-count">0</span>
+      </div>
+      <div class="nav-item" data-section="platforms">
+        <span class="nav-icon">🌐</span> Platforms
+      </div>
+
+      <div class="nav-section">Advanced</div>
+      <div class="nav-item" data-section="export">
+        <span class="nav-icon">📤</span> Export &amp; API
+      </div>
+      <div class="nav-item" data-section="about">
+        <span class="nav-icon">ℹ️</span> About
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- DETECTION SETTINGS -->
+      <section class="page-section active" id="section-detection">
+        <div class="section-title">Detection Settings</div>
+        <div class="section-desc">Configure how SENTINEL scans and blocks AI prompts.</div>
+
+        <div class="card">
+          <div class="card-title">Core Protection</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Protection Enabled</div>
+              <div class="toggle-hint">Master switch — enables all scanning and blocking</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-enabled" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">API Key & Secret Detection</div>
+              <div class="toggle-hint">150+ patterns: AWS, GitHub, Stripe, OpenAI, Anthropic, HuggingFace…</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-api-keys" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">PII Detection</div>
+              <div class="toggle-hint">Email, SSN, phone, IBAN, Aadhaar, credit card (Luhn-validated), UK NI…</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-pii" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Password & Credential Detection</div>
+              <div class="toggle-hint">Detects password= key-value patterns and connection strings</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-passwords" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Confidential Term Detection</div>
+              <div class="toggle-hint">Custom + built-in corporate / legal / financial terms</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-confidential" checked>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Advanced Intelligence</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Entropy-based Detection</div>
+              <div class="toggle-hint">Catches high-entropy tokens that look like secrets even without known patterns</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-entropy" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Base64 Decode-and-Scan</div>
+              <div class="toggle-hint">Decodes base64 blobs and scans for hidden secrets inside</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-base64" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Obfuscation Detection</div>
+              <div class="toggle-hint">Normalizes Unicode lookalikes, leet-speak, zero-width chars, and character-spaced tokens</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-obfuscation" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Bulk Data Detection</div>
+              <div class="toggle-hint">Detects CSV/JSON dumps with multiple PII entries</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-bulk" checked>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Context Window Analysis</div>
+              <div class="toggle-hint">Tracks cumulative risk across recent messages in the same conversation</div>
+            </div>
+            <input type="checkbox" class="toggle" id="opt-context" checked>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Sensitivity Level</div>
+          <div class="card-desc">Higher sensitivity catches more — may increase false positives on technical content.</div>
+          <div class="slider-row">
+            <div class="slider-label">
+              <span>Sensitivity</span>
+              <span id="sensitivity-value" style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">50</span>
+            </div>
+            <input type="range" id="opt-sensitivity" min="10" max="100" value="50" step="5">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-save-detection">💾 Save Settings</button>
+          <button class="btn btn-ghost" id="btn-reset-detection">↩ Reset Defaults</button>
+        </div>
+      </section>
+
+      <!-- COMPLIANCE PRESETS -->
+      <section class="page-section" id="section-compliance">
+        <div class="section-title">Compliance Presets</div>
+        <div class="section-desc">Enable industry-standard compliance modes to add specialized detection patterns and risk scoring.</div>
+
+        <div class="card">
+          <div class="card-title">Active Presets</div>
+          <div class="card-desc">Each preset adds domain-specific patterns and increases risk score multipliers.</div>
+          <div class="preset-grid">
+            <div class="preset-card" id="preset-hipaa" data-preset="hipaa">
+              <div class="preset-name">HIPAA</div>
+              <div class="preset-desc">Protected Health Information — NPI, MRN, ICD-10 codes, PHI keywords</div>
+              <span class="preset-badge hipaa">Healthcare</span>
+            </div>
+            <div class="preset-card" id="preset-pci_dss" data-preset="pci_dss">
+              <div class="preset-name">PCI-DSS</div>
+              <div class="preset-desc">Payment card data — PAN, expiry, track data, Luhn-validated cards</div>
+              <span class="preset-badge pci_dss">Payments</span>
+            </div>
+            <div class="preset-card" id="preset-gdpr" data-preset="gdpr">
+              <div class="preset-name">GDPR</div>
+              <div class="preset-desc">EU personal data — data subject references, DPA terms, citizen IDs</div>
+              <span class="preset-badge gdpr">EU Privacy</span>
+            </div>
+            <div class="preset-card" id="preset-soc2" data-preset="soc2">
+              <div class="preset-name">SOC 2</div>
+              <div class="preset-desc">System &amp; organization controls — audit terms, pen test references</div>
+              <span class="preset-badge soc2">Compliance</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-save-compliance">💾 Save Presets</button>
+        </div>
+      </section>
+
+      <!-- CUSTOM RULES -->
+      <section class="page-section" id="section-custom">
+        <div class="section-title">Custom Rules</div>
+        <div class="section-desc">Add your own confidential terms and custom regex patterns.</div>
+
+        <div class="card">
+          <div class="card-title">Custom Confidential Terms</div>
+          <div class="card-desc">One term per line. Case-insensitive. These trigger at "Info" severity.</div>
+          <textarea class="terms-input" id="custom-terms" placeholder="ProjectNova&#10;Operation Alpha&#10;internal-codename&#10;compensation&#10;M&amp;A target"></textarea>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Custom Regex Patterns</div>
+          <div class="card-desc">One pattern per line (no delimiters). Name and pattern separated by &quot;|&quot;. E.g.: Employee ID|EMP-\d{6}</div>
+          <textarea class="terms-input" id="custom-regex" placeholder="Employee ID|EMP-\d{6}&#10;Internal Ticket|JIRA-\d{4,6}&#10;Project Code|PRJ-[A-Z]{3}-\d{4}"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-save-custom">💾 Save Custom Rules</button>
+        </div>
+      </section>
+
+      <!-- AUDIT LOG -->
+      <section class="page-section" id="section-audit">
+        <div class="section-title">Tamper-Proof Audit Log</div>
+        <div class="section-desc">SHA-256 hash-chained entries — each block links to the previous to detect tampering.</div>
+
+        <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+          <button class="btn btn-primary" id="btn-export-audit">📤 Export JSON</button>
+          <button class="btn btn-danger" id="btn-clear-audit">🗑 Clear Log</button>
+          <span style="margin-left:auto;font-size:11px;color:var(--text-3);font-family:var(--font-mono);" id="chain-head"></span>
+        </div>
+
+        <div id="audit-log-list">
+          <div style="text-align:center;padding:40px;color:var(--text-3);">No audit entries yet.</div>
+        </div>
+      </section>
+
+      <!-- PLATFORMS -->
+      <section class="page-section" id="section-platforms">
+        <div class="section-title">Protected Platforms</div>
+        <div class="section-desc">SENTINEL v5.0 covers 25+ AI platforms.</div>
+
+        <div class="card">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">💬 ChatGPT / OpenAI</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🤖 Claude / Anthropic</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">✨ Gemini / Google</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🔍 Perplexity AI</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🤗 HuggingFace Chat</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">⚡ Groq Console</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🌊 Mistral AI</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🦙 Meta AI</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🕊 Grok / xAI</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🪁 Poe</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">💙 Character.ai</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🔵 Bing Copilot</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🐙 GitHub Copilot</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🔎 Phind</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🌟 You.com</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">☁️ Amazon Q</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🎯 Cursor</div>
+            <div style="padding:10px;background:var(--bg-3);border-radius:8px;font-size:13px;">🐬 Kagi</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPORT & API -->
+      <section class="page-section" id="section-export">
+        <div class="section-title">Export &amp; Developer API</div>
+        <div class="section-desc">Export audit data or integrate SENTINEL into your own tools.</div>
+
+        <div class="card">
+          <div class="card-title">Audit Export</div>
+          <div class="card-desc">Export the full hash-chained audit log as JSON. Verify chain integrity with the chainHead SHA-256 value.</div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-export-audit2">📤 Export Full Audit JSON</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Developer API (window.SentinelAPI)</div>
+          <div class="card-desc">On any supported page, you can call SENTINEL's detection engine directly:</div>
+          <pre style="background:var(--bg-3);padding:14px;border-radius:8px;font-family:var(--font-mono);font-size:12px;overflow:auto;color:#818cf8;margin-top:8px;border:1px solid var(--border);">// Scan any text
+const result = window.SentinelAPI.scan("my text...");
+console.log(result.riskScore, result.findings);
+
+// Auto-redact
+const redacted = window.SentinelAPI.redact("my text...");
+
+// Get compliance presets
+window.SentinelAPI.compliance.hipaa.patterns</pre>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="page-section" id="section-about">
+        <div class="section-title">About SENTINEL</div>
+        <div class="section-desc">The world's most advanced AI prompt security guardian.</div>
+        <div class="card">
+          <div style="font-size:13px;line-height:1.8;color:var(--text-2);">
+            <p><strong style="color:var(--text-1);">Version:</strong> 5.0.0</p>
+            <p><strong style="color:var(--text-1);">Architecture:</strong> Chrome Manifest V3 — 100% local, zero data exfiltration</p>
+            <p><strong style="color:var(--text-1);">Detection:</strong> 150+ patterns, Shannon entropy, Luhn validation, base64 decode-and-scan, Unicode normalization</p>
+            <p><strong style="color:var(--text-1);">Compliance:</strong> HIPAA, PCI-DSS, GDPR, SOC 2 presets</p>
+            <p><strong style="color:var(--text-1);">Audit:</strong> SHA-256 hash-chained tamper-proof log</p>
+            <p><strong style="color:var(--text-1);">Platforms:</strong> 25+ AI platforms covered</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="options-toast">✅ Settings saved</div>
+
+  <script src="js/options.js"></script>
+</body>
+</html>
