@@ -123,6 +123,10 @@
   var MAX_LOG_ENTRIES = 50;
   // Gate: live risk / inline highlight only run AFTER the user has typed something
   var userHasInteracted = false;
+  // SENTINEL DevShield: Tab-scoped ephemeral memory vault for round-trip code restoration
+  var tabDevVault = (typeof SENTINEL_SYNTHETIC !== 'undefined' && SENTINEL_SYNTHETIC.createDevVault)
+    ? SENTINEL_SYNTHETIC.createDevVault()
+    : null;
 
   // ─── Safe storage helpers ────────────────────────────────────────────────────
   function safeGet(keys, cb) {
@@ -554,13 +558,73 @@
     var synthEngine = (typeof SENTINEL_SYNTHETIC !== 'undefined' && SENTINEL_SYNTHETIC) || (typeof window !== 'undefined' && window.SENTINEL_SYNTHETIC);
     var mockResult = synthEngine ? synthEngine.autoRedactSynthetic(currentText, result.findings) : autoRedact(currentText, result.findings);
 
+    if (!tabDevVault && synthEngine && synthEngine.createDevVault) {
+      tabDevVault = synthEngine.createDevVault();
+    }
+    if (tabDevVault && mockResult.replacements) {
+      tabDevVault.storeReplacements(mockResult.replacements);
+    }
+
     setActiveValue(activeEl, mockResult.redacted || mockResult.text);
     dispatchReactEvents(activeEl);
 
     dismissBanner();
-    showToast('🎭 Replaced ' + mockResult.replacements.length + ' item' + (mockResult.replacements.length > 1 ? 's' : '') + ' with valid synthetic mocks', 'success');
+    showToast('🎭 DevShield: Replaced ' + mockResult.replacements.length + ' item' + (mockResult.replacements.length > 1 ? 's' : '') + ' with valid synthetic mocks', 'success');
     highlightFindings(result.findings);
     scrollToInput();
+  }
+
+  // ─── SENTINEL DevShield: 1-Click Code Restorer ──────────────────────────────
+  function attachCodeRestorerButtons() {
+    if (!tabDevVault || tabDevVault.size() === 0) return;
+
+    var codeBlocks = document.querySelectorAll('pre code, pre, .code-block, code-block');
+    codeBlocks.forEach(function (block) {
+      if (block.dataset.sapgRestorerAttached) return;
+
+      var text = block.textContent || '';
+      if (!tabDevVault.hasAnyToken(text)) return;
+
+      block.dataset.sapgRestorerAttached = 'true';
+      var container = block.tagName === 'CODE' ? (block.closest('pre') || block.parentElement) : block;
+      if (!container || container.querySelector('.sapg-code-restore-btn')) return;
+
+      var restoreBtn = document.createElement('button');
+      restoreBtn.className = 'sapg-code-restore-btn';
+      restoreBtn.innerHTML = '<span class="sapg-restore-icon">🛡️</span> Copy Restored';
+      restoreBtn.title = 'Copy code with real secrets & database URLs seamlessly restored from DevShield';
+
+      restoreBtn.addEventListener('click', async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var rawCode = block.textContent || '';
+        var restoredCode = tabDevVault.restore(rawCode);
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(restoredCode);
+          } else {
+            var tempArea = document.createElement('textarea');
+            tempArea.value = restoredCode;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+          }
+          restoreBtn.innerHTML = '<span>✅</span> Copied with Secrets!';
+          restoreBtn.classList.add('copied');
+          setTimeout(function () {
+            restoreBtn.innerHTML = '<span class="sapg-restore-icon">🛡️</span> Copy Restored';
+            restoreBtn.classList.remove('copied');
+          }, 2500);
+          showToast('✅ Copied code with secrets restored from DevShield (zero leaks)', 'success');
+        } catch (err) {
+          showToast('Failed to copy code to clipboard', 'error');
+        }
+      });
+
+      container.style.position = 'relative';
+      container.appendChild(restoreBtn);
+    });
   }
 
   function markAsSafe() {
@@ -1346,6 +1410,7 @@
   function startDOMObservation() {
     var observer = new MutationObserver(function () {
       interceptForms();
+      attachCodeRestorerButtons();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
