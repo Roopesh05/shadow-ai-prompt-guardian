@@ -80,6 +80,7 @@
       ],
       "js": [
         "js/detection-engine.js",
+        "js/synthetic-generator.js",
         "js/content.js"
       ],
       "css": [

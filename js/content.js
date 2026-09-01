@@ -384,6 +384,7 @@
       '</div>',
       '<div id="sapr-banner-actions">',
       '  <button id="sapr-btn-redact" title="Replace sensitive data with safe placeholders">✂️ Auto-Redact &amp; Resubmit</button>',
+      '  <button id="sapr-btn-mock" title="Replace with syntactically valid mock tokens for code debugging">🎭 Auto-Mock &amp; Resubmit</button>',
       '  <button id="sapr-btn-resubmit" title="Fix manually and resend">I\'ll fix it</button>',
       '  <button id="sapr-btn-safe" title="Mark as safe and learn">✅ This is safe</button>',
       '  <button id="sapr-btn-cancel" title="Cancel and keep prompt">✕ Cancel</button>',
@@ -399,6 +400,7 @@
       if (!btn) return;
       e.stopPropagation();
       if (btn.id === 'sapr-btn-redact') autoRedactAndResubmit();
+      else if (btn.id === 'sapr-btn-mock') autoMockAndResubmit();
       else if (btn.id === 'sapr-btn-resubmit' || btn.id === 'sapr-btn-cancel') dismissBanner();
       else if (btn.id === 'sapr-btn-safe') markAsSafe();
     });
@@ -535,6 +537,28 @@
 
     dismissBanner();
     showToast('✂️ Auto-redacted ' + redactResult.replacements.length + ' item' + (redactResult.replacements.length > 1 ? 's' : '') + ' with safe placeholders', 'success');
+    highlightFindings(result.findings);
+    scrollToInput();
+  }
+
+  function autoMockAndResubmit() {
+    var activeEl = lastPromptElement || getActivePromptElement();
+    if (!activeEl) { dismissBanner(); return; }
+
+    var currentText = activeEl.value || activeEl.innerText || '';
+    if (!currentText || currentText.length < 5) { dismissBanner(); return; }
+
+    var result = detect(currentText);
+    if (!result.shouldBlock || result.findings.length === 0) { dismissBanner(); return; }
+
+    var synthEngine = (typeof SENTINEL_SYNTHETIC !== 'undefined' && SENTINEL_SYNTHETIC) || (typeof window !== 'undefined' && window.SENTINEL_SYNTHETIC);
+    var mockResult = synthEngine ? synthEngine.autoRedactSynthetic(currentText, result.findings) : autoRedact(currentText, result.findings);
+
+    setActiveValue(activeEl, mockResult.redacted || mockResult.text);
+    dispatchReactEvents(activeEl);
+
+    dismissBanner();
+    showToast('🎭 Replaced ' + mockResult.replacements.length + ' item' + (mockResult.replacements.length > 1 ? 's' : '') + ' with valid synthetic mocks', 'success');
     highlightFindings(result.findings);
     scrollToInput();
   }

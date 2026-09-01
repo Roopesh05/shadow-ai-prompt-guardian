@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SENTINEL v5.0 — Content CSS
  * Cinematic holographic HUD, neon highlights, spring animations
  */
@@ -358,6 +358,18 @@
 #sapr-btn-redact:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px var(--sg-accent-glow);
+  filter: brightness(1.1);
+}
+
+#sapr-btn-mock {
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  color: #fff;
+  border-color: rgba(14,165,233,0.5);
+  box-shadow: 0 2px 12px rgba(14,165,233,0.3);
+}
+#sapr-btn-mock:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(14,165,233,0.45);
   filter: brightness(1.1);
 }
 

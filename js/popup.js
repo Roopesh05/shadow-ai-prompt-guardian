@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SENTINEL v5.0 — Popup "Mission Control"
  *
  * Features:
@@ -12,10 +12,61 @@
 (function () {
   'use strict';
 
-  // ─── Storage Key ─────────────────────────────────────────────────────────────
+  // ─── Global Error Suppression (Layer 1) ──────────────────────────────────────
+  if (typeof window !== 'undefined') {
+    window.addEventListener('unhandledrejection', (e) => {
+      if (e.reason && e.reason.message && e.reason.message.includes('Extension context invalidated')) {
+        e.preventDefault();
+      }
+    });
+    window.addEventListener('error', (e) => {
+      if (e.message && e.message.includes('Extension context invalidated')) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  // ─── Safe Storage Wrappers (Layer 3) ─────────────────────────────────────────
+  function safeGet(keys, cb) {
+    if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) return;
+    try {
+      chrome.storage.local.get(keys, function (result) {
+        try { if (cb) cb(result || {}); } catch (_) {}
+      });
+    } catch (_) {}
+  }
+
+  function safeSet(obj, cb) {
+    if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) {
+      if (cb) { try { cb(); } catch (_) {} }
+      return;
+    }
+    try {
+      chrome.storage.local.set(obj, function () {
+        try { if (cb) cb(); } catch (_) {}
+      });
+    } catch (_) {}
+  }
+
+  function safeRemove(keys, cb) {
+    if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) {
+      if (cb) { try { cb(); } catch (_) {} }
+      return;
+    }
+    try {
+      chrome.storage.local.remove(keys, function () {
+        try { if (cb) cb(); } catch (_) {}
+      });
+    } catch (_) {}
+  }
+
+  // ─── Storage Keys (Unified Across content, popup, options) ───────────────────
   const STORAGE = {
-    enabled: 'sapg_protectionEnabled',
-    log:     'sapg_blockedAttempts',
+    enabled:   'sapg_protectionEnabled',
+    threshold: 'sapg_sensitivityThreshold',
+    entropy:   'sapg_enableEntropy',
+    terms:     'sapg_confidentialTerms',
+    log:       'sapg_blockedAttempts',
   };
 
   // ─── Elements ─────────────────────────────────────────────────────────────────
@@ -156,17 +207,18 @@
 
   // ─── Load & Render ────────────────────────────────────────────────────────────
 
-  function load() {
-    // Load protection state
-    chrome.storage.local.get([STORAGE.enabled, STORAGE.log], (result) => {
-      const enabled = result[STORAGE.enabled] !== false;
-      toggleEl.checked = enabled;
-      statusDot.className = `status-dot ${enabled ? 'active' : 'paused'}`;
-      statusText.textContent = enabled ? 'Protection Active' : 'Protection Paused';
+  async function loadSettings() {
+    try {
+      safeGet([STORAGE.enabled, STORAGE.log, STORAGE.threshold, STORAGE.entropy, STORAGE.terms], (result) => {
+        const enabled = result[STORAGE.enabled] !== false;
+        toggleEl.checked = enabled;
+        statusDot.className = `status-dot ${enabled ? 'active' : 'paused'}`;
+        statusText.textContent = enabled ? 'Protection Active' : 'Protection Paused';
 
-      const log = result[STORAGE.log] || [];
-      renderLog(log);
-    });
+        const log = result[STORAGE.log] || [];
+        renderLog(log);
+      });
+    } catch (_) {}
 
     // Load session metrics from background service worker
     try {
@@ -192,7 +244,7 @@
 
   toggleEl.addEventListener('change', () => {
     const enabled = toggleEl.checked;
-    chrome.storage.local.set({ [STORAGE.enabled]: enabled }, () => {
+    safeSet({ [STORAGE.enabled]: enabled }, () => {
       statusDot.className = `status-dot ${enabled ? 'active' : 'paused'}`;
       statusText.textContent = enabled ? 'Protection Active' : 'Protection Paused';
       if (!enabled) { logoEl.classList.remove('danger'); logoEl.textContent = '🛡️'; }
@@ -202,7 +254,7 @@
   // ─── Clear Log ────────────────────────────────────────────────────────────────
 
   btnClearLog.addEventListener('click', () => {
-    chrome.storage.local.remove([STORAGE.log, 'sapg_audit_log'], () => {
+    safeRemove([STORAGE.log, 'sapg_audit_log'], () => {
       renderLog([]);
       setGauge(0);
       drawSparkline([]);
@@ -216,5 +268,6 @@
 
   // ─── Init ─────────────────────────────────────────────────────────────────────
 
-  load();
+  loadSettings().catch(() => {});
 })();
+

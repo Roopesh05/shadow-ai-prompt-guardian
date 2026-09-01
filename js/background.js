@@ -49,6 +49,14 @@ async function sha256hex(str) {
 
 let _chainHash = '0'.repeat(64);
 
+// Rehydrate chain hash and session metrics from storage on startup
+chrome.storage.local.get(['sapg_audit_chain', 'sapg_session_metrics'], (res) => {
+  if (res && res.sapg_audit_chain) _chainHash = res.sapg_audit_chain;
+  if (res && res.sapg_session_metrics) {
+    Object.assign(sessionMetrics, res.sapg_session_metrics);
+  }
+});
+
 async function appendAuditEntry(entry) {
   try {
     const result = await new Promise(res => chrome.storage.local.get(['sapg_audit_chain', 'sapg_audit_log'], res));
@@ -74,6 +82,12 @@ const sessionMetrics = {
   startTime: Date.now(),
 };
 
+function saveMetrics() {
+  try {
+    chrome.storage.local.set({ sapg_session_metrics: sessionMetrics });
+  } catch (_) {}
+}
+
 function updateMetrics(result, blocked) {
   sessionMetrics.promptsChecked++;
   if (blocked) sessionMetrics.promptsBlocked++;
@@ -82,6 +96,7 @@ function updateMetrics(result, blocked) {
   if (!blocked && result.riskScore > 10) {
     sessionMetrics.exposureScore = Math.min(100, sessionMetrics.exposureScore + Math.round(result.riskScore * 0.1));
   }
+  saveMetrics();
 }
 
 // ─── Message Handler ──────────────────────────────────────────────────────────
@@ -127,6 +142,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg.type === 'SAPG_RESET_EXPOSURE') {
     sessionMetrics.exposureScore = 0;
+    saveMetrics();
     sendResponse({ ok: true });
     return true;
   }

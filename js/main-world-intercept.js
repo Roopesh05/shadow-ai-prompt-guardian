@@ -101,14 +101,11 @@
     }
   }
 
-  // Check if extracted text looks like human-written prose (not a token/key blob)
+  // Validate extracted text before sending for detection
   function isHumanText(text) {
-    if (!text || text.length < 10) return false;
-    // Reject if the text looks like a base64 blob, JWT, or high-entropy token
-    if (/^[A-Za-z0-9+/=]{30,}$/.test(text)) return false;  // pure base64
-    if (/^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(text)) return false;  // JWT
-    // Must contain at least one space (words) or common punctuation
-    return /[\s.,!?;:']/.test(text);
+    if (!text || typeof text !== 'string') return false;
+    text = text.trim();
+    return text.length >= 5;
   }
 
   // ─── Synchronous check via postMessage + blocking ──────────────────────────
@@ -199,7 +196,7 @@
 
   // ─── Quick Synchronous Check (for XHR, critical patterns only) ────────────
   function quickSyncCheck(text) {
-    if (!text || text.length < 10) return false;
+    if (!text || text.length < 5) return false;
     var patterns = [
       /AKIA(?:\s*[0-9A-Z]){16}/,
       /ghp_[A-Za-z0-9]{36}/,
@@ -208,9 +205,12 @@
       /pk_live_[0-9a-zA-Z]{24,}/,
       /glpat-[A-Za-z0-9\-]{20,}/,
       /xoxb-[0-9]{10,}-[0-9]{10,}-[A-Za-z0-9]{30,}/,
+      /xoxp-[0-9]{10,}-[0-9]{10,}-[A-Za-z0-9]{20,}/,
       /ya29\.[A-Za-z0-9_-]{10,}/,
       /(?:password|passwd|pwd|secret)\s*[:=]\s*[^\s]{6,}/i,
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
       /\d{3}-\d{2}-\d{4}/,
+      /\bAC[a-f0-9]{32}\b/i,
     ];
     for (var i = 0; i < patterns.length; i++) {
       if (patterns[i].test(text)) return true;

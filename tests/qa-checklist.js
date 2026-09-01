@@ -319,7 +319,7 @@ check('Multiple findings in one prompt', analyzePrompt('key: AKIAIOSFODNN7EXAMPL
 // SECTION 14: TEST FILES
 // ═══════════════════════════════════════════════════════════════
 console.log('\n── SECTION 14: TEST FILES ──');
-check('Test dataset has 85 prompts', require('../tests/test-prompts.json').prompts.length === 85);
+check('Test dataset has 95 prompts', require('../tests/test-prompts.json').prompts.length === 95);
 check('Test detection engine imports detect', true); // verified by running tests
 check('Eval harness imports analyzePrompt', true); // verified by running tests
 
