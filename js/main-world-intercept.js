@@ -28,7 +28,8 @@
   // We ONLY intercept requests going to known AI chat APIs.
   // All other page requests (auth, session, analytics, CDN, etc.) are allowed through.
   var AI_CHAT_URL_PATTERNS = [
-    /\/backend-api\/conversation/,           // ChatGPT
+    /\/backend-api\//,                        // All ChatGPT backend API endpoints
+    /\/backend-anon\//,                       // ChatGPT anonymous conversation
     /\/api\/chat\/completions/,               // OpenAI-compatible
     /\/v1\/chat\/completions/,                // OpenAI API
     /\/v1\/messages/,                         // Anthropic Claude API
@@ -66,16 +67,21 @@
 
       // OpenAI / Anthropic messages array format
       if (data.messages && Array.isArray(data.messages) && data.messages.length > 0) {
-        // Only look at the LAST message (the new user turn)
         var lastMsg = data.messages[data.messages.length - 1];
-        // Only check 'user' role messages, not system/assistant
-        if (lastMsg && lastMsg.role && lastMsg.role !== 'user') return null;
-        if (lastMsg && typeof lastMsg.content === 'string' && lastMsg.content.length > 10)
-          return lastMsg.content.trim();
-        if (lastMsg && typeof lastMsg.text === 'string' && lastMsg.text.length > 10)
-          return lastMsg.text.trim();
-        if (lastMsg && lastMsg.content && Array.isArray(lastMsg.content.parts))
-          return lastMsg.content.parts.join('\n').trim();
+        if (lastMsg) {
+          var role = lastMsg.role || (lastMsg.author && lastMsg.author.role);
+          if (role && role !== 'user') return null;
+          if (typeof lastMsg.content === 'string' && lastMsg.content.length > 5)
+            return lastMsg.content.trim();
+          if (typeof lastMsg.text === 'string' && lastMsg.text.length > 5)
+            return lastMsg.text.trim();
+          if (lastMsg.content && Array.isArray(lastMsg.content.parts)) {
+            var extracted = lastMsg.content.parts.map(function (p) {
+              return typeof p === 'string' ? p : (p && p.text ? p.text : '');
+            }).filter(Boolean).join('\n').trim();
+            if (extracted.length > 5) return extracted;
+          }
+        }
       }
 
       // Gemini format
@@ -83,17 +89,23 @@
         var lastContent = data.contents[data.contents.length - 1];
         if (lastContent && lastContent.role && lastContent.role !== 'user') return null;
         var parts = lastContent && lastContent.parts;
-        if (parts && parts[0] && parts[0].text && parts[0].text.length > 10)
+        if (parts && parts[0] && parts[0].text && parts[0].text.length > 5)
           return parts[0].text.trim();
       }
 
       // Perplexity / direct prompt
-      if (data.query && typeof data.query === 'string' && data.query.length > 10)
+      if (data.query && typeof data.query === 'string' && data.query.length > 5)
         return data.query.trim();
 
       // Cohere
-      if (data.message && typeof data.message === 'string' && data.message.length > 10)
+      if (data.message && typeof data.message === 'string' && data.message.length > 5)
         return data.message.trim();
+
+      if (data.prompt && typeof data.prompt === 'string' && data.prompt.length > 5)
+        return data.prompt.trim();
+
+      if (data.input && typeof data.input === 'string' && data.input.length > 5)
+        return data.input.trim();
 
       return null;
     } catch (_) {
@@ -150,6 +162,13 @@
       if (!isAiChatUrl(url)) return originalFetch.apply(this, arguments);
 
       var body = init && init.body;
+      if (!body && resource && typeof resource !== 'string') {
+        try {
+          if (resource.body && !resource.bodyUsed) {
+            body = await resource.clone().text();
+          }
+        } catch (_) {}
+      }
       if (!body || typeof body !== 'string') return originalFetch.apply(this, arguments);
 
       var promptText = extractPromptFromBody(body);

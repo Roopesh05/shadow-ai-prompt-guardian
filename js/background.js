@@ -110,7 +110,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     const { result } = msg;
     updateMetrics(result, true);
     setBadgeBlocked(sender.tab && sender.tab.id);
-    appendAuditEntry({
+    const entry = {
       timestamp: new Date().toISOString(),
       categories: result.categories || [],
       riskScore: result.riskScore || 0,
@@ -120,7 +120,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       maskedPreviews: (result.findings || []).slice(0, 3).map(f => f.matchMasked || ''),
       bulkMessages: result.bulkMessages || [],
       platform: msg.platform || 'unknown',
-    });
+    };
+    appendAuditEntry(entry);
+
+    // Persist directly to sapg_blockedAttempts for immediate popup/options rendering
+    try {
+      chrome.storage.local.get(['sapg_blockedAttempts'], (r) => {
+        const attempts = (r && r.sapg_blockedAttempts) || [];
+        attempts.unshift(entry);
+        if (attempts.length > 50) attempts.splice(50);
+        chrome.storage.local.set({ sapg_blockedAttempts: attempts });
+      });
+    } catch (_) {}
+
     sendResponse({ ok: true });
     return true;
   }

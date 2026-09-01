@@ -209,13 +209,16 @@
 
   async function loadSettings() {
     try {
-      safeGet([STORAGE.enabled, STORAGE.log, STORAGE.threshold, STORAGE.entropy, STORAGE.terms], (result) => {
+      safeGet([STORAGE.enabled, STORAGE.log, STORAGE.threshold, STORAGE.entropy, STORAGE.terms, 'sapg_audit_log'], (result) => {
         const enabled = result[STORAGE.enabled] !== false;
         toggleEl.checked = enabled;
         statusDot.className = `status-dot ${enabled ? 'active' : 'paused'}`;
         statusText.textContent = enabled ? 'Protection Active' : 'Protection Paused';
 
-        const log = result[STORAGE.log] || [];
+        let log = result[STORAGE.log] || [];
+        if (log.length === 0 && Array.isArray(result.sapg_audit_log) && result.sapg_audit_log.length > 0) {
+          log = result.sapg_audit_log;
+        }
         renderLog(log);
       });
     } catch (_) {}

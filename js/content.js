@@ -50,9 +50,12 @@
 
         var result = detect(promptText);
         if (result.shouldBlock) {
-          try { recordBlock(result); } catch (_) {}
+          notifyBGBlock(result);
+          try { recordBlock(result).catch(function () {}); } catch (_) {}
           showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || []);
           console.log('[SAPG] Blocked:', result.categories, 'riskScore:', result.riskScore, 'severity:', result.severity, context);
+        } else {
+          notifyBGClean(result);
         }
         window.postMessage({ type: 'SAPG_BLOCK_DECISION', requestId: requestId, shouldBlock: result.shouldBlock }, '*');
       }
@@ -343,8 +346,8 @@
     } catch (_) {}
   }
 
-  // ─── Blocking decision ─────────────────────────────────────────────────
-  async function checkAndBlock(text, context) {
+  // ─── Blocking decision (Synchronous & Async) ───────────────────────────
+  function checkAndBlockSync(text, context) {
     if (!protectionEnabled || !text || text.length < 5) return false;
     var result = detect(text);
     if (!result.shouldBlock) {
@@ -352,10 +355,14 @@
       return false;
     }
     notifyBGBlock(result);
-    try { await recordBlock(result); } catch (_) {}
+    try { recordBlock(result).catch(function () {}); } catch (_) {}
     showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || []);
-    console.log('[SENTINEL] Blocked:', result.categories, 'risk:', result.riskScore, 'severity:', result.severity, context || '');
+    console.log('[SENTINEL] Blocked (sync):', result.categories, 'risk:', result.riskScore, 'severity:', result.severity, context || '');
     return true;
+  }
+
+  async function checkAndBlock(text, context) {
+    return checkAndBlockSync(text, context);
   }
 
   // ─── SENTINEL Cinematic Banner (“Holographic HUD”) ──────────────────────────
@@ -1339,53 +1346,50 @@
 
   // ─── Interception: Send Button Click ─────────────────────────────────────────
   function interceptSendButton() {
-    document.addEventListener('click', async function (e) {
+    document.addEventListener('click', function (e) {
       if (!protectionEnabled) return;
       var btn = e.target.closest('button');
       if (!btn) return;
-      var isSendBtn = btn.getAttribute('data-testid') === 'send-button' ||
-        btn.getAttribute('aria-label') === 'Send message' ||
-        /send/i.test(btn.textContent);
+      var testId = btn.getAttribute('data-testid') || '';
+      var aria = btn.getAttribute('aria-label') || '';
+      var isSendBtn = /send/i.test(testId) ||
+        /send|submit/i.test(aria) ||
+        /send/i.test(btn.textContent || '') ||
+        btn.type === 'submit' ||
+        (btn.querySelector('svg') && btn.closest('form, [class*="composer"], [class*="input"], main'));
       if (!isSendBtn) return;
       var promptText = extractPromptFromActiveElement();
       if (!promptText || promptText.length < 5) return;
-      var blocked = await checkAndBlock(promptText, '[send-button click]');
+      var blocked = checkAndBlockSync(promptText, '[send-button click]');
       if (blocked) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        return false;
       }
     }, true);
   }
 
   // ─── Interception: Enter Key ────────────────────────────────────────────────
   function interceptEnterKey() {
-    document.addEventListener('keydown', async function (e) {
+    document.addEventListener('keydown', function (e) {
       if (!protectionEnabled) return;
       if (e.key !== 'Enter' || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-      var activeEl = document.activeElement;
-      if (!activeEl) return;
-      var isPromptInput = activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable;
-      if (!isPromptInput) {
-        // Fallback check if focus is somehow on a button or container but cursor is inside editor
-        var editor = document.querySelector('.ProseMirror, #prompt-textarea');
-        if (editor && editor.isContentEditable) activeEl = editor;
-        else return;
-      }
-      var promptText = activeEl.value ? activeEl.value.trim() : (activeEl.innerText || '').trim();
+      var promptText = extractPromptFromActiveElement();
       if (!promptText || promptText.length < 5) return;
-      var blocked = await checkAndBlock(promptText, '[keydown Enter]');
+      var blocked = checkAndBlockSync(promptText, '[keydown Enter]');
       if (blocked) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        return false;
       }
     }, true);
   }
 
   // ─── Interception: Form Submit ──────────────────────────────────────────────
   function interceptForms() {
-    document.addEventListener('submit', async function (e) {
+    document.addEventListener('submit', function (e) {
       if (!protectionEnabled) return;
       var form = e.target;
       if (!form || form.dataset.saprChecked) return;
@@ -1398,10 +1402,12 @@
       else if (input) promptText = input.value.trim();
       else if (editable) promptText = editable.innerText.trim();
       if (!promptText || promptText.length < 5) return;
-      var blocked = await checkAndBlock(promptText, '[form submit]');
+      var blocked = checkAndBlockSync(promptText, '[form submit]');
       if (blocked) {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
       }
     }, true);
   }
