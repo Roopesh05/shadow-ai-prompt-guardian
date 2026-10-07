@@ -77,7 +77,7 @@ Shadow AI; Prompt Security; Data Loss Prevention; Browser Extension; Shannon Ent
 - **Competing Interests / Conflicts:**
   > "The authors have no competing financial or non-financial interests to declare that are relevant to the content of this article."
 - **Data & Code Availability:**
-  > "All evaluation datasets (140-prompt categorized benchmark and 1,000-prompt adversarial stress test suite) and the browser extension source code are available in the project repository."
+  > "All evaluation datasets (140-prompt categorized benchmark and 1,000-prompt adversarial stress test suite) and the browser extension source code are permanently archived on Zenodo (DOI: 10.5281/zenodo.23205630) and available in the GitHub repository (https://github.com/Roopesh05/shadow-ai-prompt-guardian)."
 - **Ethics Approval & Consent:**
   > "Not applicable. This study does not involve human participants, clinical trials, or animal subjects."
 

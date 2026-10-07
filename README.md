@@ -2,7 +2,7 @@
 
 [![Manifest V3](https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blue.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.placeholder.svg)](https://doi.org/10.5281/zenodo.placeholder)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23205630.svg)](https://doi.org/10.5281/zenodo.23205630)
 [![Privacy First](https://img.shields.io/badge/Privacy-100%25%20Client--Side-brightgreen.svg)](#privacy--zero-trust-architecture)
 [![Evaluation F1](https://img.shields.io/badge/Evaluation%20F1%20Score-1.00-success.svg)](#evaluation--benchmarks)
 
@@ -179,7 +179,7 @@ If you use **SENTINEL (Shadow AI Prompt Guardian)**, its benchmark datasets, or 
   year         = 2026,
   publisher    = {Zenodo},
   version      = {v5.0.0},
-  doi          = {10.5281/zenodo.placeholder},
+  doi          = {10.5281/zenodo.23205630},
   url          = {https://github.com/Roopesh05/shadow-ai-prompt-guardian}
 }
 ```

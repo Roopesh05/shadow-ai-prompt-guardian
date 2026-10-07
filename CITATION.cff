@@ -7,6 +7,7 @@ date-released: "2026-10-07"
 license: MIT
 repository-code: "https://github.com/Roopesh05/shadow-ai-prompt-guardian"
 url: "https://github.com/Roopesh05/shadow-ai-prompt-guardian"
+doi: 10.5281/zenodo.23205630
 keywords:
   - "shadow-ai"
   - "prompt-security"
@@ -58,3 +59,4 @@ preferred-citation:
   version: 5.0.0
   year: 2026
   url: "https://github.com/Roopesh05/shadow-ai-prompt-guardian"
+  doi: 10.5281/zenodo.23205630

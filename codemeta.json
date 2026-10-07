@@ -7,6 +7,7 @@
   "description": "Zero-Trust Client-Side Data Loss Prevention (DLP) and Sensitive Data Interception System for Generative AI Platforms.",
   "license": "https://spdx.org/licenses/MIT",
   "codeRepository": "https://github.com/Roopesh05/shadow-ai-prompt-guardian",
+  "sameAs": "https://doi.org/10.5281/zenodo.23205630",
   "datePublished": "2026-10-07",
   "programmingLanguage": [
     "JavaScript",
