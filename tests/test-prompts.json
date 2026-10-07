@@ -1,9 +1,9 @@
 {
   "meta": {
     "description": "Synthetic test dataset for Shadow AI Prompt Guardian detection engine evaluation",
-    "total_prompts": 95,
+    "total_prompts": 140,
     "categories": {
-      "clean": "Prompts with no sensitive content — should not trigger blocks",
+      "clean": "Prompts with no sensitive content \u2014 should not trigger blocks",
       "api_key": "Prompts containing API keys or secrets",
       "password": "Prompts containing passwords or credentials",
       "pii": "Prompts containing personally identifiable information",
@@ -142,7 +142,7 @@
       "text": "I need to generate a secure random API key for my microservice. What length should it be?",
       "category": "clean",
       "expected_block": false,
-      "notes": "Asking about key generation best practices — no actual key present."
+      "notes": "Asking about key generation best practices \u2014 no actual key present."
     },
     {
       "id": 20,
@@ -184,7 +184,7 @@
       "text": "How do I securely store passwords in a Node.js application?",
       "category": "clean",
       "expected_block": false,
-      "notes": "Security best practices question — no actual password."
+      "notes": "Security best practices question \u2014 no actual password."
     },
     {
       "id": 26,
@@ -226,14 +226,14 @@
       "text": "What is the population of New York City?",
       "category": "clean",
       "expected_block": false,
-      "notes": "General knowledge — no PII."
+      "notes": "General knowledge \u2014 no PII."
     },
     {
       "id": 32,
       "text": "How do I write a privacy policy for my SaaS product?",
       "category": "clean",
       "expected_block": false,
-      "notes": "Legal writing help — no actual PII."
+      "notes": "Legal writing help \u2014 no actual PII."
     },
     {
       "id": 33,
@@ -606,13 +606,12 @@
       "expected_block": true,
       "notes": "Spaced out AWS key."
     },
-
     {
       "id": 86,
       "text": "Export: user1@example.com, user2@example.com, user3@example.com, user4@example.com, user5@example.com, user6@example.com",
       "category": "pii",
       "expected_block": true,
-      "notes": "Feature 2: 6 emails — bulk data export, must block.",
+      "notes": "Feature 2: 6 emails \u2014 bulk data export, must block.",
       "feature": "bulk_data"
     },
     {
@@ -620,7 +619,7 @@
       "text": "Leads list: john.smith@corp.com, jane.doe@corp.com, bob.jones@corp.com, alice.brown@corp.com, charlie.davis@corp.com, eve.miller@corp.com, frank.wilson@corp.com",
       "category": "pii",
       "expected_block": true,
-      "notes": "Feature 2: 7 emails — bulk customer list, must block.",
+      "notes": "Feature 2: 7 emails \u2014 bulk customer list, must block.",
       "feature": "bulk_data"
     },
     {
@@ -628,7 +627,7 @@
       "text": "Phone numbers: 555-100-0001, 555-200-0002, 555-300-0003, 555-400-0004, 555-500-0005",
       "category": "pii",
       "expected_block": true,
-      "notes": "Feature 2: 5 phone numbers — bulk phone list, must block.",
+      "notes": "Feature 2: 5 phone numbers \u2014 bulk phone list, must block.",
       "feature": "bulk_data"
     },
     {
@@ -636,7 +635,7 @@
       "text": "Here are the employee SSNs: 123-45-6789, 234-56-7890, 345-67-8901, 456-78-9012, 567-89-0123",
       "category": "pii",
       "expected_block": true,
-      "notes": "Feature 2: 5 SSNs — critical bulk PII, must block.",
+      "notes": "Feature 2: 5 SSNs \u2014 critical bulk PII, must block.",
       "feature": "bulk_data"
     },
     {
@@ -644,7 +643,7 @@
       "text": "Contacts: a@b.com, c@d.com, e@f.com, 555-111-1111, 555-222-2222, 555-333-3333, g@h.com, 555-444-4444, i@j.com, 555-555-5555, k@l.com",
       "category": "pii",
       "expected_block": true,
-      "notes": "Feature 2: 11 mixed PII items — bulk mixed, must block.",
+      "notes": "Feature 2: 11 mixed PII items \u2014 bulk mixed, must block.",
       "feature": "bulk_data"
     },
     {
@@ -652,7 +651,7 @@
       "text": "Imported 12345 records. Please analyze the pattern of account_id, email, and region combinations.",
       "category": "clean",
       "expected_block": false,
-      "notes": "Feature 2 TN: mentions a count but no actual PII — should not block.",
+      "notes": "Feature 2 TN: mentions a count but no actual PII \u2014 should not block.",
       "feature": "bulk_data"
     },
     {
@@ -660,7 +659,7 @@
       "text": "Our customer support team can be reached at support@company.com. For billing, contact billing@company.com. The CEO is reachable at ceo@company.com.",
       "category": "pii",
       "expected_block": true,
-      "notes": "Feature 2 TN for bulk: only 3 emails — NOT bulk, but IS PII so still blocks via normal scoring.",
+      "notes": "Feature 2 TN for bulk: only 3 emails \u2014 NOT bulk, but IS PII so still blocks via normal scoring.",
       "feature": "bulk_data"
     },
     {
@@ -686,6 +685,321 @@
       "expected_block": false,
       "notes": "Feature 2 TN: aggregate business metrics, no PII.",
       "feature": "bulk_data"
+    },
+    {
+      "id": 96,
+      "text": "How do I implement a binary search tree in C++ with memory management?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Algorithms and data structures question."
+    },
+    {
+      "id": 97,
+      "text": "Can you recommend books on distributed systems architecture and consensus?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Book recommendations on software architecture."
+    },
+    {
+      "id": 98,
+      "text": "What is the difference between TCP and UDP protocols in networking?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Computer networking fundamentals."
+    },
+    {
+      "id": 99,
+      "text": "Write a recipe for homemade sourdough bread with hydration percentages.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Baking recipe instruction."
+    },
+    {
+      "id": 100,
+      "text": "Explain the Fourier transform and how it is applied in audio signal processing.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Mathematics and signal processing."
+    },
+    {
+      "id": 101,
+      "text": "Help me write a CSS grid layout with responsive auto-fit columns.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Frontend web styling question."
+    },
+    {
+      "id": 102,
+      "text": "Summarize the history of cryptography from Caesar ciphers to public key encryption.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Educational history question."
+    },
+    {
+      "id": 103,
+      "text": "What are the core design patterns used in modern microservices?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Software engineering design patterns."
+    },
+    {
+      "id": 104,
+      "text": "Could you create a study schedule for preparing for a cloud architect certification?",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Certification study schedule."
+    },
+    {
+      "id": 105,
+      "text": "Explain how transformer self-attention mechanisms compute query, key, and value matrices.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Machine learning theory explanation."
+    },
+    {
+      "id": 106,
+      "text": "Write an essay analyzing the themes of ambition and guilt in Shakespeare Macbeth.",
+      "category": "clean",
+      "expected_block": false,
+      "notes": "Literature essay assistance."
+    },
+    {
+      "id": 107,
+      "text": "Deploy this GitLab pipeline with my token: glpat-t9a8b7c6d5e4f3g2h1j0",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "GitLab personal access token (glpat- prefix)."
+    },
+    {
+      "id": 108,
+      "text": "Slack bot is failing to post messages. Token: xoxb-EXAMPLETOKEN-NOTREAL-abcdefghijklmnopqrstuvwx",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Slack bot token (xoxb- prefix)."
+    },
+    {
+      "id": 109,
+      "text": "Connect to Google Cloud API with OAuth token: ya29.a0AfH6SMA8kLmNoPqRsTuVwXyZ1234567890",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Google OAuth bearer token."
+    },
+    {
+      "id": 110,
+      "text": "Configure Twilio notification service using SID AC0123456789abcdefTESTINGNOTREAL0",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Twilio Account SID (AC prefix)."
+    },
+    {
+      "id": 111,
+      "text": "Here is our Azure service connection string: DefaultEndpointsProtocol=https;AccountName=prodstorage;AccountKey=AbCdEfGhIjKlMnOpQrStUvWxYz0123456789+/AbCdEf==",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Azure connection string with account key."
+    },
+    {
+      "id": 112,
+      "text": "Automate Heroku app restarts with API key: 7b89c012-3456-4789-a012-345678901234",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Heroku API key UUID format."
+    },
+    {
+      "id": 113,
+      "text": "Send transactional emails using SendGrid key: SG.abcdefghijklmnopqrstuv.1234567890abcdefghijklmnopqrstuvwxyz1234567",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "SendGrid API key pattern."
+    },
+    {
+      "id": 114,
+      "text": "Query HuggingFace inference API with token: hf_ABCDEFGHIJKLMNOPQRSTUVWXYZ012345",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "HuggingFace user access token."
+    },
+    {
+      "id": 115,
+      "text": "OpenAI project key authentication: sk-proj-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "OpenAI project-scoped API key."
+    },
+    {
+      "id": 116,
+      "text": "GitHub Fine-grained PAT for deployment: github_pat_11AAAAAAA0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdef",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "GitHub fine-grained personal access token."
+    },
+    {
+      "id": 117,
+      "text": "Internal service authentication: api_key = sec_internal_auth_token_9876543210_xyz",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "Generic API key assignment format."
+    },
+    {
+      "id": 118,
+      "text": "Here is the raw secret string: kx9Pq2Lm8Vn5Yr4Tw7Zb1Qx3Ms6Jv0Gd2Fh8",
+      "category": "api_key",
+      "expected_block": true,
+      "notes": "High Shannon entropy token (entropy >= 4.0 bits)."
+    },
+    {
+      "id": 119,
+      "text": "Database connection configuration: host=db.prod.internal port=5432 user=admin password=SuperSecretP@ssw0rd!2026",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Database password assignment."
+    },
+    {
+      "id": 120,
+      "text": "HTTP request header for service authentication: Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Bearer authorization token header."
+    },
+    {
+      "id": 121,
+      "text": "Basic authentication credentials for proxy: Authorization: Basic YWRtaW46c2VjcmV0cGFzc3dvcmQ=",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Basic authorization header."
+    },
+    {
+      "id": 122,
+      "text": "Please inspect this private key file located at ~/.ssh/id_rsa for server access",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Credential file path."
+    },
+    {
+      "id": 123,
+      "text": "Set secret credentials in shell: export API_PASSWORD=SecretProdPass123! and restart service",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Environment variable password assignment."
+    },
+    {
+      "id": 124,
+      "text": "Docker registry authentication setting: docker login -u deployment_bot --password=MySecretPassword999",
+      "category": "password",
+      "expected_block": true,
+      "notes": "CLI password flag parameter."
+    },
+    {
+      "id": 125,
+      "text": "Backup script invocation: mysqldump -u root --password=EnterpriseRootP@ss123 db_production",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Database client password flag."
+    },
+    {
+      "id": 126,
+      "text": "Server configuration file: DB_PASSWORD = 'ProductionMasterPassword!456'",
+      "category": "password",
+      "expected_block": true,
+      "notes": "Configuration file password declaration."
+    },
+    {
+      "id": 127,
+      "text": "Customer support ticket escalation for UK client phone number +44 20 7946 0958 regarding billing.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "International phone number format."
+    },
+    {
+      "id": 128,
+      "text": "Employee onboarding verification: candidate SSN is 987-65-4320, please generate contract.",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Social Security Number."
+    },
+    {
+      "id": 129,
+      "text": "Internal infrastructure node IP addresses: primary gateway is 192.168.10.254 and secondary is 10.0.15.1",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "Internal IPv4 addresses."
+    },
+    {
+      "id": 130,
+      "text": "Audit log entry from remote workstation: user connection from employee email david.ross@defensecorp.internal and IP 172.16.254.1",
+      "category": "pii",
+      "expected_block": true,
+      "notes": "PII email and network address."
+    },
+    {
+      "id": 131,
+      "text": "Drafting the executive summary for project apollo unreleased product launch next quarter.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: unreleased product and project codename."
+    },
+    {
+      "id": 132,
+      "text": "Minutes from the confidential board meeting regarding upcoming corporate restructuring.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: board meeting."
+    },
+    {
+      "id": 133,
+      "text": "Detailed executive salary and compensation review spreadsheet for senior management.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: salary."
+    },
+    {
+      "id": 134,
+      "text": "Non-disclosure agreement covering proprietary trade secret manufacturing algorithms.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential terms: proprietary, trade secret."
+    },
+    {
+      "id": 135,
+      "text": "Legal review of proposed merger and acquisition terms between both enterprises.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential terms: merger, acquisition."
+    },
+    {
+      "id": 136,
+      "text": "Document marked internal use only containing quarterly financial forecasts.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: internal use only."
+    },
+    {
+      "id": 137,
+      "text": "Privileged attorney-client communication regarding intellectual property dispute.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential terms: privileged, attorney-client."
+    },
+    {
+      "id": 138,
+      "text": "Performance review assessments and promotion recommendations for engineering staff.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: performance review."
+    },
+    {
+      "id": 139,
+      "text": "Classified technical specifications marked top secret for defense contractor contract.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: top secret."
+    },
+    {
+      "id": 140,
+      "text": "Customer compliance audit report concerning gdpr data subject requests.",
+      "category": "confidential",
+      "expected_block": true,
+      "notes": "Confidential term: gdpr."
     }
   ]
 }

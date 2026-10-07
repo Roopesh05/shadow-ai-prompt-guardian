@@ -1,0 +1,51 @@
+{
+  "title": "Shadow AI Prompt Guardian — SENTINEL: A Zero-Trust Client-Side Data Loss Prevention (DLP) and Sensitive Data Interception System for Generative AI Platforms",
+  "description": "<p><strong>SENTINEL (Shadow AI Prompt Guardian)</strong> is a zero-trust, 100% client-side Data Loss Prevention (DLP) browser extension built on Manifest V3. It intercepts and inspects prompts destined for generative AI interfaces (such as ChatGPT, Claude, Google Gemini, Microsoft Copilot, Grok, and others) prior to network transmission.</p><p>SENTINEL integrates a multi-layer detection pipeline incorporating signature-based regex matching for developer secrets and API keys, Shannon entropy analysis for high-entropy tokens, regulatory PII pattern matchers, and organizational keyword dictionaries. All computation executes locally inside the browser context with zero remote telemetry, zero external network requests, and zero raw credential retention.</p><p>This deposition contains the complete browser extension implementation, automated benchmark evaluation harness (140-prompt benchmark dataset), combinatorial stress-test suite (1,000 prompts), and testing documentation.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "version": "5.0.0",
+  "keywords": [
+    "Shadow AI",
+    "Prompt Security",
+    "Data Loss Prevention",
+    "DLP",
+    "Browser Extension",
+    "Shannon Entropy",
+    "Zero-Trust",
+    "Generative AI",
+    "Privacy-Preserving",
+    "Client-Side Security"
+  ],
+  "creators": [
+    {
+      "name": "Roopesh S N",
+      "affiliation": "Department of Computer Science and Engineering, SNS College of Engineering, Coimbatore, India",
+      "orcid": "0009-0007-7162-7897"
+    },
+    {
+      "name": "Sreegokul S",
+      "affiliation": "Department of Computer Science and Engineering, SNS College of Engineering, Coimbatore, India"
+    },
+    {
+      "name": "Sanjeevkumar P",
+      "affiliation": "Department of Computer Science and Engineering, SNS College of Engineering, Coimbatore, India"
+    },
+    {
+      "name": "Saravana Kumar M",
+      "affiliation": "Department of Computer Science and Engineering, SNS College of Engineering, Coimbatore, India"
+    },
+    {
+      "name": "Ram Sakthi Sharumathi M",
+      "affiliation": "Department of Computer Science and Engineering, SNS College of Engineering, Coimbatore, India"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "scheme": "url",
+      "identifier": "https://github.com/Roopesh05/shadow-ai-prompt-guardian",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

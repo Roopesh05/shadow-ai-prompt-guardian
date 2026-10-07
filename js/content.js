@@ -43,21 +43,23 @@
         var requestId = event.data.requestId;
         var context = event.data.context || '';
 
+        var targetOrigin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : '*';
         if (!protectionEnabled || !promptText || promptText.length < 5) {
-          window.postMessage({ type: 'SAPG_BLOCK_DECISION', requestId: requestId, shouldBlock: false }, '*');
+          window.postMessage({ type: 'SAPG_BLOCK_DECISION', requestId: requestId, shouldBlock: false }, targetOrigin);
           return;
         }
 
         var result = detect(promptText);
         if (result.shouldBlock) {
+          lastBlockedPromptText = promptText;
           notifyBGBlock(result);
-          try { recordBlock(result).catch(function () {}); } catch (_) {}
-          showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || []);
+          try { recordBlock(result, promptText).catch(function () {}); } catch (_) {}
+          showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || [], promptText);
           console.log('[SAPG] Blocked:', result.categories, 'riskScore:', result.riskScore, 'severity:', result.severity, context);
         } else {
           notifyBGClean(result);
         }
-        window.postMessage({ type: 'SAPG_BLOCK_DECISION', requestId: requestId, shouldBlock: result.shouldBlock }, '*');
+        window.postMessage({ type: 'SAPG_BLOCK_DECISION', requestId: requestId, shouldBlock: result.shouldBlock }, targetOrigin);
       }
     });
   }
@@ -85,18 +87,21 @@
           try {
             const result = _sapr_origLocal.get(keys, cb);
             if (result && typeof result.catch === 'function') result.catch(() => {});
+            return result;
           } catch (_) {}
         },
         set: function (obj, cb) {
           try {
             const result = _sapr_origLocal.set(obj, cb);
             if (result && typeof result.catch === 'function') result.catch(() => {});
+            return result;
           } catch (_) {}
         },
         remove: function (key, cb) {
           try {
             const result = _sapr_origLocal.remove(key, cb);
             if (result && typeof result.catch === 'function') result.catch(() => {});
+            return result;
           } catch (_) {}
         }
       };
@@ -112,12 +117,32 @@
     log: 'sapg_blockedAttempts',
     whitelist: 'sapg_whitelist',
     learned: 'sapg_learnedPatterns',
+    context: 'sapg_enableContextWindow',
+    bulk: 'sapg_enableBulkDetection',
+    obfuscation: 'sapg_enableObfuscationDetection',
+    base64: 'sapg_enableBase64Scan',
+    compliance: 'sapg_compliancePresets',
+    customRegex: 'sapr_customRegex',
+    apiKeys: 'sapg_enableApiKeyDetection',
+    pii: 'sapg_enablePiiDetection',
+    passwords: 'sapg_enablePasswordDetection',
+    confidential: 'sapg_enableConfidentialDetection',
   };
 
   // ─── State ───────────────────────────────────────────────────────────────────
   var protectionEnabled = true;
   var sensitivityThreshold = 30;
   var enableEntropy = true;
+  var enableContextWindow = true;
+  var enableBulkDetection = true;
+  var enableObfuscationDetection = true;
+  var enableBase64Scan = true;
+  var compliancePresets = [];
+  var customRegex = [];
+  var enableApiKeyDetection = true;
+  var enablePiiDetection = true;
+  var enablePasswordDetection = true;
+  var enableConfidentialDetection = true;
   var confidentialTerms = [];
   var blockedAttempts = [];
   var whitelist = [];
@@ -161,6 +186,16 @@
           protectionEnabled = localStorage.getItem(STORAGE.enabled) !== 'false';
           sensitivityThreshold = parseInt(localStorage.getItem(STORAGE.threshold) || '30', 10);
           enableEntropy = localStorage.getItem(STORAGE.entropy) !== 'false';
+          enableContextWindow = localStorage.getItem(STORAGE.context) !== 'false';
+          enableBulkDetection = localStorage.getItem(STORAGE.bulk) !== 'false';
+          enableObfuscationDetection = localStorage.getItem(STORAGE.obfuscation) !== 'false';
+          enableBase64Scan = localStorage.getItem(STORAGE.base64) !== 'false';
+          enableApiKeyDetection = localStorage.getItem(STORAGE.apiKeys) !== 'false';
+          enablePiiDetection = localStorage.getItem(STORAGE.pii) !== 'false';
+          enablePasswordDetection = localStorage.getItem(STORAGE.passwords) !== 'false';
+          enableConfidentialDetection = localStorage.getItem(STORAGE.confidential) !== 'false';
+          try { compliancePresets = JSON.parse(localStorage.getItem(STORAGE.compliance)) || []; } catch (_) { compliancePresets = []; }
+          try { customRegex = JSON.parse(localStorage.getItem(STORAGE.customRegex)) || []; } catch (_) { customRegex = []; }
           try { confidentialTerms = JSON.parse(localStorage.getItem(STORAGE.terms)) || []; } catch (_) { confidentialTerms = []; }
           try { blockedAttempts = JSON.parse(localStorage.getItem(STORAGE.log)) || []; } catch (_) { blockedAttempts = []; }
           try { whitelist = JSON.parse(localStorage.getItem(STORAGE.whitelist)) || []; } catch (_) { whitelist = []; }
@@ -168,13 +203,25 @@
           resolve();
           return;
         }
-        safeGet(Object.values(STORAGE), function (result) {
+        safeGet(Object.values(STORAGE).concat(['sapg_audit_log']), function (result) {
           try {
             protectionEnabled = result[STORAGE.enabled] !== false;
             sensitivityThreshold = result[STORAGE.threshold] != null ? result[STORAGE.threshold] : 30;
             enableEntropy = result[STORAGE.entropy] !== false;
+            enableContextWindow = result[STORAGE.context] !== false;
+            enableBulkDetection = result[STORAGE.bulk] !== false;
+            enableObfuscationDetection = result[STORAGE.obfuscation] !== false;
+            enableBase64Scan = result[STORAGE.base64] !== false;
+            enableApiKeyDetection = result[STORAGE.apiKeys] !== false;
+            enablePiiDetection = result[STORAGE.pii] !== false;
+            enablePasswordDetection = result[STORAGE.passwords] !== false;
+            enableConfidentialDetection = result[STORAGE.confidential] !== false;
+            compliancePresets = result[STORAGE.compliance] || [];
+            customRegex = result[STORAGE.customRegex] || [];
             confidentialTerms = result[STORAGE.terms] || [];
-            blockedAttempts = result[STORAGE.log] || [];
+            blockedAttempts = (result[STORAGE.log] && result[STORAGE.log].length)
+              ? result[STORAGE.log]
+              : (result.sapg_audit_log || []);
             whitelist = result[STORAGE.whitelist] || [];
             learnedPatterns = result[STORAGE.learned] || [];
           } catch (_) {}
@@ -186,7 +233,72 @@
     });
   }
 
-    function safeRemove(key, cb) {
+  // Real-time synchronization with options & popup changes across all open tabs
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
+    chrome.storage.onChanged.addListener(function (changes, area) {
+      if (area !== 'local') return;
+      if (changes[STORAGE.enabled]) {
+        protectionEnabled = changes[STORAGE.enabled].newValue !== false;
+        var origin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : '*';
+        window.postMessage({ type: 'SAPG_SET_PROTECTION', enabled: protectionEnabled }, origin);
+      }
+      if (changes[STORAGE.threshold]) {
+        sensitivityThreshold = changes[STORAGE.threshold].newValue != null ? changes[STORAGE.threshold].newValue : 30;
+      }
+      if (changes[STORAGE.entropy]) {
+        enableEntropy = changes[STORAGE.entropy].newValue !== false;
+      }
+      if (changes[STORAGE.context]) {
+        enableContextWindow = changes[STORAGE.context].newValue !== false;
+      }
+      if (changes[STORAGE.bulk]) {
+        enableBulkDetection = changes[STORAGE.bulk].newValue !== false;
+      }
+      if (changes[STORAGE.obfuscation]) {
+        enableObfuscationDetection = changes[STORAGE.obfuscation].newValue !== false;
+      }
+      if (changes[STORAGE.base64]) {
+        enableBase64Scan = changes[STORAGE.base64].newValue !== false;
+      }
+      if (changes[STORAGE.compliance]) {
+        compliancePresets = changes[STORAGE.compliance].newValue || [];
+      }
+      if (changes[STORAGE.customRegex]) {
+        customRegex = changes[STORAGE.customRegex].newValue || [];
+      }
+      if (changes[STORAGE.apiKeys]) {
+        enableApiKeyDetection = changes[STORAGE.apiKeys].newValue !== false;
+      }
+      if (changes[STORAGE.pii]) {
+        enablePiiDetection = changes[STORAGE.pii].newValue !== false;
+      }
+      if (changes[STORAGE.passwords]) {
+        enablePasswordDetection = changes[STORAGE.passwords].newValue !== false;
+      }
+      if (changes[STORAGE.confidential]) {
+        enableConfidentialDetection = changes[STORAGE.confidential].newValue !== false;
+      }
+      if (changes[STORAGE.terms]) {
+        confidentialTerms = changes[STORAGE.terms].newValue || [];
+      }
+      if (changes[STORAGE.whitelist]) {
+        whitelist = changes[STORAGE.whitelist].newValue || [];
+      }
+      if (changes[STORAGE.learned]) {
+        learnedPatterns = changes[STORAGE.learned].newValue || [];
+      }
+      if (changes[STORAGE.log]) {
+        blockedAttempts = changes[STORAGE.log].newValue || [];
+        updateInPagePopup();
+      }
+      if (changes.sapg_audit_log && !changes[STORAGE.log]) {
+        blockedAttempts = changes.sapg_audit_log.newValue || [];
+        updateInPagePopup();
+      }
+    });
+  }
+
+  function safeRemove(key, cb) {
     if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) {
       if (cb) { try { cb(); } catch (_) {} }
       return;
@@ -204,7 +316,6 @@
       [STORAGE.threshold]: sensitivityThreshold,
       [STORAGE.entropy]: enableEntropy,
       [STORAGE.terms]: confidentialTerms,
-      [STORAGE.log]: blockedAttempts,
       [STORAGE.whitelist]: whitelist,
       [STORAGE.learned]: learnedPatterns,
     });
@@ -245,14 +356,32 @@
         if (lastMsg && lastMsg.role && lastMsg.role !== 'user') return null;
         if (lastMsg && typeof lastMsg.content === 'string' && lastMsg.content.length > 0) return lastMsg.content.trim();
         if (lastMsg && typeof lastMsg.text === 'string' && lastMsg.text.length > 0) return lastMsg.text.trim();
-        if (lastMsg && lastMsg.content && Array.isArray(lastMsg.content.parts)) return lastMsg.content.parts.join('\n').trim();
+        if (lastMsg && Array.isArray(lastMsg.content)) {
+          var extractedText = lastMsg.content.map(function (c) {
+            if (typeof c === 'string') return c;
+            if (c && typeof c.text === 'string') return c.text;
+            return '';
+          }).filter(Boolean).join('\n').trim();
+          if (extractedText.length > 0) return extractedText;
+        }
+        if (lastMsg && lastMsg.content && Array.isArray(lastMsg.content.parts)) {
+          var extractedParts = lastMsg.content.parts.map(function (p) {
+            return typeof p === 'string' ? p : (p && p.text ? p.text : '');
+          }).filter(Boolean).join('\n').trim();
+          if (extractedParts.length > 0) return extractedParts;
+        }
       }
       // Gemini format
       if (data.contents && Array.isArray(data.contents) && data.contents.length > 0) {
         var lastContent = data.contents[data.contents.length - 1];
         if (lastContent && lastContent.role && lastContent.role !== 'user') return null;
         var parts = lastContent && lastContent.parts;
-        if (parts && parts[0] && parts[0].text && parts[0].text.length > 0) return parts[0].text.trim();
+        if (Array.isArray(parts)) {
+          var geminiText = parts.map(function (p) {
+            return typeof p === 'string' ? p : (p && p.text ? p.text : '');
+          }).filter(Boolean).join('\n').trim();
+          if (geminiText.length > 0) return geminiText;
+        }
       }
       // Anthropic / System + Prompt
       if (data.system && typeof data.system === 'string') {
@@ -317,14 +446,63 @@
         sensitivityThreshold: sensitivityThreshold,
         confidentialTerms: confidentialTerms.length > 0 ? confidentialTerms : undefined,
         enableEntropyDetection: enableEntropy,
+        enableContextWindow: enableContextWindow,
+        enableBulkDetection: enableBulkDetection,
+        enableObfuscationDetection: enableObfuscationDetection,
+        enableBase64Scan: enableBase64Scan,
+        compliancePresets: compliancePresets,
+        customRegex: customRegex,
+        enableApiKeyDetection: enableApiKeyDetection,
+        enablePiiDetection: enablePiiDetection,
+        enablePasswordDetection: enablePasswordDetection,
+        enableConfidentialDetection: enableConfidentialDetection,
       });
     }
     return { findings: [], riskScore: 0, shouldBlock: false, categories: [], context: 'clean', severity: 'info', explanations: [] };
   }
 
-  // ─── Background SW bridge ─────────────────────────────────────────────────
+  // ─── Background SW bridge & Persistent Storage ───────────────────────────
+  function recordBlock(result, promptText) {
+    return new Promise(function (resolve) {
+      try {
+        var host = 'ChatGPT';
+        try {
+          if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+            host = window.location.hostname.replace(/^www\./, '');
+          }
+        } catch (_) {}
+
+        var entry = {
+          timestamp: new Date().toISOString(),
+          categories: result.categories || [],
+          riskScore: result.riskScore || 0,
+          severity: result.severity || 'info',
+          hasCritical: result.hasCritical || false,
+          findingCount: (result.findings || []).length,
+          maskedPreviews: (result.findings || []).slice(0, 3).map(function (f) { return f.matchMasked || ''; }),
+          bulkMessages: result.bulkMessages || [],
+          platform: host,
+        };
+
+        // Update in-memory blocked attempts array for tab UI
+        blockedAttempts.unshift(entry);
+        if (blockedAttempts.length > MAX_LOG_ENTRIES) blockedAttempts.splice(MAX_LOG_ENTRIES);
+        resolve();
+      } catch (_) {
+        resolve();
+      }
+    });
+  }
+
   function notifyBGBlock(result) {
     try {
+      var host = 'ChatGPT';
+      try {
+        if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+          host = window.location.hostname.replace(/^www\./, '');
+        }
+      } catch (_) {}
+
       chrome.runtime.sendMessage({
         type: 'SAPG_BLOCK_OCCURRED',
         result: {
@@ -335,28 +513,46 @@
           findings: result.findings || [],
           bulkMessages: result.bulkMessages || [],
         },
-        platform: window.location.hostname,
+        platform: host,
+      }, function () {
+        if (chrome.runtime && chrome.runtime.lastError) {} // clean error suppression
       });
     } catch (_) {}
   }
 
   function notifyBGClean(result) {
     try {
-      chrome.runtime.sendMessage({ type: 'SAPG_CLEAN_PROMPT', result: { riskScore: result.riskScore || 0 } });
+      safeGet(['sapg_session_metrics'], function (r) {
+        var metrics = (r && r.sapg_session_metrics) ? r.sapg_session_metrics : {
+          promptsChecked: 0,
+          promptsBlocked: 0,
+          riskHistory: [],
+          exposureScore: 0,
+          startTime: Date.now(),
+        };
+        metrics.promptsChecked = (metrics.promptsChecked || 0) + 1;
+        safeSet({ sapg_session_metrics: metrics });
+      });
+      chrome.runtime.sendMessage({ type: 'SAPG_CLEAN_PROMPT', result: { riskScore: result.riskScore || 0 } }, function () {
+        if (chrome.runtime && chrome.runtime.lastError) {}
+      });
     } catch (_) {}
   }
 
   // ─── Blocking decision (Synchronous & Async) ───────────────────────────
+  var lastBlockedPromptText = '';
+
   function checkAndBlockSync(text, context) {
     if (!protectionEnabled || !text || text.length < 5) return false;
     var result = detect(text);
     if (!result.shouldBlock) {
-      if (result.riskScore > 0) notifyBGClean(result);
+      notifyBGClean(result);
       return false;
     }
+    lastBlockedPromptText = text;
     notifyBGBlock(result);
-    try { recordBlock(result).catch(function () {}); } catch (_) {}
-    showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || []);
+    try { recordBlock(result, text).catch(function () {}); } catch (_) {}
+    showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || [], text);
     console.log('[SENTINEL] Blocked (sync):', result.categories, 'risk:', result.riskScore, 'severity:', result.severity, context || '');
     return true;
   }
@@ -365,61 +561,166 @@
     return checkAndBlockSync(text, context);
   }
 
-  // ─── SENTINEL Cinematic Banner (“Holographic HUD”) ──────────────────────────
+  // ─── SENTINEL Enterprise Modal Card (Professional Security Dialog) ──────────
   var bannerEl = null;
   let lastPromptElement = null;
 
   function buildBannerUI() {
     if (bannerEl) return bannerEl;
+
+    // Create backdrop if not already created
+    var backdropEl = document.getElementById('sapg-modal-backdrop');
+    if (!backdropEl && typeof document !== 'undefined' && document.body) {
+      backdropEl = document.createElement('div');
+      backdropEl.id = 'sapg-modal-backdrop';
+      backdropEl.className = 'sapg-backdrop';
+      backdropEl.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(backdropEl);
+      backdropEl.onclick = function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        dismissBanner();
+        return false;
+      };
+    }
+
     bannerEl = document.createElement('div');
     bannerEl.id = 'sapg-warning-banner';
+    bannerEl.setAttribute('role', 'dialog');
+    bannerEl.setAttribute('aria-modal', 'true');
     bannerEl.innerHTML = [
       '<div id="sapg-banner-header">',
       '  <div class="sapg-banner-left">',
-      '    <div class="sapg-shield-icon" id="sapg-shield-icon">🛡️</div>',
+      '    <div class="sapg-shield-icon" id="sapg-shield-icon">',
+      '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10 11V9a2 2 0 0 1 4 0v2"/></svg>',
+      '    </div>',
       '    <div class="sapg-title-group">',
-      '      <div class="sapg-title-main">SENTINEL — Sensitive content detected</div>',
-      '      <div class="sapg-title-sub" id="sapg-title-sub">Analyzing threat level…</div>',
+      '      <div class="sapg-title-main">SENTINEL Security Guard</div>',
+      '      <div class="sapg-title-sub" id="sapg-title-sub">Sensitive content blocked on-device before transmission</div>',
       '    </div>',
       '  </div>',
-      '  <span class="sapg-severity-badge" id="sapr-severity-badge">INFO</span>',
+      '  <div class="sapg-banner-right">',
+      '    <span class="sapg-severity-badge" id="sapr-severity-badge"><span class="sapg-badge-dot"></span>CRITICAL RISK</span>',
+      '    <button class="sapg-close-btn" id="sapr-banner-close" title="Dismiss" aria-label="Close">✕</button>',
+      '  </div>',
       '</div>',
       '<div id="sapr-banner-body">',
-      '  <span id="sapr-banner-message"></span>',
-      '  <div id="sapr-banner-chips"></div>',
+      '  <div class="sapg-alert-summary">',
+      '    <div id="sapr-banner-message"></div>',
+      '    <div id="sapr-banner-chips"></div>',
+      '  </div>',
+      '  <div class="sapg-findings-inspector-card" id="sapr-findings-card">',
+      '    <div class="sapg-inspector-header">',
+      '      <div class="sapg-inspector-title">',
+      '        <span>🛡️ Security Violations Breakdown</span>',
+      '      </div>',
+      '      <span class="sapg-inspector-count-badge" id="sapr-findings-count-badge">0 issues</span>',
+      '    </div>',
+      '    <div class="sapg-findings-list" id="sapr-findings-list"></div>',
+      '  </div>',
+      '  <div class="sapg-raw-drawer-container" id="sapr-raw-drawer-container">',
+      '    <button class="sapg-raw-toggle-btn" id="sapr-raw-toggle-btn" type="button">',
+      '      <span class="sapg-drawer-arrow" id="sapr-drawer-arrow">▶</span>',
+      '      <span id="sapr-drawer-toggle-text">Show Full Intercepted Context</span>',
+      '    </button>',
+      '    <div id="sapr-payload-preview-box" class="sapg-payload-preview-card" style="display:none;">',
+      '      <div class="payload-preview-header">',
+      '        <span class="payload-preview-title">Raw Text Context (Masked)</span>',
+      '        <span class="payload-preview-badge">Client-Side Intercept</span>',
+      '      </div>',
+      '      <pre id="sapr-payload-snippet" class="payload-code-block"></pre>',
+      '    </div>',
+      '  </div>',
       '</div>',
       '<div id="sapr-risk-meter" style="display:none;">',
-      '  <span class="meter-label">RISK</span>',
-      '  <div class="meter-bar-bg"><div class="meter-bar-fill" id="sapr-risk-bar"></div></div>',
-      '  <span class="meter-value" id="sapr-risk-value">0</span>',
+      '  <div class="meter-label-group">',
+      '    <span class="meter-title">Threat Exposure</span>',
+      '    <span class="meter-status" id="sapr-meter-status">High Risk</span>',
+      '  </div>',
+      '  <div class="meter-bar-track"><div class="meter-bar-fill" id="sapr-risk-bar"></div></div>',
+      '  <span class="meter-score-badge" id="sapr-risk-value">0</span>',
       '</div>',
       '<div id="sapr-banner-actions">',
-      '  <button id="sapr-btn-redact" title="Replace sensitive data with safe placeholders">✂️ Auto-Redact &amp; Resubmit</button>',
-      '  <button id="sapr-btn-mock" title="Replace with syntactically valid mock tokens for code debugging">🎭 Auto-Mock &amp; Resubmit</button>',
-      '  <button id="sapr-btn-resubmit" title="Fix manually and resend">I\'ll fix it</button>',
-      '  <button id="sapr-btn-safe" title="Mark as safe and learn">✅ This is safe</button>',
-      '  <button id="sapr-btn-cancel" title="Cancel and keep prompt">✕ Cancel</button>',
+      '  <div class="sapg-actions-primary-row">',
+      '    <button id="sapr-btn-redact" class="sapg-btn-primary" title="Replace sensitive data with safe placeholders and send">🛡️ Auto-Redact &amp; Proceed</button>',
+      '    <button id="sapr-btn-mock" class="sapg-btn-secondary" title="Replace with syntactically valid mock tokens for code debugging">🎭 DevShield Mock</button>',
+      '    <button id="sapr-btn-resubmit" class="sapg-btn-tertiary" title="Fix manually in prompt">✏️ Edit Prompt</button>',
+      '    <button id="sapr-btn-cancel" class="sapr-btn-cancel btn-cancel sapg-btn-ghost" title="Cancel prompt submission">✕ Cancel</button>',
+      '  </div>',
       '</div>',
       '<div id="sapr-rotation-links"></div>',
     ].join('');
 
     lastPromptElement = getActivePromptElement();
-    document.body.appendChild(bannerEl);
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.appendChild(bannerEl);
+    }
 
+    // Event delegation on banner for robust interception and QA compliance
     bannerEl.addEventListener('click', function (e) {
-      var btn = e.target.closest('button');
-      if (!btn) return;
-      e.stopPropagation();
-      if (btn.id === 'sapr-btn-redact') autoRedactAndResubmit();
-      else if (btn.id === 'sapr-btn-mock') autoMockAndResubmit();
-      else if (btn.id === 'sapr-btn-resubmit' || btn.id === 'sapr-btn-cancel') dismissBanner();
-      else if (btn.id === 'sapr-btn-safe') markAsSafe();
+      var target = e.target;
+      if (!target) return;
+      if (target.id === 'sapr-btn-cancel' || target.closest('#sapr-btn-cancel') || target.classList.contains('sapr-btn-cancel') || target.classList.contains('btn-cancel')) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+        dismissBanner();
+      }
     });
+
+    // Secure direct event listeners for guaranteed execution
+    var closeBtn = bannerEl.querySelector('#sapr-banner-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        dismissBanner();
+      });
+    }
+
+    var cancelBtn = bannerEl.querySelector('#sapr-btn-cancel');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        dismissBanner();
+      });
+    }
+
+    var redactBtn = bannerEl.querySelector('#sapr-btn-redact');
+    if (redactBtn) {
+      redactBtn.addEventListener('click', function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        autoRedactAndResubmit();
+      });
+    }
+
+    var mockBtn = bannerEl.querySelector('#sapr-btn-mock');
+    if (mockBtn) {
+      mockBtn.addEventListener('click', function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        autoMockAndResubmit();
+      });
+    }
+
+    var resubmitBtn = bannerEl.querySelector('#sapr-btn-resubmit');
+    if (resubmitBtn) {
+      resubmitBtn.addEventListener('click', function (e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        dismissBanner();
+      });
+    }
+
+    // Escape key dismissal
+    if (typeof window !== 'undefined' && !window._sapg_escape_attached && typeof document !== 'undefined') {
+      window._sapg_escape_attached = true;
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && bannerEl && bannerEl.classList.contains('visible')) {
+          dismissBanner();
+        }
+      });
+    }
 
     return bannerEl;
   }
 
-  function showBanner(findings, riskScore, severity, explanations, bulkMessages) {
+  function showBanner(findings, riskScore, severity, explanations, bulkMessages, rawPromptText) {
     lastPromptElement = getActivePromptElement();
     buildBannerUI();
     var chipsEl = document.getElementById('sapr-banner-chips');
@@ -431,25 +732,31 @@
     var shieldEl = document.getElementById('sapg-shield-icon');
     var titleSubEl = document.getElementById('sapg-title-sub');
     var badgeEl = document.getElementById('sapr-severity-badge');
+    var payloadBox = document.getElementById('sapr-payload-preview-box');
+    var payloadSnippet = document.getElementById('sapr-payload-snippet');
+    var findingsListEl = document.getElementById('sapr-findings-list');
+    var countBadgeEl = document.getElementById('sapr-findings-count-badge');
+    var rawToggleBtn = document.getElementById('sapr-raw-toggle-btn');
+    var drawerArrow = document.getElementById('sapr-drawer-arrow');
+    var drawerText = document.getElementById('sapr-drawer-toggle-text');
+    var meterStatusEl = document.getElementById('sapr-meter-status');
 
-    // ── SENTINEL severity classes ─────────────────────────────────────────
-    var sevConfig = {
-      critical: { icon: '🚨', label: '🔴 CRITICAL', sub: findings.length + ' critical threat' + (findings.length !== 1 ? 's' : '') + ' detected' },
-      warning:  { icon: '⚠️', label: '🟡 WARNING',  sub: findings.length + ' issue' + (findings.length !== 1 ? 's' : '') + ' require attention' },
-      info:     { icon: 'ℹ️', label: '🔵 INFO',     sub: 'Potential sensitive content found' },
-    };
-    var sev = sevConfig[severity] || sevConfig.info;
-
-    // Apply severity class to banner
+    // ── Apply severity class to banner ─────────────────────────────────────
     bannerEl.className = 'severity-' + severity;
-    // Shield icon
-    if (shieldEl) { shieldEl.textContent = sev.icon; shieldEl.className = 'sapg-shield-icon ' + severity; }
-    // Subtitle
-    if (titleSubEl) titleSubEl.textContent = sev.sub;
-    // Badge
-    if (badgeEl) { badgeEl.textContent = sev.label; badgeEl.className = 'sapg-severity-badge ' + severity; }
+    if (shieldEl) {
+      shieldEl.className = 'sapg-shield-icon ' + severity;
+    }
+    if (titleSubEl) {
+      var threatWord = findings.length === 1 ? 'threat' : 'threats';
+      titleSubEl.textContent = findings.length + ' critical ' + threatWord + ' intercepted locally before dispatch';
+    }
+    if (badgeEl) {
+      var badgeText = severity === 'critical' ? 'CRITICAL RISK' : severity === 'warning' ? 'POTENTIAL RISK' : 'ADVISORY';
+      badgeEl.innerHTML = '<span class="sapg-badge-dot"></span>' + badgeText;
+      badgeEl.className = 'sapg-severity-badge ' + severity;
+    }
 
-    // ── Category chips (───────────────────────────────────────────────────
+    // ── Category chips ─────────────────────────────────────────────────────
     var categories = [];
     findings.forEach(function (f) {
       if (categories.indexOf(f.category) === -1) categories.push(f.category);
@@ -465,17 +772,19 @@
       api_key: '#f43f5e', password: '#f59e0b', pii: '#818cf8',
       confidential: '#34d399', company: '#a78bfa',
     };
-    chipsEl.innerHTML = categories.map(function (cat) {
-      var color = categoryColors[cat] || '#94a3b8';
-      var label = categoryLabels[cat] || cat;
-      return '<span class="sapk-category-chip" data-cat="' + cat + '"' +
-        ' style="color:' + color + ';border-color:' + color + '60;">' + label + '</span>';
-    }).join('');
-    chipsEl.querySelectorAll('.sapk-category-chip').forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        showExplanationPanel(chip.dataset.cat, findings, explanations);
+    if (chipsEl) {
+      chipsEl.innerHTML = categories.map(function (cat) {
+        var color = categoryColors[cat] || '#94a3b8';
+        var label = categoryLabels[cat] || cat;
+        return '<span class="sapk-category-chip" data-cat="' + cat + '"' +
+          ' style="color:' + color + ';border-color:' + color + '60;">' + label + '</span>';
+      }).join('');
+      chipsEl.querySelectorAll('.sapk-category-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          showExplanationPanel(chip.dataset.cat, findings, explanations);
+        });
       });
-    });
+    }
 
     // ── Banner message (bulk-aware) ────────────────────────────────────────────
     var sensitive = categories.indexOf('api_key') !== -1 || categories.indexOf('password') !== -1;
@@ -485,47 +794,215 @@
         ? 'Sending secrets is dangerous — use “Auto-Redact” to replace them safely.'
         : 'Review and remove highlighted content before resubmitting.');
 
-    if (bulkMessages && bulkMessages.length > 0) {
-      msgEl.innerHTML = bulkMessages.map(function(m) {
-        return '<div style="font-weight:700;margin-bottom:4px;">📊 ' + m + '</div>';
-      }).join('') + '<div style="opacity:0.9;font-size:12px;">' + baseMsg + '</div>';
-    } else {
-      msgEl.textContent = baseMsg;
+    if (msgEl) {
+      if (bulkMessages && bulkMessages.length > 0) {
+        msgEl.innerHTML = bulkMessages.map(function(m) {
+          return '<div style="font-weight:700;margin-bottom:4px;">📊 ' + escapeHtml(m) + '</div>';
+        }).join('') + '<div style="opacity:0.9;font-size:12px;">' + baseMsg + '</div>';
+      } else {
+        msgEl.textContent = baseMsg;
+      }
     }
 
-    // ── Risk meter ───────────────────────────────────────────────────────────
-    if (riskScore > 0) {
+    // ── Helper for clean masked pills ──────────────────────────────────────────
+    var formatMaskPill = function(match) {
+      if (!match) return '[REDACTED]';
+      var str = String(match).trim();
+      if (str.length <= 8) return '••••••••';
+      if (str.includes('@')) {
+        var parts = str.split('@');
+        var u = parts[0];
+        var d = parts[1] || '';
+        return (u.length > 3 ? u.slice(0, 3) + '•••' : '•••') + '@' + d;
+      }
+      if (str.startsWith('http://') || str.startsWith('https://')) {
+        try {
+          var urlObj = new URL(str);
+          return urlObj.protocol + '//' + urlObj.hostname;
+        } catch (_) {}
+      }
+      var pfx = str.slice(0, 4);
+      var sfx = str.length >= 10 ? str.slice(-3) : '';
+      return pfx + '••••' + sfx;
+    };
+
+    // ── Structured Security Violations Inspector ───────────────────────────────
+    if (countBadgeEl) {
+      countBadgeEl.textContent = findings.length + ' issue' + (findings.length !== 1 ? 's' : '');
+    }
+
+    if (findingsListEl) {
+      var catMeta = {
+        api_key:      { icon: '🔑', label: 'API Key', badgeCls: 'badge-critical', fallbackDesc: 'Cryptographic API credential detected.' },
+        password:     { icon: '🔒', label: 'Credential', badgeCls: 'badge-critical', fallbackDesc: 'Plaintext authentication secret detected.' },
+        pii:          { icon: '👤', label: 'PII / Identity', badgeCls: 'badge-warning', fallbackDesc: 'Personal data subject to privacy regulations.' },
+        confidential: { icon: '📋', label: 'Confidential', badgeCls: 'badge-warning', fallbackDesc: 'Internal corporate codename or restricted term.' },
+        company:      { icon: '🏢', label: 'Internal Domain', badgeCls: 'badge-info', fallbackDesc: 'Internal network or proprietary host address.' },
+      };
+
+      findingsListEl.innerHTML = findings.map(function(f) {
+        if (f.isBulk) {
+          return [
+            '<div class="sapg-threat-item">',
+            '  <div class="sapg-threat-icon-cell">📊</div>',
+            '  <div class="sapg-threat-info">',
+            '    <div class="sapg-threat-top-row">',
+            '      <span class="sapg-threat-name">Bulk Data Exposure</span>',
+            '      <span class="sapg-threat-cat badge-critical">HIGH VOLUME</span>',
+            '    </div>',
+            '    <div class="sapg-threat-desc">' + escapeHtml(f.bulkMessage || 'Mass data dump detected exceeding safety thresholds.') + '</div>',
+            '  </div>',
+            '</div>'
+          ].join('');
+        }
+
+        var meta = catMeta[f.category] || { icon: '⚠️', label: f.category || 'Security Alert', badgeCls: 'badge-warning', fallbackDesc: 'Sensitive data pattern detected.' };
+        var name = f.name || meta.label;
+        var desc = f.explanation || meta.fallbackDesc;
+        var preview = formatMaskPill(f.match);
+
+        return [
+          '<div class="sapg-threat-item">',
+          '  <div class="sapg-threat-icon-cell">' + meta.icon + '</div>',
+          '  <div class="sapg-threat-info">',
+          '    <div class="sapg-threat-top-row">',
+          '      <span class="sapg-threat-name">' + escapeHtml(name) + '</span>',
+          '      <span class="sapg-threat-cat ' + meta.badgeCls + '">' + meta.label + '</span>',
+          '    </div>',
+          '    <div class="sapg-threat-desc">' + escapeHtml(desc) + '</div>',
+          '  </div>',
+          '  <div class="sapg-threat-preview-cell">',
+          '    <span class="sapg-threat-pill" title="Protected Token Preview">' + escapeHtml(preview) + '</span>',
+          '  </div>',
+          '</div>'
+        ].join('');
+      }).join('');
+    }
+
+    // ── Collapsible Raw Context Drawer ─────────────────────────────────────────
+    var previewText = rawPromptText || lastBlockedPromptText;
+    if (!previewText) {
+      var activeEl = lastPromptElement || getActivePromptElement();
+      if (activeEl) previewText = activeEl.value || activeEl.innerText || '';
+    }
+
+    if (rawToggleBtn && payloadBox) {
+      payloadBox.style.display = 'none';
+      if (drawerArrow) drawerArrow.classList.remove('open');
+      if (drawerText) drawerText.textContent = 'Show Full Intercepted Context';
+
+      if (!rawToggleBtn._sapg_attached) {
+        rawToggleBtn._sapg_attached = true;
+        rawToggleBtn.onclick = function(e) {
+          if (e) { e.preventDefault(); e.stopPropagation(); }
+          var isOpen = payloadBox.style.display === 'block';
+          if (isOpen) {
+            payloadBox.style.display = 'none';
+            if (drawerArrow) drawerArrow.classList.remove('open');
+            if (drawerText) drawerText.textContent = 'Show Full Intercepted Context';
+          } else {
+            payloadBox.style.display = 'block';
+            if (drawerArrow) drawerArrow.classList.add('open');
+            if (drawerText) drawerText.textContent = 'Hide Intercepted Context';
+          }
+          return false;
+        };
+      }
+    }
+
+    if (previewText && previewText.length > 5 && payloadSnippet) {
+      var maskedSnippet = previewText;
+      if (findings && findings.length > 0) {
+        findings.forEach(function (f) {
+          if (f.match && maskedSnippet.includes(f.match)) {
+            var sleekMask = formatMaskPill(f.match);
+            maskedSnippet = maskedSnippet.split(f.match).join(sleekMask);
+          }
+        });
+      }
+      if (maskedSnippet.length > 600) {
+        maskedSnippet = maskedSnippet.slice(0, 600) + '\n\n… [TRUNCATED FOR DISPLAY]';
+      }
+      payloadSnippet.textContent = maskedSnippet;
+    }
+
+    // ── Executive Risk Meter ───────────────────────────────────────────────────
+    if (riskScore > 0 && meterEl) {
       meterEl.style.display = 'flex';
-      barEl.style.width = Math.min(riskScore, 100) + '%';
-      barEl.style.background = riskScore < 30 ? '#00ff9d' : riskScore < 70 ? '#ffbe0b' : '#ff0044';
-      valEl.textContent = riskScore;
+      var clampedScore = Math.min(riskScore, 100);
+      if (barEl) barEl.style.width = clampedScore + '%';
+      if (clampedScore < 35) {
+        if (barEl) {
+          barEl.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+          barEl.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+        }
+        if (meterStatusEl) { meterStatusEl.textContent = 'Low Exposure Risk'; meterStatusEl.style.color = '#34d399'; }
+      } else if (clampedScore < 70) {
+        if (barEl) {
+          barEl.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+          barEl.style.boxShadow = '0 0 10px rgba(245, 158, 11, 0.4)';
+        }
+        if (meterStatusEl) { meterStatusEl.textContent = 'Elevated Risk Level'; meterStatusEl.style.color = '#fbbf24'; }
+      } else {
+        if (barEl) {
+          barEl.style.background = 'linear-gradient(90deg, #f43f5e, #fb7185)';
+          barEl.style.boxShadow = '0 0 10px rgba(244, 63, 94, 0.4)';
+        }
+        if (meterStatusEl) { meterStatusEl.textContent = 'Critical Threat Level'; meterStatusEl.style.color = '#fb7185'; }
+      }
+      if (valEl) valEl.textContent = clampedScore + '/100';
+    } else if (meterEl) {
+      meterEl.style.display = 'none';
     }
 
-    // ── Rotation links ───────────────────────────────────────────────────────
+    // ── Rotation links ─────────────────────────────────────────────────────────
     var rotationLinks = getRotationLinks(findings);
-    if (rotationLinks.length > 0) {
-      rotationEl.innerHTML = '<div class="rotation-header">🔑 Quick Rotation:</div>' +
-        rotationLinks.map(function (l) {
-          return '<a href="' + l.url + '" target="_blank" rel="noopener">' + l.icon + ' ' + l.label + '</a>';
-        }).join('');
-      rotationEl.style.display = 'block';
-    } else {
-      rotationEl.style.display = 'none';
+    if (rotationEl) {
+      if (rotationLinks.length > 0) {
+        rotationEl.innerHTML = '<div class="rotation-header">🔑 Quick Rotation:</div>' +
+          rotationLinks.map(function (l) {
+            return '<a href="' + l.url + '" target="_blank" rel="noopener">' + l.icon + ' ' + l.label + '</a>';
+          }).join('');
+        rotationEl.style.display = 'block';
+      } else {
+        rotationEl.style.display = 'none';
+      }
     }
 
     // Store explanations for later display
     window._sapr_lastExplanations = explanations;
     window._sapr_lastFindings = findings;
 
-    // Make banner visible
-    bannerEl.classList.add('visible');
-    document.body.classList.add('sapg-blocking');
+    // Make banner and backdrop visible
+    var backdropEl = document.getElementById('sapg-modal-backdrop');
+    if (backdropEl) {
+      backdropEl.style.display = 'block';
+      setTimeout(function () { backdropEl.classList.add('visible'); }, 10);
+    }
+    bannerEl.style.display = 'block';
+    bannerEl.style.visibility = 'visible';
+    bannerEl.style.pointerEvents = 'auto';
+    setTimeout(function () { bannerEl.classList.add('visible'); }, 10);
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.classList.add('sapg-blocking');
+    }
   }
 
   function dismissBanner() {
-    if (!bannerEl) return;
-    bannerEl.classList.remove('visible');
-    document.body.classList.remove('sapg-blocking');
+    if (bannerEl) {
+      bannerEl.classList.remove('visible');
+      bannerEl.style.display = 'none';
+      bannerEl.style.visibility = 'hidden';
+      bannerEl.style.pointerEvents = 'none';
+    }
+    var backdrop = document.getElementById('sapg-modal-backdrop');
+    if (backdrop) {
+      backdrop.classList.remove('visible');
+      backdrop.style.display = 'none';
+    }
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.classList.remove('sapg-blocking');
+    }
     clearHighlights();
     // Also hide explanation panel if open
     var panel = document.getElementById('sapr-explanation-panel');
@@ -750,6 +1227,7 @@
 
   function getActivePromptElement() {
     var selectors = [
+      '#prompt-textarea',
       'textarea[placeholder*="message"]',
       'textarea[placeholder*="ChatGPT"]',
       'textarea[placeholder*="Send a message"]',
@@ -768,9 +1246,32 @@
 
   // ─── React-compatible value setter ───────────────────────────────────────────
   function setActiveValue(el, value) {
+    if (!el) return;
+    var isContentEditable = el.isContentEditable || (el.getAttribute && el.getAttribute('contenteditable') === 'true');
+    if (isContentEditable) {
+      try {
+        el.focus();
+        if (typeof document !== 'undefined' && document.execCommand) {
+          document.execCommand('selectAll', false, null);
+          document.execCommand('insertText', false, value);
+        } else {
+          el.innerText = value;
+          el.textContent = value;
+        }
+      } catch (_) {
+        el.innerText = value;
+        el.textContent = value;
+      }
+      return;
+    }
+
     var nativeSetter = null;
     try {
-      nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
+      if (typeof window !== 'undefined' && window.HTMLInputElement && el instanceof window.HTMLInputElement) {
+        nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+      } else if (typeof window !== 'undefined' && window.HTMLTextAreaElement) {
+        nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
+      }
       if (nativeSetter && nativeSetter.set) nativeSetter.set.call(el, value);
       else el.value = value;
     } catch (_) {
@@ -785,25 +1286,8 @@
     });
   }
 
-  // ─── Blocking Log ────────────────────────────────────────────────────────────
-  async function recordBlock(result) {
-    var entry = {
-      timestamp: new Date().toISOString(),
-      categories: result.categories,
-      riskScore: result.riskScore,
-      severity: result.severity || 'info',          // Feature 1: record severity
-      hasCritical: result.hasCritical || false,
-      findingCount: result.findings.length,
-      maskedPreviews: result.findings.slice(0, 3).map(function (f) { return f.matchMasked; }),
-      bulkMessages: result.bulkMessages || [],       // Feature 2: record bulk messages
-    };
-    blockedAttempts.unshift(entry);
-    if (blockedAttempts.length > MAX_LOG_ENTRIES) {
-      blockedAttempts = blockedAttempts.slice(0, MAX_LOG_ENTRIES);
-    }
-    saveSettings();
-    updateInPagePopup();
-  }
+  // ─── Blocking Log (see main recordBlock at top) ──────────────────────────────
+
 
   // ─── Toast Notifications ─────────────────────────────────────────────────────
   var toastEl = null;
@@ -1048,6 +1532,8 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
       .replace(/\n/g, '<br>')
       .replace(/ {2}/g, ' &nbsp;');
   }
@@ -1241,26 +1727,38 @@
       '  </div>',
       '</div>',
     ].join('\n');
-    document.body.appendChild(popupEl);
-
-    document.getElementById('sapr-popup-close').addEventListener('click', function () {
-      popupEl.classList.remove('visible');
-    });
-    document.getElementById('sapr-protection-toggle').addEventListener('change', function (e) {
-      protectionEnabled = e.target.checked;
-      saveSettings();
-      // Sync to main-world interceptor
-      window.postMessage({ type: 'SAPG_SET_PROTECTION', enabled: protectionEnabled }, '*');
-      var s = popupEl.querySelector('.sapr-status-row span strong');
-      if (s) s.textContent = protectionEnabled ? 'Active' : 'Paused';
-    });
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.appendChild(popupEl);
+      var closeBtn = document.getElementById('sapr-popup-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+          popupEl.classList.remove('visible');
+        });
+      }
+      var toggleInput = document.getElementById('sapr-protection-toggle');
+      if (toggleInput) {
+        toggleInput.addEventListener('change', function (e) {
+          protectionEnabled = e.target.checked;
+          saveSettings();
+          if (typeof window !== 'undefined') {
+            window.postMessage({ type: 'SAPG_SET_PROTECTION', enabled: protectionEnabled }, '*');
+          }
+          var s = popupEl.querySelector('.sapr-status-row span strong');
+          if (s) s.textContent = protectionEnabled ? 'Active' : 'Paused';
+        });
+      }
+    }
     return popupEl;
   }
 
   function updateInPagePopup() {
-    var popup = buildPopup();
-    var logEl = popup.querySelector('#sapr-log-entries');
-    var severityIcons = { critical: '🔴', warning: '🟡', info: '🔵' };
+    try {
+      if (typeof document === 'undefined' || !document.body) return;
+      var popup = buildPopup();
+      if (!popup) return;
+      var logEl = popup.querySelector('#sapr-log-entries');
+      if (!logEl) return;
+      var severityIcons = { critical: '🔴', warning: '🟡', info: '🔵' };
 
     if (blockedAttempts.length === 0) {
       logEl.innerHTML = '<div style="color:#6c7086; font-size:12px; padding:4px 0;">No blocks yet.</div>';
@@ -1279,7 +1777,8 @@
           '</div>';
       }).join('');
     }
-  }
+  } catch (_) {}
+}
 
   // ─── Floating Toggle Button ──────────────────────────────────────────────────
   function buildFloatingToggle() {
@@ -1304,6 +1803,7 @@
       if (!protectionEnabled) return originalFetch.apply(this, arguments);
       var url = '';
       try { url = typeof resource === 'string' ? resource : (resource && resource.url ? resource.url : ''); } catch (_) {}
+      if (!isAiChatUrl(url)) return originalFetch.apply(this, arguments);
       var body = init && init.body;
       var promptText = null;
       if (body && typeof body === 'string' && body.length > 5) {
@@ -1328,15 +1828,16 @@
     };
     XMLHttpRequest.prototype.send = function (body) {
       if (!protectionEnabled) return origSend.apply(this, arguments);
+      var url = this._sapr_url || '';
+      if (!isAiChatUrl(url)) return origSend.apply(this, arguments);
       var promptText = null;
       if (body && typeof body === 'string' && body.length > 5) promptText = extractPromptFromBody(body);
       if (!promptText) return origSend.apply(this, arguments);
-      var url = this._sapr_url || '';
       // Synchronous detection — checkAndBlock is async and can't work in XHR.send()
       var result = detect(promptText);
       if (result.shouldBlock) {
-        try { recordBlock(result); } catch (_) {}
-        showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || []);
+        try { recordBlock(result, promptText); } catch (_) {}
+        showBanner(result.findings, result.riskScore, result.severity, result.explanations, result.bulkMessages || [], promptText);
         console.log('[SAPG] Blocked:', result.categories, 'riskScore:', result.riskScore, 'severity:', result.severity, '[XHR] ' + url.substring(0, 80));
         throw new DOMException('Shadow AI Prompt Guardian: XHR blocked.', 'AbortError');
       }
@@ -1388,19 +1889,21 @@
   }
 
   // ─── Interception: Form Submit ──────────────────────────────────────────────
+  var formSubmitAttached = false;
   function interceptForms() {
+    if (formSubmitAttached || typeof document === 'undefined') return;
+    formSubmitAttached = true;
     document.addEventListener('submit', function (e) {
       if (!protectionEnabled) return;
       var form = e.target;
-      if (!form || form.dataset.saprChecked) return;
-      form.dataset.saprChecked = '1';
+      if (!form) return;
       var textarea = form.querySelector('textarea');
       var input = form.querySelector('input[type="text"], input[type="search"]');
       var editable = form.querySelector('[contenteditable="true"]');
       var promptText = null;
       if (textarea) promptText = textarea.value.trim();
       else if (input) promptText = input.value.trim();
-      else if (editable) promptText = editable.innerText.trim();
+      else if (editable) promptText = (editable.innerText || editable.textContent || '').trim();
       if (!promptText || promptText.length < 5) return;
       var blocked = checkAndBlockSync(promptText, '[form submit]');
       if (blocked) {
@@ -1413,9 +1916,11 @@
   }
 
   // ─── DOM Observation for SPAs ───────────────────────────────────────────────
+  var spaObserverStarted = false;
   function startDOMObservation() {
+    if (spaObserverStarted || typeof document === 'undefined' || !document.body) return;
+    spaObserverStarted = true;
     var observer = new MutationObserver(function () {
-      interceptForms();
       attachCodeRestorerButtons();
     });
     observer.observe(document.body, { childList: true, subtree: true });
@@ -1423,12 +1928,13 @@
 
   // ─── Initialization ──────────────────────────────────────────────────────────
   async function init() {
-    console.log('[SAPG] Shadow AI Prompt Guardian v4.0 "NEXUS" loaded on', window.location.href);
+    console.log('[SAPG] Shadow AI Prompt Guardian v5.0 "SENTINEL" loaded on', window.location.href);
     await loadSettings();
     injectMainWorldScript();
     setupMainWorldBridge();
     // Sync initial protection state to main world
-    window.postMessage({ type: 'SAPG_SET_PROTECTION', enabled: protectionEnabled }, '*');
+    var targetOrigin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : '*';
+    window.postMessage({ type: 'SAPG_SET_PROTECTION', enabled: protectionEnabled }, targetOrigin);
     interceptFetch();
     interceptXHR();
     interceptSendButton();
@@ -1451,7 +1957,8 @@
       interceptFetch: interceptFetch, interceptXHR: interceptXHR, interceptSendButton: interceptSendButton,
       interceptEnterKey: interceptEnterKey, interceptForms: interceptForms, detect: detect,
       extractPromptFromBody: extractPromptFromBody, extractPromptFromActiveElement: extractPromptFromActiveElement,
-      scanConversation: scanConversation, loadSettings: loadSettings,
+      scanConversation: scanConversation, loadSettings: loadSettings, recordBlock: recordBlock,
+      checkAndBlockSync: checkAndBlockSync,
     };
     return;
   }

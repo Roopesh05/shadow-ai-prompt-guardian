@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    background: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 24px;
+    margin: 0;
+    color: #f8fafc;
+}
+.card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.title { font-size: 18px; font-weight: 700; color: #f8fafc; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #334155; }
+th { background: #0f172a; color: #94a3b8; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+.badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.badge-crit { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+.badge-high { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid #f59e0b; }
+.badge-med { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #3b82f6; }
+.masked-txt { font-family: monospace; color: #cbd5e1; }
+.btn-export { background: #3b82f6; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <div>
+            <div class="title">Figure 15.6: Zero-Trust Local Audit Log Viewer (Encrypted chrome.storage.local)</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:4px;">100% Client-Side Privacy: Stores only masked previews &bull; Zero plain secrets stored</div>
+        </div>
+        <button class="btn-export">Export Audit Log (JSON)</button>
+    </div>
+    <table>
+        <tr>
+            <th>Timestamp</th>
+            <th>Platform</th>
+            <th>Threat Type</th>
+            <th>Severity</th>
+            <th>Masked Token Preview</th>
+            <th>Action Taken</th>
+        </tr>
+        <tr>
+            <td>2026-09-19 09:12:44</td>
+            <td>chatgpt.com</td>
+            <td>OpenAI Secret Key</td>
+            <td><span class="badge badge-crit">Critical</span></td>
+            <td class="masked-txt">sk-proj-••••••••••••••••3xY9</td>
+            <td>Blocked &amp; Auto-Redacted</td>
+        </tr>
+        <tr>
+            <td>2026-09-19 09:14:02</td>
+            <td>claude.ai</td>
+            <td>AWS Access Key</td>
+            <td><span class="badge badge-crit">Critical</span></td>
+            <td class="masked-txt">AKIA••••••••••••MPLE</td>
+            <td>Blocked &amp; User Cancelled</td>
+        </tr>
+        <tr>
+            <td>2026-09-19 09:15:19</td>
+            <td>gemini.google.com</td>
+            <td>High Shannon Entropy</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td class="masked-txt">9f8e••••••••••••••••a1b2</td>
+            <td>Auto-Redacted</td>
+        </tr>
+        <tr>
+            <td>2026-09-19 09:15:58</td>
+            <td>copilot.microsoft.com</td>
+            <td>US Social Security No.</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td class="masked-txt">•••-••-9012</td>
+            <td>Blocked &amp; Auto-Redacted</td>
+        </tr>
+        <tr>
+            <td>2026-09-19 09:17:33</td>
+            <td>perplexity.ai</td>
+            <td>Confidential Codename</td>
+            <td><span class="badge badge-med">Medium</span></td>
+            <td class="masked-txt">Project [REDACTED_CODENAME]</td>
+            <td>User Overridden</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -217,6 +217,40 @@
       padding: 2px 7px; border-radius: 10px;
       background: rgba(244,63,94,0.15); color: var(--critical);
     }
+
+    /* ── Simulator ── */
+    .sim-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .sim-sample-btn {
+      padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 6px;
+      background: var(--bg-3); border: 1px solid var(--border); color: var(--text-2);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .sim-sample-btn:hover { background: rgba(99,102,241,0.15); color: var(--text-1); border-color: var(--accent); }
+    .sim-input {
+      width: 100%; padding: 12px 14px; border-radius: 8px;
+      background: var(--bg-3); border: 1px solid var(--border);
+      color: var(--text-1); font-family: var(--font-mono); font-size: 13px;
+      resize: vertical; min-height: 110px; outline: none; transition: border-color 0.2s;
+    }
+    .sim-input:focus { border-color: var(--accent); }
+    .sim-result-box {
+      margin-top: 16px; padding: 16px; border-radius: 10px;
+      background: var(--bg-3); border: 1px solid var(--border); display: none;
+    }
+    .sim-score-bar {
+      height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06);
+      margin: 10px 0; overflow: hidden; position: relative;
+    }
+    .sim-score-fill {
+      height: 100%; border-radius: 4px; transition: width 0.4s ease;
+    }
+    .sim-findings-list {
+      margin-top: 10px; font-family: var(--font-mono); font-size: 11px;
+    }
+    .sim-finding-item {
+      padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.25);
+      margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -251,6 +285,10 @@
         <span class="nav-icon">🌐</span> Platforms
       </div>
 
+      <div class="nav-section">Diagnostics</div>
+      <div class="nav-item" data-section="simulator">
+        <span class="nav-icon">🧪</span> Guardian Simulator
+      </div>
       <div class="nav-section">Advanced</div>
       <div class="nav-item" data-section="export">
         <span class="nav-icon">📤</span> Export &amp; API
@@ -352,9 +390,9 @@
           <div class="slider-row">
             <div class="slider-label">
               <span>Sensitivity</span>
-              <span id="sensitivity-value" style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">50</span>
+              <span id="sensitivity-value" style="color: var(--accent); font-family: var(--font-mono); font-weight: 700;">30</span>
             </div>
-            <input type="range" id="opt-sensitivity" min="10" max="100" value="50" step="5">
+            <input type="range" id="opt-sensitivity" min="10" max="100" value="30" step="5">
           </div>
         </div>
 
@@ -496,6 +534,62 @@ window.SentinelAPI.compliance.hipaa.patterns</pre>
         </div>
       </section>
 
+      <!-- GUARDIAN TEST SIMULATOR -->
+      <section class="page-section" id="section-simulator">
+        <div class="section-title">Guardian Test Simulator</div>
+        <div class="section-desc">Test real-time prompt scanning, evaluate risk detection, and simulate block events with live audit logging.</div>
+
+        <div class="card">
+          <div class="card-title">Test Prompt Input</div>
+          <div class="card-desc">Click any preset payload below or enter custom text to test the Guardian engine:</div>
+          <div class="sim-presets">
+            <button class="sim-sample-btn" data-preset="aws">🔑 AWS Key</button>
+            <button class="sim-sample-btn" data-preset="card">💳 Credit Card (Luhn)</button>
+            <button class="sim-sample-btn" data-preset="email">📧 PII &amp; Email</button>
+            <button class="sim-sample-btn" data-preset="db">🗄️ Database URL</button>
+            <button class="sim-sample-btn" data-preset="clean">💬 Clean Text</button>
+          </div>
+          <textarea class="sim-input" id="sim-prompt-input" placeholder="Type or paste any prompt here to analyze..."></textarea>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="sim-scan-btn">🔍 Live Scan Prompt</button>
+            <button class="btn btn-danger" id="sim-block-btn">🛡️ Simulate &amp; Log Block</button>
+            <button class="btn btn-ghost" id="sim-clear-btn">🧹 Clear</button>
+          </div>
+
+          <!-- Scan Results -->
+          <div class="sim-result-box" id="sim-results">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span id="sim-verdict-badge" style="display:inline-block; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:700; text-transform:uppercase;">SAFE</span>
+                <span id="sim-categories-badge" style="font-size:12px; color:var(--text-2); margin-left:8px;"></span>
+              </div>
+              <div style="font-family:var(--font-mono); font-size:18px; font-weight:800;" id="sim-score-num">Risk: 0</div>
+            </div>
+            <div class="sim-score-bar">
+              <div class="sim-score-fill" id="sim-score-fill" style="width:0%; background:var(--safe);"></div>
+            </div>
+            <div id="sim-findings-container" class="sim-findings-list"></div>
+            <div id="sim-redacted-box" style="margin-top:12px; display:none;">
+              <div style="font-size:11px; color:var(--text-3); margin-bottom:4px; font-weight:700;">REDACTED PREVIEW:</div>
+              <div id="sim-redacted-text" style="font-family:var(--font-mono); font-size:12px; color:#34d399; background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px; word-break:break-all;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div>
+              <div class="card-title" style="margin-bottom:2px;">Live Real-Time Audit Feed</div>
+              <div class="card-desc" style="margin-bottom:0;">Most recent blocks recorded locally with SHA-256 integrity chaining.</div>
+            </div>
+            <button class="btn btn-ghost" id="sim-refresh-log-btn" style="font-size:11px; padding:4px 10px;">🔄 Refresh Feed</button>
+          </div>
+          <div id="sim-recent-logs" style="margin-top:10px;">
+            <div style="text-align:center; padding:20px; color:var(--text-3); font-size:12px;">No recent blocks recorded yet.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- ABOUT -->
       <section class="page-section" id="section-about">
         <div class="section-title">About SENTINEL</div>
@@ -517,6 +611,7 @@ window.SentinelAPI.compliance.hipaa.patterns</pre>
 
   <div id="options-toast">✅ Settings saved</div>
 
+  <script src="js/detection-engine.js"></script>
   <script src="js/options.js"></script>
 </body>
 </html>

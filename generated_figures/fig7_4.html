@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.diagram-box {
+    border: 1.5px solid #0f172a;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.node {
+    fill: #f8fafc;
+    stroke: #334155;
+    stroke-width: 1.5;
+}
+.node-accent {
+    fill: #eff6ff;
+    stroke: #2563eb;
+    stroke-width: 2;
+}
+.node-danger {
+    fill: #fef2f2;
+    stroke: #dc2626;
+    stroke-width: 2;
+}
+.node-success {
+    fill: #f0fdf4;
+    stroke: #16a34a;
+    stroke-width: 2;
+}
+.node-purple {
+    fill: #faf5ff;
+    stroke: #9333ea;
+    stroke-width: 2;
+}
+.txt-title {
+    font-size: 13px;
+    font-weight: bold;
+    fill: #0f172a;
+    text-anchor: middle;
+}
+.txt-sub {
+    font-size: 11px;
+    fill: #475569;
+    text-anchor: middle;
+}
+.arrow {
+    stroke: #475569;
+    stroke-width: 1.5;
+    fill: none;
+    marker-end: url(#arrowhead);
+}
+.arrow-dash {
+    stroke: #2563eb;
+    stroke-width: 1.5;
+    stroke-dasharray: 4,3;
+    fill: none;
+    marker-end: url(#arrowhead-blue);
+}
+</style>
+</head>
+<body>
+<div class="diagram-box">
+<svg width="820" height="480" viewBox="0 0 820 480">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- Level 0 Context Diagram (Top Half) -->
+  <text x="30" y="30" class="txt-title" style="text-anchor:start; fill:#1e40af;">DFD LEVEL 0: CONTEXT DIAGRAM</text>
+  
+  <rect x="40" y="50" width="140" height="60" rx="4" class="node" />
+  <text x="110" y="85" class="txt-title">End User / Dev</text>
+
+  <circle cx="390" cy="80" r="45" class="node-accent" />
+  <text x="390" y="78" class="txt-title">0.0</text>
+  <text x="390" y="94" class="txt-title" style="font-size:11px;">SENTINEL System</text>
+
+  <rect x="630" y="50" width="150" height="60" rx="4" class="node" />
+  <text x="705" y="85" class="txt-title">AI Model Provider</text>
+
+  <path d="M 180 70 L 345 70" class="arrow" />
+  <text x="260" y="63" class="txt-sub">Raw Prompt</text>
+
+  <path d="M 435 70 L 630 70" class="arrow" />
+  <text x="530" y="63" class="txt-sub">Sanitized Prompt</text>
+
+  <path d="M 390 125 L 390 155" class="arrow" />
+  <text x="450" y="145" class="txt-sub">Masked Log</text>
+  <line x1="330" y1="155" x2="450" y2="155" stroke="#334155" stroke-width="2" />
+  <line x1="330" y1="180" x2="450" y2="180" stroke="#334155" stroke-width="2" />
+  <text x="390" y="172" class="txt-sub" style="font-weight:bold;">D1: chrome.storage.local</text>
+
+  <!-- Divider -->
+  <line x1="20" y1="200" x2="800" y2="200" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,4" />
+
+  <!-- Level 1 DFD (Bottom Half) -->
+  <text x="30" y="230" class="txt-title" style="text-anchor:start; fill:#1e40af;">DFD LEVEL 1: INTERNAL PROCESS DECOMPOSITION</text>
+
+  <circle cx="90" cy="300" r="32" class="node-purple" />
+  <text x="90" y="298" class="txt-title" style="font-size:10px;">1.0</text>
+  <text x="90" y="312" class="txt-sub" style="font-size:9px;">DOM Intercept</text>
+
+  <circle cx="270" cy="300" r="32" class="node-accent" />
+  <text x="270" y="298" class="txt-title" style="font-size:10px;">2.0</text>
+  <text x="270" y="312" class="txt-sub" style="font-size:9px;">Multi-Layer Scan</text>
+
+  <circle cx="450" cy="300" r="32" class="node-danger" />
+  <text x="450" y="298" class="txt-title" style="font-size:10px;">3.0</text>
+  <text x="450" y="312" class="txt-sub" style="font-size:9px;">Risk &amp; Modal</text>
+
+  <circle cx="630" cy="300" r="32" class="node-success" />
+  <text x="630" y="298" class="txt-title" style="font-size:10px;">4.0</text>
+  <text x="630" y="312" class="txt-sub" style="font-size:9px;">Auto-Redaction</text>
+
+  <path d="M 122 300 L 238 300" class="arrow" />
+  <text x="180" y="292" class="txt-sub" style="font-size:10px;">Raw Text</text>
+
+  <path d="M 302 300 L 418 300" class="arrow" />
+  <text x="360" y="292" class="txt-sub" style="font-size:10px;">Findings</text>
+
+  <path d="M 482 300 L 598 300" class="arrow" />
+  <text x="540" y="292" class="txt-sub" style="font-size:10px;">User Confirm</text>
+
+  <!-- Store connections -->
+  <path d="M 450 332 L 450 400" class="arrow" />
+  <text x="490" y="380" class="txt-sub" style="font-size:10px;">Audit Record</text>
+  <line x1="390" y1="400" x2="510" y2="400" stroke="#334155" stroke-width="2" />
+  <line x1="390" y1="425" x2="510" y2="425" stroke="#334155" stroke-width="2" />
+  <text x="450" y="417" class="txt-sub" style="font-weight:bold;">D1: Local Storage</text>
+</svg>
+</div>
+</body>
+</html>

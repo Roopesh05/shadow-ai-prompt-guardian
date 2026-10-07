@@ -304,6 +304,8 @@ for (const key of storageKeys) {
     check('Storage key ' + key + ' consistent', false, 'content=' + inContent + ' popup=' + inPopup + ' options=' + inOptions);
   }
 }
+check('options.html default sensitivity is 30', fs.readFileSync('options.html', 'utf8').includes('value="30"'));
+check('options.js default sensitivity is 30', optionsCode.includes('get(STORAGE_KEYS.sensitivity, 30)'));
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION 13: EDGE CASES
@@ -314,14 +316,139 @@ check('Unicode in prompt handled', analyzePrompt('🔑 My key is AKIAIOSFODNN7EX
 check('Newlines in prompt handled', analyzePrompt('line1\nline2\nmy email: test@example.com').shouldBlock);
 check('Mixed case patterns work', analyzePrompt('MY PASSWORD IS: Secret123!').shouldBlock);
 check('Multiple findings in one prompt', analyzePrompt('key: AKIAIOSFODNN7EXAMPLE email: test@example.com').categories.length >= 2);
+const zwEdge = analyzePrompt('Hello AKIA\u200BIOSFODNN7EXAMPLE world');
+check('Zero-width secret detected', zwEdge.findings.length === 1);
+check('Zero-width secret redacts without leakage', autoRedact('Hello AKIA\u200BIOSFODNN7EXAMPLE world', zwEdge.findings).redacted === 'Hello [API_KEY] world');
+const spEdge = analyzePrompt('Key is s k - p r o j - 1 2 3 4 5 6 7 8 9 0 a b c d e f g h i j k l m n o p q r s t u v w x y z thanks');
+check('Character-spaced secret detected', spEdge.findings.length === 1);
+check('Character-spaced secret redacts cleanly', autoRedact('Key is s k - p r o j - 1 2 3 4 5 6 7 8 9 0 a b c d e f g h i j k l m n o p q r s t u v w x y z thanks', spEdge.findings).redacted === 'Key is [API_KEY] thanks');
+check('Spaced digits do not falsely trigger phone or bulk PII', analyzePrompt('Sequence: 1 2 3 4 5 6 7 8 9 0 and 0 9 8 7 6 5 4 3 2 1').findings.length === 0);
 
 // ═══════════════════════════════════════════════════════════════
 // SECTION 14: TEST FILES
 // ═══════════════════════════════════════════════════════════════
 console.log('\n── SECTION 14: TEST FILES ──');
-check('Test dataset has 95 prompts', require('../tests/test-prompts.json').prompts.length === 95);
+check('Test dataset has 140 prompts', require('../tests/test-prompts.json').prompts.length === 140);
 check('Test detection engine imports detect', true); // verified by running tests
 check('Eval harness imports analyzePrompt', true); // verified by running tests
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION 15: SENIOR AUDIT DEFECT VERIFICATION (BUG-001 to BUG-015)
+// ═══════════════════════════════════════════════════════════════
+console.log('\n── SECTION 15: SENIOR AUDIT DEFECT VERIFICATION (BUG-001 to BUG-015) ──');
+
+// BUG-001 & BUG-002: Audit Log Storage Isolation
+const recordBlockFn = contentCode.slice(contentCode.indexOf('function recordBlock'), contentCode.indexOf('function notifyBGBlock'));
+check('BUG-001: content.js recordBlock does not write directly to STORAGE.log', !recordBlockFn.includes('STORAGE.log'));
+const saveSettingsFn = contentCode.slice(contentCode.indexOf('function saveSettings'), contentCode.indexOf('function isAiChatUrl'));
+check('BUG-002: content.js saveSettings does not overwrite STORAGE.log', !saveSettingsFn.includes('STORAGE.log'));
+
+// BUG-003: Multi-tab live settings sync
+check('BUG-003: content.js listens to chrome.storage.onChanged', contentCode.includes('chrome.storage.onChanged.addListener'));
+check('BUG-003: content.js forwards SAPG_SET_PROTECTION to main-world', contentCode.includes('SAPG_SET_PROTECTION'));
+
+// BUG-004: ML Classifier window & variable safety
+const mlCode = fs.readFileSync('js/phases/ml-classifier.js', 'utf8');
+check('BUG-004: ml-classifier guards window assignment', mlCode.includes("typeof window !== 'undefined'"));
+check('BUG-004: ml-classifier tracks lastMLResult safely', mlCode.includes('lastMLResult'));
+
+// BUG-005: High-entropy token regex tracking
+const detectCode = fs.readFileSync('js/detection-engine.js', 'utf8');
+check('BUG-005: findHighEntropyTokens uses regex execution loop', detectCode.includes('tokenRe.exec(text)'));
+
+// BUG-006: Bulk meta-findings filtered in autoRedact and autoRedactSynthetic
+check('BUG-006: autoRedact filters isBulk findings', detectCode.includes('!f.isBulk'));
+const synthCode = fs.readFileSync('js/synthetic-generator.js', 'utf8');
+check('BUG-006: autoRedactSynthetic filters isBulk findings', synthCode.includes('f.isBulk'));
+
+// BUG-007: ContentEditable support in setActiveValue
+check('BUG-007: setActiveValue handles contenteditable elements', contentCode.includes('isContentEditable') || contentCode.includes('contenteditable'));
+check('BUG-007: setActiveValue supports document.execCommand fallback', contentCode.includes('insertText') || contentCode.includes('execCommand'));
+
+// BUG-008 & BUG-009: Form submit listener attached once without saprChecked gating
+check('BUG-008: interceptForms does not gate submission on saprChecked', !contentCode.includes('form.dataset.saprChecked'));
+check('BUG-009: interceptForms attaches a single global listener on document', contentCode.includes("document.addEventListener('submit'"));
+
+// BUG-010: Anthropic Claude and Gemini message block extraction
+const claudeMsg = JSON.stringify({
+  messages: [{
+    role: 'user',
+    content: [{ type: 'text', text: 'Anthropic secret key AKIAIOSFODNN7EXAMPLE leak' }]
+  }]
+});
+const extractedClaude = extractPromptFromBody(claudeMsg);
+check('BUG-010: extractPromptFromBody handles Claude array content blocks', extractedClaude && extractedClaude.includes('AKIAIOSFODNN7EXAMPLE'));
+
+const geminiMsg = JSON.stringify({
+  contents: [{
+    role: 'user',
+    parts: [{ text: 'Gemini part 1' }, { text: 'Gemini part 2 with sk-proj-1234567890abcdefghijklmnop' }]
+  }]
+});
+const extractedGemini = extractPromptFromBody(geminiMsg);
+check('BUG-010: extractPromptFromBody handles Gemini multi-part contents', extractedGemini && extractedGemini.includes('sk-proj-1234567890abcdefghijklmnop'));
+
+const mainInterceptCode = fs.readFileSync('js/main-world-intercept.js', 'utf8');
+check('BUG-010: main-world-intercept handles array content blocks', mainInterceptCode.includes('Array.isArray(lastMsg.content)'));
+
+// BUG-011: options.html includes detection-engine.js
+const optionsHtml = fs.readFileSync('options.html', 'utf8');
+check('BUG-011: options.html includes js/detection-engine.js', optionsHtml.includes('<script src="js/detection-engine.js"></script>'));
+
+// BUG-012: Deduplicated findings category consistency
+const testDedupe = analyzePrompt('Contact me at admin@corp.internal');
+check('BUG-012: analyzePrompt categories derived from deduplicated findings', testDedupe.categories.every(cat => testDedupe.findings.some(f => f.category === cat)));
+
+// BUG-013: Git commit hash false-positive prevention
+const git40 = analyzePrompt('commit 9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e');
+check('BUG-013: 40-char git commit hash does not trigger false positives', !git40.findings.some(f => f.name && (f.name.includes('Azure') || f.name.includes('Twilio'))));
+
+// BUG-014: postMessage origin restriction
+check('BUG-014: content.js restricts postMessage to window.location.origin', contentCode.includes('window.location.origin'));
+check('BUG-014: main-world-intercept restricts postMessage to window.location.origin', mainInterceptCode.includes('window.location.origin'));
+
+// BUG-015: PCI-DSS PAN pattern validates Luhn
+const { luhnCheck: luhnFn, COMPLIANCE_PRESETS: compPresets } = require('../js/detection-engine.js');
+check('BUG-015: luhnCheck validates valid card', luhnFn('4532015112830366') === true);
+check('BUG-015: luhnCheck invalidates bad checksum', luhnFn('4532015112830367') === false);
+check('BUG-015: COMPLIANCE_PRESETS pci_dss pan rule exists', compPresets.pci_dss.patterns.some(p => p.id === 'pan'));
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION 16: GUARDIAN AUDIT & REAL-TIME LOG INTEGRATION (CHKL-01 to CHKL-05)
+// ═══════════════════════════════════════════════════════════════
+console.log('\n── SECTION 16: GUARDIAN AUDIT & REAL-TIME LOG INTEGRATION (CHKL-01 to CHKL-05) ──');
+
+// CHKL-01: Background atomic unified storage write
+const bgCode = fs.readFileSync('js/background.js', 'utf8');
+check('CHKL-01: background.js writes audit log & attempts in a unified storage call',
+  bgCode.includes('sapg_audit_chain: _chainHash') &&
+  bgCode.includes('sapg_audit_log: log') &&
+  bgCode.includes('sapg_blockedAttempts: attempts'));
+
+// CHKL-02: Options real-time storage sync & dual-key fallback
+check('CHKL-02: options.js listens to chrome.storage.onChanged', optionsCode.includes('chrome.storage.onChanged.addListener'));
+check('CHKL-02: options.js loads audit log on initialization', optionsCode.includes('loadAuditLog();'));
+check('CHKL-02: options.js handles dual-key fallback for logs', optionsCode.includes('STORAGE_KEYS.blockedAttempts'));
+
+// CHKL-03: Content script real-time log sync
+check('CHKL-03: content.js listens for STORAGE.log in onChanged', contentCode.includes('changes[STORAGE.log]'));
+check('CHKL-03: content.js updates in-page popup on log changes', contentCode.includes('updateInPagePopup()'));
+
+// CHKL-04: Localhost and 127.0.0.1 developer matching
+check('CHKL-04: manifest.json matches http://localhost/*', manifest.host_permissions.includes('http://localhost/*'));
+check('CHKL-04: manifest.json matches http://127.0.0.1/*', manifest.host_permissions.includes('http://127.0.0.1/*'));
+check('CHKL-04: content_scripts matches localhost', manifest.content_scripts[0].matches.includes('http://localhost/*'));
+
+// CHKL-05: Guardian Test Simulator
+check('CHKL-05: options.html contains Guardian Simulator section', optionsHtml.includes('id="section-simulator"'));
+check('CHKL-05: options.html contains simulator input and action buttons',
+  optionsHtml.includes('id="sim-prompt-input"') &&
+  optionsHtml.includes('id="sim-scan-btn"') &&
+  optionsHtml.includes('id="sim-block-btn"'));
+check('CHKL-05: options.js wires simulator scan and block handlers',
+  optionsCode.includes('simScanBtn') &&
+  optionsCode.includes('simBlockBtn') &&
+  optionsCode.includes('runSimulatorScan'));
 
 // ═══════════════════════════════════════════════════════════════
 // SUMMARY

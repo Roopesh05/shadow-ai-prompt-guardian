@@ -1,5 +1,5 @@
 /**
- * Shadow AI Prompt Guardian — Detection Engine (v4.0 "NEXUS")
+ * Shadow AI Prompt Guardian — Detection Engine (v5.0 "SENTINEL")
  *
  * Client-side detection engine with:
  *   1. Regex-based rules for API keys / secrets
@@ -99,16 +99,16 @@ const API_KEY_PATTERNS = [
   { id: 'stripe_pk', name: 'Stripe Publishable Key', pattern: /pk_(?:live|test)_[0-9a-zA-Z]{24,}/g },
   { id: 'stripe_webhook', name: 'Stripe Webhook Secret', pattern: /whsec_[A-Za-z0-9]{32,}/g },
   // ── OpenAI / Anthropic / AI providers ────────────────────────────────────
-  { id: 'openai_key', name: 'OpenAI API Key', pattern: /sk-[A-Za-z0-9\-\s]{20,}/gi },
+  { id: 'openai_key', name: 'OpenAI API Key', pattern: /sk-[A-Za-z0-9\-]{12,}\b/gi },
   { id: 'openai_project_key', name: 'OpenAI Project Key', pattern: /sk-proj-[A-Za-z0-9_\-]{40,}/g },
   { id: 'anthropic_key', name: 'Anthropic API Key', pattern: /sk-ant-[A-Za-z0-9\-_]{80,}/g },
   { id: 'huggingface_token', name: 'HuggingFace Token', pattern: /hf_[A-Za-z0-9]{32,}/g },
   // ── Azure ─────────────────────────────────────────────────────────────────
-  { id: 'azure_key', name: 'Azure API Key (hex)', pattern: /[0-9a-f]{32}(?![0-9a-f])/gi },
+  { id: 'azure_key', name: 'Azure API Key (hex)', pattern: /(?<=\b(?:azure|AZURE)[^\n]{0,30}?[=:\s_]+)[0-9a-fA-F]{32}\b/gi },
   { id: 'azure_conn_string', name: 'Azure Connection String', pattern: /DefaultEndpointsProtocol=https?;AccountName=[^;]+;AccountKey=[A-Za-z0-9+\/=]{40,}/g },
   { id: 'azure_sas_token', name: 'Azure SAS Token', pattern: /sv=\d{4}-\d{2}-\d{2}&[a-z]{2}=[^&\s]{1,50}&(?:[a-z]{2}=[^&\s]{1,50}&){1,10}sig=[A-Za-z0-9%+\/=]{30,}/g },
   // ── Heroku / Platform ─────────────────────────────────────────────────────
-  { id: 'heroku_key', name: 'Heroku API Key', pattern: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi },
+  { id: 'heroku_key', name: 'Heroku API Key', pattern: /(?<=\b(?:heroku|HEROKU)[^\n]{0,30}?[=:\s_]+)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi },
   // ── Twilio / Vonage / Comms ───────────────────────────────────────────────
   { id: 'twilio_sid', name: 'Twilio Account SID', pattern: /AC[a-zA-Z0-9]{32}/gi },
   { id: 'twilio_token', name: 'Twilio Auth Token', pattern: /(?:twilio|TWILIO).*?["']([a-f0-9]{32})["']/gi },
@@ -119,7 +119,7 @@ const API_KEY_PATTERNS = [
   { id: 'vercel_token', name: 'Vercel Token', pattern: /(?:vercel|VERCEL).*?["']([A-Za-z0-9]{24,})["']/gi },
   { id: 'railway_token', name: 'Railway Token', pattern: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?=.*railway)/gi },
   { id: 'cloudflare_global_key', name: 'Cloudflare Global API Key', pattern: /(?:cloudflare|CLOUDFLARE).*?["']([0-9a-f]{37})["']/gi },
-  { id: 'cloudflare_api_token', name: 'Cloudflare API Token', pattern: /[A-Za-z0-9_\-]{40}(?=.*cloudflare)/gi },
+  { id: 'cloudflare_api_token', name: 'Cloudflare API Token', pattern: /(?:cloudflare|CLOUDFLARE).*?["']?([A-Za-z0-9_\-]{40})["']?/gi },
   { id: 'digitalocean_pat', name: 'DigitalOcean PAT', pattern: /dop_v1_[A-Za-z0-9]{64}/g },
   { id: 'linode_token', name: 'Linode API Token', pattern: /(?:linode|LINODE).*?["']([a-f0-9]{64})["']/gi },
   // ── Databases ─────────────────────────────────────────────────────────────
@@ -141,7 +141,7 @@ const API_KEY_PATTERNS = [
   { id: 'figma_token', name: 'Figma Personal Access Token', pattern: /figd_[A-Za-z0-9_\-]{43}/g },
   { id: 'linear_api_key', name: 'Linear API Key', pattern: /lin_api_[A-Za-z0-9]{40}/g },
   { id: 'notion_token', name: 'Notion Integration Token', pattern: /secret_[A-Za-z0-9]{43}/g },
-  { id: 'airtable_key', name: 'Airtable API Key', pattern: /key[A-Za-z0-9]{14}/g },
+  { id: 'airtable_key', name: 'Airtable API Key', pattern: /\bkey[A-Za-z0-9]{14}\b/g },
   { id: 'postman_api_key', name: 'Postman API Key', pattern: /PMAK-[a-f0-9]{24}-[a-f0-9]{34}/g },
   { id: 'npm_token', name: 'NPM Access Token', pattern: /npm_[A-Za-z0-9]{36}/g },
   // ── Security / Secrets Management ─────────────────────────────────────────
@@ -156,10 +156,9 @@ const API_KEY_PATTERNS = [
   { id: 'square_secret', name: 'Square App Secret', pattern: /sq0csp-[A-Za-z0-9_\-]{43}/g },
   { id: 'bitcoin_priv_key', name: 'Bitcoin Private Key (WIF)', pattern: /[5KL][1-9A-HJ-NP-Za-km-z]{51}/g },
   { id: 'ethereum_priv_key', name: 'Ethereum Private Key', pattern: /0x[a-fA-F0-9]{64}/g },
-  { id: 'ethereum_mnemonic', name: 'Ethereum Mnemonic (12-word)', pattern: /(?:(?:[a-z]{3,10}\s){11}[a-z]{3,10})/gi },
-  // ── Legacy (kept from v4) ─────────────────────────────────────────────────
-  { id: 'openai_key_partial', name: 'OpenAI API Key (Partial)', pattern: /sk-[A-Za-z0-9\-]{10,19}\b/gi },
-  { id: 'twilio_token_legacy', name: 'Twilio Auth Token', pattern: /[0-9a-f]{32}/gi },
+  { id: 'generic_api_key_labeled', name: 'API Key (labeled)', pattern: /(?:api_?key|staging_?key|dev_?key|secret_?key|access_?token|auth_?token|app_?key)[\s:=-]+([A-Za-z0-9_\-]{16,})/gi },
+  { id: 'generic_xapp_token', name: 'Application Token (xapp)', pattern: /xapp_[a-z0-9_\-]{16,}/gi },
+  // ethereum_mnemonic disabled due to extreme false positive rate on English prose
 ];
 
 // ─── Password / Credential Patterns ──────────────────────────────────────────
@@ -181,6 +180,7 @@ const COMPANY_PATTERNS = [
   { id: 'emp_id_short', name: 'Employee ID Short', pattern: /\b(?:EMP|Employee)[-\s]*\d{4,10}\b/gi },
   { id: 'company_domain', name: 'Company Email Domain', pattern: /\b[A-Za-z0-9._%+\-]+@(?:company|corp|inc|llc|org|net)\.(?:com|org|net|io|co)\b/gi },
   { id: 'internal_tool', name: 'Internal Tool/Service', pattern: /\b(?:slack|jira|confluence|asana|trello|notion|okta|azure|aws|gcp|salesforce|workday|sapsuccessfactors)\b/gi },
+  { id: 'internal_endpoint', name: 'Internal Domain/Endpoint', pattern: /https?:\/\/[a-zA-Z0-9.\-_]*(?:internal|intranet|staging|corp|private)[a-zA-Z0-9.\-_]*\.[a-z]{2,}/gi },
   { id: 'project_code', name: 'Project Code Name', pattern: /\b(?:project|codename|initiative|operation)[\s_-]*(?:[a-z]+|[A-Z]{2,})\b/gi },
   { id: 'client_name', name: 'Client/Vendor Name', pattern: /\b(?:client|vendor|partner|customer|supplier|contractor)[\s_-]+(?:name|details|info)[\s:]*[A-Z][a-z]+/gi },
 ];
@@ -189,20 +189,20 @@ const COMPANY_PATTERNS = [
 
 const PII_PATTERNS = [
   // ── Core PII ──────────────────────────────────────────────────────────────
-  { id: 'email', name: 'Email Address', pattern: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g },
-  { id: 'us_phone', name: 'US Phone Number', pattern: /(?:\+?1[-.\s]?)?(?:\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}/g },
-  { id: 'int_phone', name: 'International Phone', pattern: /\+\d{8,15}/g },
+  { id: 'email', name: 'Email Address', pattern: /\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g },
+  { id: 'us_phone', name: 'US Phone Number', pattern: /(?<!\w)(?:\+?1[-.\s]?)?(?:\(\d{3}\)[-.\s]?|\b\d{3}[-.\s])\d{3}[-.\s]?\d{4}(?!\w)/g },
+  { id: 'int_phone', name: 'International Phone', pattern: /\+(?:[0-9][-.\s]?){7,15}[0-9]\b/g },
   { id: 'ssn', name: 'US Social Security Number', pattern: /\b\d{3}-\d{2}-\d{4}\b/g },
-  { id: 'ip_address', name: 'IP Address', pattern: /\b(?!255\.255\.255\.255)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g },
+  { id: 'ip_address', name: 'IP Address', pattern: /\b(?!255\.255\.255\.255|0\.0\.0\.0|127\.\d{1,3}\.\d{1,3}\.\d{1,3})\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g },
   { id: 'ipv6', name: 'IPv6 Address', pattern: /\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b/g },
   { id: 'dob', name: 'Date of Birth', pattern: /\b(?:dob|date of birth|birth ?date)\s*[=:]*\s*\d{1,2}[/\-.]\d{1,2}[/\-.]\d{2,4}\b/gi },
   // ── International ID Numbers ──────────────────────────────────────────────
   { id: 'uk_ni', name: 'UK National Insurance Number', pattern: /\b[A-CEGHJ-PR-TW-Z]{2}\d{6}[ABCD]\b/gi },
-  { id: 'canadian_sin', name: 'Canadian Social Insurance Number', pattern: /\b\d{3}[\s\-]?\d{3}[\s\-]?\d{3}\b/g },
-  { id: 'indian_aadhaar', name: 'Indian Aadhaar Number', pattern: /\b[2-9]\d{3}[\s\-]?\d{4}[\s\-]?\d{4}\b/g },
+  { id: 'canadian_sin', name: 'Canadian Social Insurance Number', pattern: /(?<=\b(?:sin|nas|social\s*insurance)[^\n]{0,30}?[=:\s_#]+)\b[1-79]\d{2}[\s\-]?\d{3}[\s\-]?\d{3}\b/gi },
+  { id: 'indian_aadhaar', name: 'Indian Aadhaar Number', pattern: /(?<=\b(?:aadhaar|aadhar|uidai)[^\n]{0,30}?[=:\s_#]+)\b[2-9]\d{3}[\s\-]?\d{4}[\s\-]?\d{4}\b/gi },
   { id: 'eu_vat', name: 'EU VAT Number', pattern: /\b(?:AT|BE|BG|CY|CZ|DE|DK|EE|EL|ES|FI|FR|HR|HU|IE|IT|LT|LU|LV|MT|NL|PL|PT|RO|SE|SI|SK)\d{8,12}\b/g },
-  { id: 'iban', name: 'IBAN Bank Account', pattern: /\b[A-Z]{2}\d{2}[A-Z0-9]{1,30}\b/g },
-  { id: 'swift_bic', name: 'SWIFT/BIC Code', pattern: /\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b/g },
+  { id: 'iban', name: 'IBAN Bank Account', pattern: /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g },
+  { id: 'swift_bic', name: 'SWIFT/BIC Code', pattern: /(?<=\b(?:swift|bic|bank)[\s:_\-=]+)[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b/gi },
   { id: 'passport', name: 'Passport Number', pattern: /\b(?:passport(?:\s+no\.?|\s+number)?\s*[=:])\s*([A-Z]{1,2}\d{7}|\d{9})\b/gi },
   { id: 'drivers_license', name: "Driver's License", pattern: /\b(?:driver'?s?\s+licen[cs]e(?:\s+no\.?)?)\s*[=:]\s*[A-Z0-9\-]{6,18}\b/gi },
   // ── Payment Card ──────────────────────────────────────────────────────────
@@ -264,20 +264,31 @@ const CONTEXT_MODIFIERS = {
 // ─── SENTINEL: Obfuscation Normalizer ───────────────────────────────────────
 
 /**
- * Normalize obfuscated text to improve pattern detection.
+ * Normalize obfuscated text to improve pattern detection while maintaining precise
+ * 1-to-1 character index mapping back to the original text.
+ * Prevents offset drift and secret leakage during auto-redaction and DOM highlighting.
  * Handles: leet-speak, zero-width chars, Unicode lookalikes,
  * char-spacing ("s k - a b c"), base64 decoding.
+ * @param {string} text
+ * @returns {{ normalized: string, indexMap: number[] }}
  */
-function normalizeObfuscated(text) {
-  if (!text || typeof text !== 'string') return text;
+function normalizeObfuscatedWithMap(text) {
+  if (!text || typeof text !== 'string') {
+    return { normalized: text || '', indexMap: [] };
+  }
 
-  let normalized = text;
+  // Track original index for each character
+  let chars = [];
+  for (let i = 0; i < text.length; i++) {
+    chars.push({ char: text[i], origIndex: i });
+  }
 
   // 1. Remove zero-width / invisible characters
   // eslint-disable-next-line no-control-regex
-  normalized = normalized.replace(/[\u200B-\u200D\uFEFF\u00AD\u2060\u180E]/g, '');
+  const invisibleRe = /[\u200B-\u200D\uFEFF\u00AD\u2060\u180E]/;
+  chars = chars.filter(c => !invisibleRe.test(c.char));
 
-  // 2. Unicode lookalike substitution (common replacements)
+  // 2. Unicode lookalike substitution (1-to-1 mapping)
   const lookalikes = {
     '\u0430': 'a', '\u04D0': 'A', '\u00E0': 'a', '\u00E1': 'a', '\u00E2': 'a',
     '\u0435': 'e', '\u00E9': 'e', '\u00E8': 'e',
@@ -286,24 +297,63 @@ function normalizeObfuscated(text) {
     '\u0440': 'p', '\u0441': 'c', '\u0445': 'x',
     '\u2013': '-', '\u2014': '-', '\u2212': '-',
   };
-  Object.keys(lookalikes).forEach(ch => {
-    normalized = normalized.split(ch).join(lookalikes[ch]);
-  });
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i].char;
+    if (lookalikes[ch]) {
+      chars[i].char = lookalikes[ch];
+    }
+  }
 
-  // 3. Leet-speak normalization (conservative — only unambiguous)
-  normalized = normalized
-    .replace(/(?<![a-zA-Z])0(?=[a-zA-Z])/g, 'o')
-    .replace(/(?<=[a-zA-Z])0(?![a-zA-Z])/g, 'o')
-    .replace(/(?<=[A-Z])1(?=[A-Z])/g, 'I')
-    .replace(/\$(?=[A-Za-z])/g, 's');
+  // 3. Leet-speak normalization (conservative, 1-to-1 character replacement)
+  let currentStr = chars.map(c => c.char).join('');
+  const leetRules = [
+    { re: /(?<![a-zA-Z])0(?=[a-zA-Z])/g, repl: 'o' },
+    { re: /(?<=[a-zA-Z])0(?![a-zA-Z])/g, repl: 'o' },
+    { re: /(?<=[A-Z])1(?=[A-Z])/g, repl: 'I' },
+    { re: /\$(?=[A-Za-z])/g, repl: 's' }
+  ];
+  for (const rule of leetRules) {
+    let m;
+    while ((m = rule.re.exec(currentStr)) !== null) {
+      chars[m.index].char = rule.repl;
+    }
+    currentStr = chars.map(c => c.char).join('');
+  }
 
   // 4. Collapse character-spaced tokens ("s k - a b c" → "sk-abc")
-  // Look for 2+ single chars separated by spaces
-  normalized = normalized.replace(/\b([A-Za-z0-9])(?:\s([A-Za-z0-9\-])){3,}\b/g, (m) => {
-    return m.replace(/\s+/g, '');
-  });
+  // Only collapse when the token contains letters or hyphens,
+  // preventing false-positive phone detection on space-delimited digit sequences.
+  const spacedRe = /\b([A-Za-z0-9])(?:\s([A-Za-z0-9\-])){3,}\b/g;
+  let spacedMatch;
+  const spaceIndicesToRemove = new Set();
+  while ((spacedMatch = spacedRe.exec(currentStr)) !== null) {
+    const matchedSegment = spacedMatch[0];
+    if (/[a-zA-Z\-]/.test(matchedSegment)) {
+      const startIdx = spacedMatch.index;
+      const endIdx = startIdx + matchedSegment.length;
+      for (let i = startIdx; i < endIdx; i++) {
+        if (/\s/.test(chars[i].char)) {
+          spaceIndicesToRemove.add(i);
+        }
+      }
+    }
+  }
 
-  return normalized;
+  if (spaceIndicesToRemove.size > 0) {
+    chars = chars.filter((_, idx) => !spaceIndicesToRemove.has(idx));
+  }
+
+  return {
+    normalized: chars.map(c => c.char).join(''),
+    indexMap: chars.map(c => c.origIndex),
+  };
+}
+
+/**
+ * Normalize obfuscated text (wrapper for backwards compatibility).
+ */
+function normalizeObfuscated(text) {
+  return normalizeObfuscatedWithMap(text).normalized;
 }
 
 /**
@@ -414,6 +464,7 @@ function applyCompliancePresets(text, activePresets) {
       rule.pattern.lastIndex = 0;
       let m;
       while ((m = rule.pattern.exec(text)) !== null) {
+        if (rule.id === 'pan' && !luhnCheck(m[0])) continue;
         results.push({
           id: `${presetId}_${rule.id}`,
           name: `[${preset.name}] ${rule.name}`,
@@ -594,7 +645,12 @@ function isHighEntropyToken(s) {
   if (!s || s.length < 20) return false;
   const cleaned = s.replace(/^[=: \t"']+|[=:"' \t]+$/g, '');
   if (cleaned.length < 20) return false;
-  return shannonEntropy(cleaned) >= 4.0;
+  const entropy = shannonEntropy(cleaned);
+  // Base-16 hex strings have a theoretical max entropy of log2(16) = 4.0
+  if (/^[0-9a-fA-F]+$/.test(cleaned) && cleaned.length >= 30) {
+    return entropy >= 3.7;
+  }
+  return entropy >= 4.0;
 }
 
 /**
@@ -731,8 +787,23 @@ function findMatches(text, rule) {
 function findConfidentialTerms(text, terms) {
   const results = [];
   for (const term of terms) {
+    if (!term || typeof term !== 'string') continue;
     try {
-      const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      let regex;
+      const isRegexLiteral = /^\/(.+)\/([a-z]*)$/.test(term);
+      if (isRegexLiteral) {
+        const parts = term.match(/^\/(.+)\/([a-z]*)$/);
+        const flags = parts[2].includes('g') ? parts[2] : parts[2] + 'g';
+        regex = new RegExp(parts[1], flags);
+      } else if (/[\[\]\(\)\*\+\?\^\|\\]/.test(term)) {
+        try {
+          regex = new RegExp(term, 'gi');
+        } catch (_) {
+          regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        }
+      } else {
+        regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      }
       regex.lastIndex = 0;
       let m;
       while ((m = regex.exec(text)) !== null) {
@@ -752,13 +823,15 @@ function findConfidentialTerms(text, terms) {
 
 function findHighEntropyTokens(text, alreadyFoundRanges) {
   const results = [];
-  const tokens = text.split(/[\s,;:\n\r\t/"'`()\[\]{}<>|\\]+/);
-  for (const token of tokens) {
+  const tokenRe = /[^\s,;:\n\r\t/"'`()\[\]{}<>|\\]+/g;
+  let m;
+  while ((m = tokenRe.exec(text)) !== null) {
+    const token = m[0];
     if (!isHighEntropyToken(token)) continue;
-    const tokenStart = text.indexOf(token);
-    if (tokenStart === -1) continue;
+    const tokenStart = m.index;
+    const tokenEnd = tokenStart + token.length;
     const overlaps = alreadyFoundRanges.some(
-      (r) => tokenStart >= r.start && tokenStart < r.end
+      (r) => !(tokenEnd <= r.start || tokenStart >= r.end)
     );
     if (overlaps) continue;
     results.push({
@@ -766,7 +839,7 @@ function findHighEntropyTokens(text, alreadyFoundRanges) {
       name: 'High-entropy token (possible secret)',
       match: token,
       start: tokenStart,
-      end: tokenStart + token.length,
+      end: tokenEnd,
     });
   }
   return results;
@@ -784,10 +857,12 @@ function deduplicateFindings(findings) {
   // Separate bulk findings (they span the whole text)
   const bulkFindings = findings.filter(f => f.id && f.id.startsWith("bulk_"));
   const normalFindings = findings.filter(f => !(f.id && f.id.startsWith("bulk_")));
-  const categoryOrder = { api_key: 4, password: 4, pii: 3, confidential: 2 };
-  const sorted = normalFindings.sort(
-    (a, b) => (categoryOrder[b.category] || 0) - (categoryOrder[a.category] || 0)
-  );
+  const categoryOrder = { api_key: 4, password: 4, company: 3, pii: 3, confidential: 2 };
+  const sorted = normalFindings.sort((a, b) => {
+    const orderDiff = (categoryOrder[b.category] || 0) - (categoryOrder[a.category] || 0);
+    if (orderDiff !== 0) return orderDiff;
+    return (b.end - b.start) - (a.end - a.start);
+  });
   const kept = [];
   for (const f of sorted) {
     const overlaps = kept.some((k) => !(f.end <= k.start || f.start >= k.end));
@@ -800,8 +875,11 @@ function deduplicateFindings(findings) {
  * Build highlight ranges suitable for DOM insertion.
  */
 function getHighlightRanges(findings) {
-  const categoryOrder = { api_key: 4, password: 4, pii: 3, confidential: 2 };
-  const sorted = [...findings].sort(
+  if (!findings || findings.length === 0) return [];
+  // Filter out bulk findings since they span the entire text (0..length)
+  const nonBulk = findings.filter(f => !f.isBulk && !(f.id && f.id.startsWith('bulk_')));
+  const categoryOrder = { api_key: 4, password: 4, pii: 3, company: 3, confidential: 2 };
+  const sorted = [...nonBulk].sort(
     (a, b) => (categoryOrder[b.category] || 0) - (categoryOrder[a.category] || 0)
   );
   const ranges = [];
@@ -819,16 +897,20 @@ function getHighlightRanges(findings) {
  * @returns {{redacted: string, replacements: Array<{start:number, end:number, category:string, originalMasked:string, placeholder:string}>}}
  */
 function autoRedact(text, findings) {
-  if (!findings || findings.length === 0) return { redacted: text, replacements: [] };
+  if (!text || !findings || findings.length === 0) return { redacted: text, replacements: [] };
+
+  // Filter out bulk meta-findings — they describe dataset aggregations, not replace-in-place spans
+  const nonBulk = findings.filter(f => !f.isBulk && !(f.id && f.id.startsWith('bulk_')));
+  if (nonBulk.length === 0) return { redacted: text, replacements: [] };
 
   // Sort by start position descending so we can safely splice
-  const sorted = [...findings].sort((a, b) => b.start - a.start);
+  const sorted = [...nonBulk].sort((a, b) => b.start - a.start);
   let redacted = text;
   const replacements = [];
 
   for (const f of sorted) {
     const placeholder = PLACEHOLDERS[f.category] || `[REDACTED]`;
-    const originalMasked = f.matchMasked || f.match.substring(0, 8) + '…';
+    const originalMasked = f.matchMasked || (f.match ? f.match.substring(0, 8) + '…' : '[REDACTED]');
     const actualStart = Math.min(f.start, redacted.length);
     const actualEnd = Math.min(f.end, redacted.length);
     if (actualStart >= actualEnd) continue;
@@ -1030,38 +1112,89 @@ function analyzePrompt(text, options = {}) {
     enableObfuscationDetection = true,
     enableBase64Scan = true,
     compliancePresets = [],
+    customRegex = [],
+    enableApiKeyDetection = true,
+    enablePiiDetection = true,
+    enablePasswordDetection = true,
+    enableConfidentialDetection = true,
   } = options;
-
-  // ── SENTINEL: Normalize obfuscated text ─────────────────────────────────────
-  const normalizedText = enableObfuscationDetection ? normalizeObfuscated(text) : text;
-  // Run detection on BOTH original and normalized (to preserve offsets for original)
-  const textToScan = normalizedText !== text ? normalizedText : text;
 
   const allFindings = [];
   const categoriesFound = new Set();
 
-  for (const rule of API_KEY_PATTERNS) {
-    for (const m of findMatches(textToScan, rule)) {
-      // Luhn-check credit card patterns
-      if (rule.id === 'credit_card' || rule.id === 'credit_card_spaced') {
-        if (!luhnCheck(m.match)) continue;
+  function rangesOverlap(a, b) {
+    return Math.max(a.start, b.start) < Math.min(a.end, b.end);
+  }
+
+  function addFinding(candidate) {
+    for (let i = 0; i < allFindings.length; i++) {
+      const existing = allFindings[i];
+      if (existing.category === candidate.category && rangesOverlap(existing, candidate)) {
+        if ((candidate.end - candidate.start) > (existing.end - existing.start)) {
+          allFindings[i] = candidate;
+        }
+        return;
       }
-      allFindings.push({ category: 'api_key', ...m, matchMasked: maskSecret(m.match), severity: 'critical' });
-      categoriesFound.add('api_key');
+    }
+    allFindings.push(candidate);
+    categoriesFound.add(candidate.category);
+  }
+
+  // Compile custom regex rules if provided
+  const customRegexList = (Array.isArray(customRegex) ? customRegex : (typeof customRegex === 'string' ? customRegex.split('\n') : []))
+    .map(r => typeof r === 'string' ? r.trim() : r)
+    .filter(Boolean);
+
+  const compiledCustomRules = [];
+  for (const cr of customRegexList) {
+    try {
+      if (cr instanceof RegExp) {
+        compiledCustomRules.push({
+          id: 'custom_regex',
+          name: 'Custom Pattern Match',
+          pattern: new RegExp(cr.source, cr.flags.includes('g') ? cr.flags : cr.flags + 'g')
+        });
+      } else {
+        const slashMatch = cr.match(/^\/(.+)\/([a-z]*)$/);
+        if (slashMatch) {
+          const flags = slashMatch[2].includes('g') ? slashMatch[2] : slashMatch[2] + 'g';
+          compiledCustomRules.push({
+            id: 'custom_regex',
+            name: `Custom Pattern: ${slashMatch[1]}`,
+            pattern: new RegExp(slashMatch[1], flags)
+          });
+        } else {
+          compiledCustomRules.push({
+            id: 'custom_regex',
+            name: `Custom Pattern: ${cr}`,
+            pattern: new RegExp(cr, 'gi')
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Pass 1: Scan un-normalized original text
+  if (enableApiKeyDetection) {
+    for (const rule of API_KEY_PATTERNS) {
+      for (const m of findMatches(text, rule)) {
+        addFinding({ category: 'api_key', ...m, matchMasked: maskSecret(m.match), severity: 'critical' });
+      }
     }
   }
 
-  for (const rule of PASSWORD_PATTERNS) {
-    for (const m of findMatches(textToScan, rule)) {
-      allFindings.push({ category: 'password', ...m, matchMasked: maskSecret(m.match), severity: 'critical' });
-      categoriesFound.add('password');
+  if (enablePasswordDetection) {
+    for (const rule of PASSWORD_PATTERNS) {
+      for (const m of findMatches(text, rule)) {
+        addFinding({ category: 'password', ...m, matchMasked: maskSecret(m.match), severity: 'critical' });
+      }
     }
   }
 
   // Company/Employee details detection
   for (const rule of COMPANY_PATTERNS) {
-    for (const m of findMatches(textToScan, rule)) {
-      allFindings.push({
+    for (const m of findMatches(text, rule)) {
+      addFinding({
         category: 'company',
         id: rule.id,
         name: rule.name,
@@ -1069,34 +1202,132 @@ function analyzePrompt(text, options = {}) {
         start: m.start,
         end: m.end,
         matchMasked: maskSecret(m.match),
+        severity: rule.id === 'internal_tool' ? 'info' : 'warning',
+      });
+    }
+  }
+
+  if (enablePiiDetection) {
+    for (const rule of PII_PATTERNS) {
+      for (const m of findMatches(text, rule)) {
+        if (rule.id === 'credit_card' || rule.id === 'credit_card_spaced') {
+          if (!luhnCheck(m.match)) continue;
+        }
+        addFinding({ category: 'pii', ...m, matchMasked: maskSecret(m.match), severity: 'warning' });
+      }
+    }
+  }
+
+  if (enableConfidentialDetection) {
+    const confMatches = findConfidentialTerms(text, confidentialTerms);
+    for (const m of confMatches) {
+      addFinding({
+        category: 'confidential', ...m,
+        matchMasked: `[confidential: ${m.match.substring(0, 4)}…]`,
+        severity: 'info',
+      });
+    }
+  }
+
+  for (const rule of compiledCustomRules) {
+    for (const m of findMatches(text, rule)) {
+      addFinding({
+        category: 'confidential',
+        id: 'custom_regex',
+        name: rule.name,
+        match: m.match,
+        start: m.start,
+        end: m.end,
+        matchMasked: maskSecret(m.match),
         severity: 'warning',
       });
-      categoriesFound.add('company');
     }
   }
 
-  for (const rule of PII_PATTERNS) {
-    for (const m of findMatches(textToScan, rule)) {
-      // Luhn-check credit card PAN PII patterns too
-      if (rule.id === 'credit_card' || rule.id === 'credit_card_spaced') {
-        if (!luhnCheck(m.match)) continue;
+  // Pass 2: Normalized scan with exact character coordinate mapping
+  if (enableObfuscationDetection) {
+    const { normalized, indexMap } = normalizeObfuscatedWithMap(text);
+    if (normalized !== text && indexMap.length > 0) {
+      const mapMatchToOrig = (m, rule, category) => {
+        if (m.start >= indexMap.length || m.end - 1 >= indexMap.length) return null;
+        const origStart = indexMap[m.start];
+        const origEnd = indexMap[m.end - 1] + 1;
+        const origMatch = text.substring(origStart, origEnd);
+
+        // Filter false-positive phone matches on space-separated single digits
+        if ((rule.id === 'us_phone' || rule.id === 'int_phone') && /^\d(?:\s+\d)+$/.test(origMatch.trim())) {
+          return null;
+        }
+        // Luhn check credit cards
+        if ((rule.id === 'credit_card' || rule.id === 'credit_card_spaced') && !luhnCheck(origMatch)) {
+          return null;
+        }
+
+        return {
+          category,
+          id: rule.id,
+          name: rule.name || (category === 'confidential' ? `Confidential term: ${origMatch}` : rule.id),
+          match: origMatch,
+          start: origStart,
+          end: origEnd,
+          matchMasked: category === 'confidential' ? `[confidential: ${origMatch.substring(0, 4)}…]` : maskSecret(origMatch),
+          severity: category === 'api_key' || category === 'password' ? 'critical' : (category === 'confidential' ? 'info' : 'warning'),
+        };
+      };
+
+      if (enableApiKeyDetection) {
+        for (const rule of API_KEY_PATTERNS) {
+          for (const m of findMatches(normalized, rule)) {
+            const mapped = mapMatchToOrig(m, rule, 'api_key');
+            if (mapped) addFinding(mapped);
+          }
+        }
       }
-      allFindings.push({ category: 'pii', ...m, matchMasked: maskSecret(m.match), severity: 'warning' });
-      categoriesFound.add('pii');
+
+      if (enablePasswordDetection) {
+        for (const rule of PASSWORD_PATTERNS) {
+          for (const m of findMatches(normalized, rule)) {
+            const mapped = mapMatchToOrig(m, rule, 'password');
+            if (mapped) addFinding(mapped);
+          }
+        }
+      }
+
+      for (const rule of COMPANY_PATTERNS) {
+        for (const m of findMatches(normalized, rule)) {
+          const mapped = mapMatchToOrig(m, rule, 'company');
+          if (mapped) addFinding(mapped);
+        }
+      }
+
+      if (enablePiiDetection) {
+        for (const rule of PII_PATTERNS) {
+          for (const m of findMatches(normalized, rule)) {
+            const mapped = mapMatchToOrig(m, rule, 'pii');
+            if (mapped) addFinding(mapped);
+          }
+        }
+      }
+
+      if (enableConfidentialDetection) {
+        for (const m of findConfidentialTerms(normalized, confidentialTerms)) {
+          const mapped = mapMatchToOrig(m, { id: 'confidential', name: `Confidential term: ${m.match}` }, 'confidential');
+          if (mapped) addFinding(mapped);
+        }
+      }
+
+      for (const rule of compiledCustomRules) {
+        for (const m of findMatches(normalized, rule)) {
+          const mapped = mapMatchToOrig(m, rule, 'confidential');
+          if (mapped) addFinding(mapped);
+        }
+      }
     }
   }
 
-  const confMatches = findConfidentialTerms(textToScan, confidentialTerms);
-  for (const m of confMatches) {
-    allFindings.push({
-      category: 'confidential', ...m,
-      matchMasked: `[confidential: ${m.match.substring(0, 4)}…]`,
-      severity: 'info',
-    });
-    categoriesFound.add('confidential');
-  }
+  const textToScan = text;
 
-  if (enableEntropyDetection) {
+  if (enableApiKeyDetection && enableEntropyDetection) {
     const knownRanges = allFindings.map(f => ({ start: f.start, end: f.end }));
     const entropyMatches = findHighEntropyTokens(textToScan, knownRanges);
     for (const m of entropyMatches) {
@@ -1110,7 +1341,7 @@ function analyzePrompt(text, options = {}) {
   }
 
   // ── SENTINEL: Base64 decode-and-scan ──────────────────────────────────────
-  if (enableBase64Scan) {
+  if (enableApiKeyDetection && enableBase64Scan) {
     const knownRanges = allFindings.map(f => ({ start: f.start, end: f.end }));
     const b64Findings = scanBase64Content(textToScan, knownRanges);
     for (const f of b64Findings) {
@@ -1144,7 +1375,7 @@ function analyzePrompt(text, options = {}) {
   const severityOrder = { info: 0, warning: 1, critical: 2 };
 
   for (const f of deduped) {
-    let score = CATEGORY_SCORES[f.category] || 10;
+    let score = (f.id === 'internal_tool') ? 10 : (CATEGORY_SCORES[f.category] || 10);
     if (isEducational && (f.category === 'api_key' || f.category === 'password')) {
       score = Math.round(score * CONTEXT_MODIFIERS.educational);
     }
@@ -1181,7 +1412,7 @@ function analyzePrompt(text, options = {}) {
     riskScore,
     shouldBlock,
     hasCritical,
-    categories: Array.from(categoriesFound),
+    categories: Array.from(new Set(deduped.map(f => f.category))),
     context: isEducational ? 'educational' : 'clean',
     severity: maxSeverity,
     explanations,
@@ -1230,15 +1461,6 @@ function saveFalsePositive(pattern) {
   });
 }
 
-/**
- * Check if text matches any learned false positive pattern.
- * @param {string} text
- * @param {string} domain
- * @returns {Array<{text: string, category: string, match: string}>}
- */
-function checkLearnedFalsePositives(text, domain) {
-  return []; // Simplified for now - would need async loading
-}
 
 // ─── Export ──────────────────────────────────────────────────────────────────
 
@@ -1251,6 +1473,7 @@ if (typeof window !== 'undefined') {
     entropy: shannonEntropy,
     compliance: COMPLIANCE_PRESETS,
     normalize: normalizeObfuscated,
+    normalizeWithMap: normalizeObfuscatedWithMap,
     onBlock: null, // set by content script
   };
 }
@@ -1271,6 +1494,7 @@ if (typeof module !== 'undefined' && module.exports) {
     loadLearnedPatterns,
     saveFalsePositive,
     normalizeObfuscated,
+    normalizeObfuscatedWithMap,
     scanBase64Content,
     applyCompliancePresets,
     luhnCheck,

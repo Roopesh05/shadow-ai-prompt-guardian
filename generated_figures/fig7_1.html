@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.diagram-box {
+    border: 1.5px solid #0f172a;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.node {
+    fill: #f8fafc;
+    stroke: #334155;
+    stroke-width: 1.5;
+}
+.node-accent {
+    fill: #eff6ff;
+    stroke: #2563eb;
+    stroke-width: 2;
+}
+.node-danger {
+    fill: #fef2f2;
+    stroke: #dc2626;
+    stroke-width: 2;
+}
+.node-success {
+    fill: #f0fdf4;
+    stroke: #16a34a;
+    stroke-width: 2;
+}
+.node-purple {
+    fill: #faf5ff;
+    stroke: #9333ea;
+    stroke-width: 2;
+}
+.txt-title {
+    font-size: 13px;
+    font-weight: bold;
+    fill: #0f172a;
+    text-anchor: middle;
+}
+.txt-sub {
+    font-size: 11px;
+    fill: #475569;
+    text-anchor: middle;
+}
+.arrow {
+    stroke: #475569;
+    stroke-width: 1.5;
+    fill: none;
+    marker-end: url(#arrowhead);
+}
+.arrow-dash {
+    stroke: #2563eb;
+    stroke-width: 1.5;
+    stroke-dasharray: 4,3;
+    fill: none;
+    marker-end: url(#arrowhead-blue);
+}
+</style>
+</head>
+<body>
+<div class="diagram-box">
+<svg width="840" height="520" viewBox="0 0 840 520">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- Layer 1: Presentation / Web Applications -->
+  <rect x="30" y="20" width="780" height="70" rx="8" class="node" style="fill:#f8fafc; stroke:#94a3b8;" />
+  <text x="180" y="42" class="txt-title" style="text-anchor:start;">LAYER 1: USER INTERACTION &amp; AI PLATFORM INTERFACES</text>
+  <rect x="50" y="52" width="130" height="28" rx="4" class="node-accent" /><text x="115" y="70" class="txt-sub">ChatGPT Web UI</text>
+  <rect x="200" y="52" width="130" height="28" rx="4" class="node-accent" /><text x="265" y="70" class="txt-sub">Claude.ai Web UI</text>
+  <rect x="350" y="52" width="130" height="28" rx="4" class="node-accent" /><text x="415" y="70" class="txt-sub">Google Gemini UI</text>
+  <rect x="500" y="52" width="130" height="28" rx="4" class="node-accent" /><text x="565" y="70" class="txt-sub">Microsoft Copilot</text>
+  <rect x="650" y="52" width="140" height="28" rx="4" class="node-accent" /><text x="720" y="70" class="txt-sub">Perplexity / Grok / Poe</text>
+
+  <!-- Layer 2: Deep Interception Pipeline -->
+  <rect x="30" y="115" width="780" height="80" rx="8" class="node-purple" />
+  <text x="180" y="137" class="txt-title" style="text-anchor:start; fill:#6b21a8;">LAYER 2: DEEP INTERCEPTION PIPELINE (MANIFEST V3 CONTENT SCRIPT)</text>
+  <rect x="50" y="148" width="165" height="34" rx="4" class="node" /><text x="132" y="169" class="txt-sub">DOM Keystroke / Enter Trap</text>
+  <rect x="235" y="148" width="165" height="34" rx="4" class="node" /><text x="317" y="169" class="txt-sub">MutationObserver (Buttons)</text>
+  <rect x="420" y="148" width="175" height="34" rx="4" class="node" /><text x="507" y="169" class="txt-sub">Window.fetch Capture Hook</text>
+  <rect x="615" y="148" width="175" height="34" rx="4" class="node" /><text x="702" y="169" class="txt-sub">XMLHttpRequest Hook (XHR)</text>
+
+  <!-- Layer 3: Core Multi-Layer Detection Engine -->
+  <rect x="30" y="220" width="780" height="110" rx="8" class="node-accent" />
+  <text x="180" y="242" class="txt-title" style="text-anchor:start; fill:#1e40af;">LAYER 3: CORE MULTI-LAYER DETECTION &amp; HEURISTIC ENGINE</text>
+  <rect x="50" y="255" width="160" height="60" rx="4" class="node" />
+  <text x="130" y="278" class="txt-title" style="font-size:11px;">Known Secrets</text>
+  <text x="130" y="295" class="txt-sub">AWS, OpenAI, GitHub</text>
+  <text x="130" y="308" class="txt-sub">Stripe, Slack, Azure</text>
+
+  <rect x="230" y="255" width="160" height="60" rx="4" class="node" />
+  <text x="310" y="278" class="txt-title" style="font-size:11px;">Shannon Entropy</text>
+  <text x="310" y="295" class="txt-sub">Information Entropy (H)</text>
+  <text x="310" y="308" class="txt-sub">Random High-Entropy Keys</text>
+
+  <rect x="410" y="255" width="160" height="60" rx="4" class="node" />
+  <text x="490" y="278" class="txt-title" style="font-size:11px;">PII Recognition</text>
+  <text x="490" y="295" class="txt-sub">SSN, Phone, Email</text>
+  <text x="490" y="308" class="txt-sub">Luhn Credit Cards</text>
+
+  <rect x="590" y="255" width="200" height="60" rx="4" class="node" />
+  <text x="690" y="278" class="txt-title" style="font-size:11px;">Confidential Terms &amp; Risk</text>
+  <text x="690" y="295" class="txt-sub">Project Codenames, NDA</text>
+  <text x="690" y="308" class="txt-sub">Weighted Risk Evaluator</text>
+
+  <!-- Layer 4: Enforcement & Remediation -->
+  <rect x="30" y="355" width="780" height="75" rx="8" class="node-danger" />
+  <text x="180" y="377" class="txt-title" style="text-anchor:start; fill:#991b1b;">LAYER 4: ENFORCEMENT, REMEDIATION &amp; UI NOTIFICATION</text>
+  <rect x="50" y="388" width="225" height="30" rx="4" class="node" /><text x="162" y="407" class="txt-sub">Glassmorphism Interception Modal</text>
+  <rect x="300" y="388" width="225" height="30" rx="4" class="node" /><text x="412" y="407" class="txt-sub">Reverse-Splice Auto-Redaction</text>
+  <rect x="550" y="388" width="240" height="30" rx="4" class="node" /><text x="670" y="407" class="txt-sub">Inline Coordinate Highlighting</text>
+
+  <!-- Layer 5: Local Storage & Security -->
+  <rect x="30" y="450" width="780" height="55" rx="8" class="node-success" />
+  <text x="180" y="470" class="txt-title" style="text-anchor:start; fill:#166534;">LAYER 5: ZERO-TRUST LOCAL PERSISTENCE (100% CLIENT-SIDE STORAGE)</text>
+  <text x="420" y="492" class="txt-sub">&bull; Masked Audit Log &bull; Custom Regex Rules &bull; Domain Whitelist &bull; Zero Remote Telemetry &bull; chrome.storage.local</text>
+
+  <!-- Inter-layer connecting arrows -->
+  <path d="M 420 90 L 420 115" class="arrow" />
+  <path d="M 420 195 L 420 220" class="arrow" />
+  <path d="M 420 330 L 420 355" class="arrow" />
+  <path d="M 420 430 L 420 450" class="arrow" />
+</svg>
+</div>
+</body>
+</html>

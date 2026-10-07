@@ -15,6 +15,10 @@ const {
   getFindingExplanation,
   detectBulkData,
   SEVERITY_LEVELS,
+  autoRedact,
+  normalizeObfuscatedWithMap,
+  luhnCheck,
+  applyCompliancePresets,
 } = require('../js/detection-engine.js');
 
 let passed = 0;
@@ -401,6 +405,128 @@ if (pwdExpl) {
   // Verify it does NOT contain the actual password
   assert(!pwdExpl.locationHint.includes('MyP@ssword'), 'Location hint does NOT contain raw password');
 }
+
+// ═══════════════════════════════════════════════════════════════
+// Feature 5: Obfuscation Coordinate Mapping & Leak Prevention Tests
+// ═══════════════════════════════════════════════════════════════
+
+console.log('\n═══ Feature 5: Obfuscation Coordinate Mapping Tests ═══');
+
+// 35. normalizeObfuscatedWithMap produces accurate index mapping
+console.log('\n── normalizeObfuscatedWithMap index mapping ──');
+const mapTest = normalizeObfuscatedWithMap('A\u200BB');
+assert(mapTest.normalized === 'AB', 'Invisible char stripped in normalized string');
+assert(mapTest.indexMap.length === 2, 'indexMap length matches normalized string');
+assert(mapTest.indexMap[0] === 0 && mapTest.indexMap[1] === 2, 'indexMap correctly maps past stripped char');
+
+// 36. Zero-width character inside AWS key does not leak trailing character
+console.log('\n── Zero-width secret auto-redaction ──');
+const zwPrompt = 'Hello AKIA\u200BIOSFODNN7EXAMPLE world';
+const zwResult = analyzePrompt(zwPrompt);
+assert(zwResult.findings.length === 1, 'Zero-width AWS key detected');
+assert(zwResult.findings[0].match === 'AKIA\u200BIOSFODNN7EXAMPLE', 'Finding captures exact span including zero-width char');
+const zwRedacted = autoRedact(zwPrompt, zwResult.findings);
+assert(zwRedacted.redacted === 'Hello [API_KEY] world', 'No trailing character leaked during redaction of zero-width secret');
+
+// 37. Character-spaced token fully redacted without trailing remnants
+console.log('\n── Character-spaced secret auto-redaction ──');
+const spacedPrompt = 'Key is s k - p r o j - 1 2 3 4 5 6 7 8 9 0 a b c d e f g h i j k l m n o p q r s t u v w x y z thanks';
+const spacedResult = analyzePrompt(spacedPrompt);
+assert(spacedResult.findings.length === 1, 'Character-spaced OpenAI key detected');
+assert(spacedResult.findings[0].match.startsWith('s k - p r o j -'), 'Match covers character-spaced token in original text');
+const spacedRedacted = autoRedact(spacedPrompt, spacedResult.findings);
+assert(spacedRedacted.redacted === 'Key is [API_KEY] thanks', 'Entire character-spaced secret redacted cleanly without remnants');
+
+// 38. Spaced numeric list does not falsely trigger bulk phone PII
+console.log('\n── Spaced digits false positive prevention ──');
+const digitsPrompt = 'Sequence: 1 2 3 4 5 6 7 8 9 0 and 0 9 8 7 6 5 4 3 2 1';
+const digitsResult = analyzePrompt(digitsPrompt);
+assert(digitsResult.findings.length === 0, 'Spaced digits not falsely flagged as phone or bulk PII');
+assert(!digitsResult.shouldBlock, 'Spaced digits prompt not blocked');
+
+// ═══════════════════════════════════════════════════════════════
+// Feature 6: Senior Engineering Audit & Regression Tests (BUG-005, BUG-006, BUG-012, BUG-013, BUG-015)
+// ═══════════════════════════════════════════════════════════════
+
+console.log('\n═══ Feature 6: Senior Engineering Audit & Regression Tests ═══');
+
+// BUG-005: Duplicate high-entropy tokens auto-redaction
+console.log('\n── Duplicate high-entropy tokens auto-redaction (BUG-005) ──');
+const dupSecret = '9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c';
+const dupPrompt = `Token 1: ${dupSecret} and Token 2: ${dupSecret}`;
+const dupResult = analyzePrompt(dupPrompt);
+assert(dupResult.findings.length >= 2, 'Detects both occurrences of duplicate high-entropy token');
+assert(dupResult.findings[0].start !== dupResult.findings[1].start, 'Offsets of duplicate tokens are distinct');
+const dupRedacted = autoRedact(dupPrompt, dupResult.findings);
+assert(!dupRedacted.redacted.includes(dupSecret), 'Both occurrences of high-entropy token are completely redacted');
+assert(dupRedacted.replacements.length >= 2, 'Replacement count reflects both redacted instances');
+
+// BUG-006: Bulk PII auto-redaction without prompt corruption
+console.log('\n── Bulk PII auto-redaction without text corruption (BUG-006) ──');
+const bulkEmailsList = [
+  'alpha@example.com',
+  'beta@example.com',
+  'gamma@example.com',
+  'delta@example.com',
+  'epsilon@example.com',
+  'zeta@example.com'
+];
+const bulkRosterPrompt = `Recipient roster:\n${bulkEmailsList.join('\n')}\nPlease send invitations.`;
+const bulkRosterResult = analyzePrompt(bulkRosterPrompt);
+assert(bulkRosterResult.findings.some(f => f.isBulk), 'Bulk PII finding detected');
+const bulkRosterRedacted = autoRedact(bulkRosterPrompt, bulkRosterResult.findings);
+assert(!bulkRosterRedacted.redacted.includes('[REDACTED]ED]'), 'Redacted text does not contain corrupted repeated tags');
+for (const em of bulkEmailsList) {
+  assert(!bulkRosterRedacted.redacted.includes(em), `Email ${em} was redacted`);
+}
+assert(bulkRosterRedacted.redacted.includes('Please send invitations.'), 'Trailing non-sensitive prompt text preserved');
+
+// BUG-012: Deduped findings category accuracy
+console.log('\n── Deduped findings category reflection (BUG-012) ──');
+const dedupPrompt = 'Contact me at admin@corp.internal';
+const dedupResult = analyzePrompt(dedupPrompt);
+assert(dedupResult.categories.includes('pii'), 'Active category pii is present');
+assert(dedupResult.categories.every(cat => dedupResult.findings.some(f => f.category === cat)), 'All reported categories exist in deduplicated findings');
+
+// BUG-013: Git commit hash false-positive prevention
+console.log('\n── Git commit hash false-positive prevention (BUG-013) ──');
+const gitPrompt = 'Check out commit 9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e in repository';
+const gitResult = analyzePrompt(gitPrompt);
+assert(!gitResult.findings.some(f => f.name && f.name.includes('Azure')), '40-char git commit hash not flagged as Azure key');
+assert(!gitResult.findings.some(f => f.name && f.name.includes('Twilio')), '40-char git commit hash not flagged as Twilio token');
+
+const shaPrompt = 'SHA256 checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+const shaResult = analyzePrompt(shaPrompt);
+assert(!shaResult.findings.some(f => f.name && f.name.includes('Azure')), '64-char sha256 hash not flagged as Azure key');
+
+// BUG-015: Luhn check & PCI-DSS compliance preset
+console.log('\n── Luhn check and PCI-DSS compliance validation (BUG-015) ──');
+assert(luhnCheck('4532015112830366'), 'Valid Visa card passes Luhn check');
+assert(!luhnCheck('4532015112830367'), 'Invalid card fails Luhn check');
+assert(!luhnCheck('1234567812345678'), 'Arbitrary 16-digit number fails Luhn check');
+
+const pciValidPrompt = 'Token: 4532015112830366';
+const pciValidFindings = applyCompliancePresets(pciValidPrompt, ['pci_dss']);
+assert(pciValidFindings.findings.length > 0, 'PCI-DSS preset detects valid Luhn PAN');
+
+const pciInvalidPrompt = 'Token: 4532015112830367';
+const pciInvalidFindings = applyCompliancePresets(pciInvalidPrompt, ['pci_dss']);
+assert(pciInvalidFindings.findings.length === 0, 'PCI-DSS preset rejects invalid Luhn PAN');
+
+// BUG-016: Custom regex & Category toggle support
+console.log('\n── Custom regex and Category toggle validation (BUG-016) ──');
+const customRegexPrompt = 'Internal database ID is CUST-SEC-998811.';
+const resCustom = analyzePrompt(customRegexPrompt, { customRegex: ['CUST-SEC-\\d+'] });
+assert(resCustom.findings.length > 0, 'Custom regex matches user-specified pattern');
+assert(resCustom.categories.includes('confidential'), 'Custom regex categorized as confidential');
+
+const piiDisabledPrompt = 'Contact me at alice@example.com';
+const resPiiDisabled = analyzePrompt(piiDisabledPrompt, { enablePiiDetection: false });
+assert(resPiiDisabled.findings.length === 0, 'PII detection toggled off suppresses email detection');
+
+const apiKeyDisabledPrompt = 'Key is AKIAIOSFODNN7EXAMPLE';
+const resKeyDisabled = analyzePrompt(apiKeyDisabledPrompt, { enableApiKeyDetection: false });
+assert(resKeyDisabled.findings.length === 0, 'API key detection toggled off suppresses AWS key detection');
 
 // ─── Summary ─────────────────────────────────────────────────────────────────
 

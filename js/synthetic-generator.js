@@ -130,6 +130,7 @@
     }
 
     var sorted = findings.filter(function (f) {
+      if (f.isBulk || (f.id && String(f.id).startsWith('bulk_'))) return false;
       var s = typeof f.start === 'number' ? f.start : f.startIndex;
       var e = typeof f.end === 'number' ? f.end : f.endIndex;
       return typeof s === 'number' && typeof e === 'number' && e > s;

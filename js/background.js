@@ -59,7 +59,7 @@ chrome.storage.local.get(['sapg_audit_chain', 'sapg_session_metrics'], (res) => 
 
 async function appendAuditEntry(entry) {
   try {
-    const result = await new Promise(res => chrome.storage.local.get(['sapg_audit_chain', 'sapg_audit_log'], res));
+    const result = await new Promise(res => chrome.storage.local.get(['sapg_audit_chain', 'sapg_audit_log', 'sapg_blockedAttempts'], res));
     _chainHash = result.sapg_audit_chain || _chainHash;
     const log = result.sapg_audit_log || [];
     const payload = JSON.stringify({ prev: _chainHash, ts: entry.timestamp, cats: entry.categories, score: entry.riskScore });
@@ -68,8 +68,21 @@ async function appendAuditEntry(entry) {
     _chainHash = newHash;
     log.unshift(chainedEntry);
     if (log.length > 200) log.splice(200);
-    await new Promise(res => chrome.storage.local.set({ sapg_audit_chain: _chainHash, sapg_audit_log: log }, res));
-  } catch (_) {}
+
+    const attempts = (result && result.sapg_blockedAttempts) || [];
+    attempts.unshift(chainedEntry);
+    if (attempts.length > 50) attempts.splice(50);
+
+    await new Promise(res => chrome.storage.local.set({
+      sapg_audit_chain: _chainHash,
+      sapg_audit_log: log,
+      sapg_blockedAttempts: attempts,
+      sapg_session_metrics: sessionMetrics,
+    }, res));
+    return chainedEntry;
+  } catch (_) {
+    return entry;
+  }
 }
 
 // ─── Session Metrics ──────────────────────────────────────────────────────────
@@ -81,6 +94,17 @@ const sessionMetrics = {
   exposureScore: 0,
   startTime: Date.now(),
 };
+
+// Rehydrate metrics on service worker startup
+try {
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+    chrome.storage.local.get(['sapg_session_metrics'], (res) => {
+      if (res && res.sapg_session_metrics) {
+        Object.assign(sessionMetrics, res.sapg_session_metrics);
+      }
+    });
+  }
+} catch (_) {}
 
 function saveMetrics() {
   try {
@@ -103,7 +127,12 @@ function updateMetrics(result, blocked) {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'SAPG_GET_METRICS') {
-    sendResponse({ metrics: sessionMetrics });
+    chrome.storage.local.get(['sapg_session_metrics'], (res) => {
+      if (res && res.sapg_session_metrics) {
+        Object.assign(sessionMetrics, res.sapg_session_metrics);
+      }
+      sendResponse({ metrics: sessionMetrics });
+    });
     return true;
   }
   if (msg.type === 'SAPG_BLOCK_OCCURRED') {
@@ -121,19 +150,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       bulkMessages: result.bulkMessages || [],
       platform: msg.platform || 'unknown',
     };
-    appendAuditEntry(entry);
-
-    // Persist directly to sapg_blockedAttempts for immediate popup/options rendering
-    try {
-      chrome.storage.local.get(['sapg_blockedAttempts'], (r) => {
-        const attempts = (r && r.sapg_blockedAttempts) || [];
-        attempts.unshift(entry);
-        if (attempts.length > 50) attempts.splice(50);
-        chrome.storage.local.set({ sapg_blockedAttempts: attempts });
-      });
-    } catch (_) {}
-
-    sendResponse({ ok: true });
+    appendAuditEntry(entry).then((chained) => {
+      sendResponse({ ok: true, entry: chained });
+    }).catch(() => {
+      sendResponse({ ok: true, entry });
+    });
     return true;
   }
   if (msg.type === 'SAPG_CLEAN_PROMPT') {
@@ -153,7 +174,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg.type === 'SAPG_RESET_EXPOSURE') {
+    sessionMetrics.promptsChecked = 0;
+    sessionMetrics.promptsBlocked = 0;
+    sessionMetrics.riskHistory = [];
     sessionMetrics.exposureScore = 0;
+    sessionMetrics.startTime = Date.now();
     saveMetrics();
     sendResponse({ ok: true });
     return true;

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.diagram-box {
+    border: 1.5px solid #0f172a;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.node {
+    fill: #f8fafc;
+    stroke: #334155;
+    stroke-width: 1.5;
+}
+.node-accent {
+    fill: #eff6ff;
+    stroke: #2563eb;
+    stroke-width: 2;
+}
+.node-danger {
+    fill: #fef2f2;
+    stroke: #dc2626;
+    stroke-width: 2;
+}
+.node-success {
+    fill: #f0fdf4;
+    stroke: #16a34a;
+    stroke-width: 2;
+}
+.node-purple {
+    fill: #faf5ff;
+    stroke: #9333ea;
+    stroke-width: 2;
+}
+.txt-title {
+    font-size: 13px;
+    font-weight: bold;
+    fill: #0f172a;
+    text-anchor: middle;
+}
+.txt-sub {
+    font-size: 11px;
+    fill: #475569;
+    text-anchor: middle;
+}
+.arrow {
+    stroke: #475569;
+    stroke-width: 1.5;
+    fill: none;
+    marker-end: url(#arrowhead);
+}
+.arrow-dash {
+    stroke: #2563eb;
+    stroke-width: 1.5;
+    stroke-dasharray: 4,3;
+    fill: none;
+    marker-end: url(#arrowhead-blue);
+}
+</style>
+</head>
+<body>
+<div class="diagram-box">
+<svg width="780" height="600" viewBox="0 0 780 600">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect x="280" y="20" width="220" height="40" rx="20" class="node" style="fill:#e0f2fe; stroke:#0284c7;" />
+  <text x="390" y="45" class="txt-title">1. User Inputs Prompt in AI UI</text>
+
+  <rect x="270" y="85" width="240" height="45" rx="6" class="node-purple" />
+  <text x="390" y="105" class="txt-title">2. Event Trapped by Content Script</text>
+  <text x="390" y="120" class="txt-sub">keydown [Enter] / submit click / fetch()</text>
+
+  <rect x="250" y="155" width="280" height="55" rx="6" class="node-accent" />
+  <text x="390" y="178" class="txt-title">3. Multi-Layer Heuristic Scanning</text>
+  <text x="390" y="196" class="txt-sub">Regex + Shannon Entropy + PII + Codenames</text>
+
+  <polygon points="390,235 480,275 390,315 300,275" class="node" style="fill:#fef3c7; stroke:#d97706;" />
+  <text x="390" y="272" class="txt-title" style="font-size:11px;">Threat Detected?</text>
+  <text x="390" y="286" class="txt-sub" style="font-size:10px;">Risk Score &gt; 0</text>
+
+  <!-- Clean Path -->
+  <rect x="570" y="250" width="180" height="50" rx="6" class="node-success" />
+  <text x="660" y="272" class="txt-title" style="fill:#166534;">Allow Submission</text>
+  <text x="660" y="288" class="txt-sub">Transparently Pass to Model</text>
+
+  <!-- Threat Path -->
+  <rect x="260" y="340" width="260" height="50" rx="6" class="node-danger" />
+  <text x="390" y="362" class="txt-title" style="fill:#991b1b;">4. Block Event &amp; Show Modal</text>
+  <text x="390" y="378" class="txt-sub">Highlight findings, display masked preview</text>
+
+  <!-- User Action Decision -->
+  <polygon points="390,415 480,455 390,495 300,455" class="node" style="fill:#fef3c7; stroke:#d97706;" />
+  <text x="390" y="452" class="txt-title" style="font-size:11px;">User Choice?</text>
+
+  <!-- Action Branches -->
+  <rect x="40" y="435" width="190" height="45" rx="6" class="node" style="fill:#fee2e2;" />
+  <text x="135" y="455" class="txt-title">Cancel / Dismiss</text>
+  <text x="135" y="470" class="txt-sub">User edits manually / aborts</text>
+
+  <rect x="270" y="525" width="240" height="55" rx="6" class="node-success" />
+  <text x="390" y="548" class="txt-title" style="fill:#166534;">Auto-Redact &amp; Submit</text>
+  <text x="390" y="565" class="txt-sub">Reverse-splice placeholders &amp; dispatch</text>
+
+  <rect x="560" y="435" width="180" height="45" rx="6" class="node" style="fill:#f1f5f9;" />
+  <text x="650" y="455" class="txt-title">Manual Override</text>
+  <text x="650" y="470" class="txt-sub">Explicit user confirmation</text>
+
+  <!-- Arrows -->
+  <path d="M 390 60 L 390 85" class="arrow" />
+  <path d="M 390 130 L 390 155" class="arrow" />
+  <path d="M 390 210 L 390 235" class="arrow" />
+  <path d="M 480 275 L 570 275" class="arrow" /><text x="515" y="267" class="txt-sub" style="fill:#16a34a; font-weight:bold;">No</text>
+  <path d="M 390 315 L 390 340" class="arrow" /><text x="400" y="332" class="txt-sub" style="fill:#dc2626; font-weight:bold;">Yes</text>
+  <path d="M 390 390 L 390 415" class="arrow" />
+  <path d="M 300 455 L 230 455" class="arrow" /><text x="255" y="447" class="txt-sub">Cancel</text>
+  <path d="M 390 495 L 390 525" class="arrow" /><text x="400" y="512" class="txt-sub" style="fill:#16a34a; font-weight:bold;">Redact</text>
+  <path d="M 480 455 L 560 455" class="arrow" /><text x="510" y="447" class="txt-sub">Override</text>
+</svg>
+</div>
+</body>
+</html>

@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-01T17:16:00.318Z",
+  "generated_at": "2026-10-07T06:39:05.693Z",
   "threshold_used": 30,
-  "total_tests": 95,
+  "total_tests": 140,
   "metrics": {
-    "total": 95,
-    "tp": 61,
-    "tn": 34,
+    "total": 140,
+    "tp": 95,
+    "tn": 45,
     "fp": 0,
     "fn": 0,
     "accuracy": 1,
@@ -14,16 +14,16 @@
     "fpr": 0,
     "f1": 1,
     "confusionMatrix": {
-      "tp": 61,
-      "tn": 34,
+      "tp": 95,
+      "tn": 45,
       "fp": 0,
       "fn": 0
     },
     "perCategory": {
       "clean": {
-        "total": 34,
+        "total": 45,
         "tp": 0,
-        "tn": 34,
+        "tn": 45,
         "fp": 0,
         "fn": 0,
         "accuracy": 1,
@@ -32,8 +32,8 @@
         "fpr": 0
       },
       "api_key": {
-        "total": 18,
-        "tp": 18,
+        "total": 30,
+        "tp": 30,
         "tn": 0,
         "fp": 0,
         "fn": 0,
@@ -43,17 +43,6 @@
         "fpr": 0
       },
       "password": {
-        "total": 11,
-        "tp": 11,
-        "tn": 0,
-        "fp": 0,
-        "fn": 0,
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "fpr": 0
-      },
-      "pii": {
         "total": 19,
         "tp": 19,
         "tn": 0,
@@ -64,9 +53,20 @@
         "recall": 1,
         "fpr": 0
       },
+      "pii": {
+        "total": 23,
+        "tp": 23,
+        "tn": 0,
+        "fp": 0,
+        "fn": 0,
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "fpr": 0
+      },
       "confidential": {
-        "total": 13,
-        "tp": 13,
+        "total": 23,
+        "tp": 23,
         "tn": 0,
         "fp": 0,
         "fn": 0,
@@ -194,11 +194,11 @@
       "expected_block": true,
       "actual_block": true,
       "correct": true,
-      "risk_score": 85,
+      "risk_score": 60,
       "findings_count": 2,
       "detected_categories": [
-        "api_key",
-        "company"
+        "company",
+        "api_key"
       ],
       "notes": "AWS access key pattern (AKIA prefix)."
     },
@@ -237,8 +237,7 @@
       "risk_score": 50,
       "findings_count": 1,
       "detected_categories": [
-        "api_key",
-        "pii"
+        "api_key"
       ],
       "notes": "Stripe test secret key."
     },
@@ -261,12 +260,11 @@
       "expected_block": true,
       "actual_block": true,
       "correct": true,
-      "risk_score": 85,
+      "risk_score": 60,
       "findings_count": 2,
       "detected_categories": [
-        "api_key",
         "company",
-        "pii"
+        "api_key"
       ],
       "notes": "Slack bot token pattern."
     },
@@ -354,7 +352,6 @@
       "risk_score": 50,
       "findings_count": 1,
       "detected_categories": [
-        "api_key",
         "password"
       ],
       "notes": "Bearer token pattern (JWT-like)."
@@ -418,8 +415,8 @@
       "risk_score": 70,
       "findings_count": 2,
       "detected_categories": [
-        "pii",
-        "confidential"
+        "confidential",
+        "pii"
       ],
       "notes": "Social Security Number."
     },
@@ -553,11 +550,11 @@
       "expected_block": true,
       "actual_block": true,
       "correct": true,
-      "risk_score": 85,
+      "risk_score": 60,
       "findings_count": 2,
       "detected_categories": [
-        "api_key",
-        "company"
+        "company",
+        "api_key"
       ],
       "notes": "AWS access key + secret key in same prompt."
     },
@@ -643,11 +640,10 @@
       "expected_block": true,
       "actual_block": true,
       "correct": true,
-      "risk_score": 70,
+      "risk_score": 65,
       "findings_count": 2,
       "detected_categories": [
         "company",
-        "pii",
         "confidential"
       ],
       "notes": "Email + confidential term 'GDPR'."
@@ -674,7 +670,6 @@
       "risk_score": 50,
       "findings_count": 1,
       "detected_categories": [
-        "pii",
         "api_key"
       ],
       "notes": "Twilio Account SID."
@@ -699,8 +694,7 @@
       "risk_score": 50,
       "findings_count": 1,
       "detected_categories": [
-        "api_key",
-        "pii"
+        "api_key"
       ],
       "notes": "Heroku API key (UUID-like pattern matched)."
     },
@@ -812,8 +806,8 @@
       "risk_score": 70,
       "findings_count": 2,
       "detected_categories": [
-        "pii",
-        "confidential"
+        "confidential",
+        "pii"
       ],
       "notes": "SSN explicitly provided."
     },
@@ -834,11 +828,11 @@
       "expected_block": true,
       "actual_block": true,
       "correct": true,
-      "risk_score": 100,
-      "findings_count": 3,
+      "risk_score": 60,
+      "findings_count": 2,
       "detected_categories": [
         "company",
-        "pii"
+        "api_key"
       ],
       "notes": "Azure API key (32-char hex pattern)."
     },
@@ -912,8 +906,7 @@
       "risk_score": 50,
       "findings_count": 1,
       "detected_categories": [
-        "api_key",
-        "pii"
+        "api_key"
       ],
       "notes": "OpenAI-style key pattern (sk- prefix)."
     },
@@ -950,8 +943,8 @@
       "risk_score": 95,
       "findings_count": 3,
       "detected_categories": [
-        "company",
-        "confidential"
+        "confidential",
+        "company"
       ],
       "notes": "Contains 'unreleased product', 'proprietary', project codename."
     },
@@ -985,11 +978,10 @@
       "expected_block": true,
       "actual_block": true,
       "correct": true,
-      "risk_score": 85,
+      "risk_score": 60,
       "findings_count": 2,
       "detected_categories": [
         "company",
-        "pii",
         "api_key"
       ],
       "notes": "Slack user token pattern."
@@ -1027,7 +1019,6 @@
       "risk_score": 50,
       "findings_count": 1,
       "detected_categories": [
-        "api_key",
         "password"
       ],
       "notes": "Bearer token with JWT-like payload."
@@ -1167,8 +1158,8 @@
       "risk_score": 100,
       "findings_count": 8,
       "detected_categories": [
-        "company",
-        "pii"
+        "pii",
+        "company"
       ],
       "notes": "Feature 2: 7 emails — bulk customer list, must block."
     },
@@ -1232,8 +1223,7 @@
       "risk_score": 100,
       "findings_count": 3,
       "detected_categories": [
-        "company",
-        "pii"
+        "company"
       ],
       "notes": "Feature 2 TN for bulk: only 3 emails — NOT bulk, but IS PII so still blocks via normal scoring."
     },
@@ -1269,6 +1259,574 @@
       "findings_count": 0,
       "detected_categories": [],
       "notes": "Feature 2 TN: aggregate business metrics, no PII."
+    },
+    {
+      "id": 96,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Algorithms and data structures question."
+    },
+    {
+      "id": 97,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Book recommendations on software architecture."
+    },
+    {
+      "id": 98,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Computer networking fundamentals."
+    },
+    {
+      "id": 99,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Baking recipe instruction."
+    },
+    {
+      "id": 100,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Mathematics and signal processing."
+    },
+    {
+      "id": 101,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Frontend web styling question."
+    },
+    {
+      "id": 102,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Educational history question."
+    },
+    {
+      "id": 103,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Software engineering design patterns."
+    },
+    {
+      "id": 104,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Certification study schedule."
+    },
+    {
+      "id": 105,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Machine learning theory explanation."
+    },
+    {
+      "id": 106,
+      "category": "clean",
+      "expected_block": false,
+      "actual_block": false,
+      "correct": true,
+      "risk_score": 0,
+      "findings_count": 0,
+      "detected_categories": [],
+      "notes": "Literature essay assistance."
+    },
+    {
+      "id": 107,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "GitLab personal access token (glpat- prefix)."
+    },
+    {
+      "id": 108,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "api_key"
+      ],
+      "notes": "Slack bot token (xoxb- prefix)."
+    },
+    {
+      "id": 109,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Google OAuth bearer token."
+    },
+    {
+      "id": 110,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Twilio Account SID (AC prefix)."
+    },
+    {
+      "id": 111,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "api_key"
+      ],
+      "notes": "Azure connection string with account key."
+    },
+    {
+      "id": 112,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Heroku API key UUID format."
+    },
+    {
+      "id": 113,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "SendGrid API key pattern."
+    },
+    {
+      "id": 114,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "HuggingFace user access token."
+    },
+    {
+      "id": 115,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 85,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "api_key"
+      ],
+      "notes": "OpenAI project-scoped API key."
+    },
+    {
+      "id": 116,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "GitHub fine-grained personal access token."
+    },
+    {
+      "id": 117,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "Generic API key assignment format."
+    },
+    {
+      "id": 118,
+      "category": "api_key",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "api_key"
+      ],
+      "notes": "High Shannon entropy token (entropy >= 4.0 bits)."
+    },
+    {
+      "id": 119,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Database password assignment."
+    },
+    {
+      "id": 120,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Bearer authorization token header."
+    },
+    {
+      "id": 121,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Basic authorization header."
+    },
+    {
+      "id": 122,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Credential file path."
+    },
+    {
+      "id": 123,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Environment variable password assignment."
+    },
+    {
+      "id": 124,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "CLI password flag parameter."
+    },
+    {
+      "id": 125,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Database client password flag."
+    },
+    {
+      "id": 126,
+      "category": "password",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 50,
+      "findings_count": 1,
+      "detected_categories": [
+        "password"
+      ],
+      "notes": "Configuration file password declaration."
+    },
+    {
+      "id": 127,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 40,
+      "findings_count": 1,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "International phone number format."
+    },
+    {
+      "id": 128,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 70,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential",
+        "pii"
+      ],
+      "notes": "Social Security Number."
+    },
+    {
+      "id": 129,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 80,
+      "findings_count": 2,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "Internal IPv4 addresses."
+    },
+    {
+      "id": 130,
+      "category": "pii",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 80,
+      "findings_count": 2,
+      "detected_categories": [
+        "pii"
+      ],
+      "notes": "PII email and network address."
+    },
+    {
+      "id": 131,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 65,
+      "findings_count": 2,
+      "detected_categories": [
+        "company",
+        "confidential"
+      ],
+      "notes": "Confidential term: unreleased product and project codename."
+    },
+    {
+      "id": 132,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential term: board meeting."
+    },
+    {
+      "id": 133,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential term: salary."
+    },
+    {
+      "id": 134,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential terms: proprietary, trade secret."
+    },
+    {
+      "id": 135,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential terms: merger, acquisition."
+    },
+    {
+      "id": 136,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential term: internal use only."
+    },
+    {
+      "id": 137,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 60,
+      "findings_count": 2,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential terms: privileged, attorney-client."
+    },
+    {
+      "id": 138,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential term: performance review."
+    },
+    {
+      "id": 139,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential term: top secret."
+    },
+    {
+      "id": 140,
+      "category": "confidential",
+      "expected_block": true,
+      "actual_block": true,
+      "correct": true,
+      "risk_score": 30,
+      "findings_count": 1,
+      "detected_categories": [
+        "confidential"
+      ],
+      "notes": "Confidential term: gdpr."
     }
   ]
 }

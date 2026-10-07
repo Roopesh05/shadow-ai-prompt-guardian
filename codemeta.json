@@ -1,0 +1,79 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Shadow AI Prompt Guardian — SENTINEL",
+  "identifier": "shadow-ai-prompt-guardian",
+  "version": "5.0.0",
+  "description": "Zero-Trust Client-Side Data Loss Prevention (DLP) and Sensitive Data Interception System for Generative AI Platforms.",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/Roopesh05/shadow-ai-prompt-guardian",
+  "datePublished": "2026-10-07",
+  "programmingLanguage": [
+    "JavaScript",
+    "HTML",
+    "CSS"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Roopesh",
+      "familyName": "S N",
+      "email": "mrroopesh005@gmail.com",
+      "@id": "https://orcid.org/0009-0007-7162-7897",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "SNS College of Engineering"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Sreegokul",
+      "familyName": "S",
+      "email": "gokevish@gmail.com",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "SNS College of Engineering"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Sanjeevkumar",
+      "familyName": "P",
+      "email": "sanjeevparamesh@gmail.com",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "SNS College of Engineering"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Saravana Kumar",
+      "familyName": "M",
+      "email": "saravanakuma0261@gmail.com",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "SNS College of Engineering"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Ram Sakthi Sharumathi",
+      "familyName": "M",
+      "email": "ramsakthisharumathi@gmail.com",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "SNS College of Engineering"
+      }
+    }
+  ],
+  "keywords": [
+    "shadow ai",
+    "prompt security",
+    "data loss prevention",
+    "dlp",
+    "browser extension",
+    "shannon entropy",
+    "zero-trust",
+    "privacy-preserving"
+  ]
+}

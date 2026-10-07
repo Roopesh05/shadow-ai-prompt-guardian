@@ -1,8 +1,9 @@
 /**
  * Shadow AI Prompt Guardian — Phase 2: Local ML Classifier
  *
- * Lightweight TensorFlow.js classifier for paraphrased leak detection.
- * Runs 100% client-side with zero external API calls.
+ * NOTE: Experimental Phase 2 standalone module.
+ * Not bundled into the Manifest V3 content script pipeline by default.
+ * Preserved for offline evaluation and future local ONNX/TF.js deployment.
  */
 
 (function () {
@@ -107,38 +108,48 @@
   }
 
   // ─── Prediction ──────────────────────────────────────────────────────────────
+  var lastMLResult = null;
+
   function predict(text) {
-    if (!mlReady) return { score: 0, isML: true, confidence: 0 };
+    if (!mlReady) {
+      lastMLResult = { score: 0, isML: true, confidence: 0 };
+      return lastMLResult;
+    }
     var features = extractFeatures(text);
     var score = sigmoid(sum(features, mlModel.weights, mlModel.bias));
-    return {
+    lastMLResult = {
       score: score,
       isML: true,
       confidence: Math.abs(score - 0.5) * 2,
       prediction: score > 0.5 ? 1 : 0
     };
+    return lastMLResult;
   }
 
   // ─── Combined Scoring ────────────────────────────────────────────────────────
   function combineResults(ruleScore, mlResult) {
     // Weighted combination: 70% rule-based, 30% ML
-    var mlScore = mlResult.isML ? mlResult.score * 100 : 0;
+    var mlScore = mlResult && mlResult.isML ? mlResult.score * 100 : 0;
     var combined = (ruleScore * 0.7) + (mlScore * 0.3);
     return Math.min(Math.round(combined), 100);
   }
 
   // ─── Public API ──────────────────────────────────────────────────────────────
-  window.SAPG_ML = {
+  var sapgML = {
     train: trainModel,
     predict: predict,
     combine: combineResults,
     getLoadTime: function() { return mlLoadTime; },
     isReady: function() { return mlReady; },
-    getConfidence: function() { return mlResult ? mlResult.confidence : 0; }
+    getConfidence: function() { return lastMLResult ? lastMLResult.confidence : 0; }
   };
+
+  if (typeof window !== 'undefined') {
+    window.SAPG_ML = sapgML;
+  }
 
   // Auto-train on load
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { trainModel, predict, combineResults };
+    module.exports = { trainModel: trainModel, predict: predict, combineResults: combineResults, SAPG_ML: sapgML };
   }
 })();

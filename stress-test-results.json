@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-10-07T06:35:14.151Z",
+  "total_prompts": 1000,
+  "true_positives": 954,
+  "false_negatives": 46,
+  "accuracy_percent": 95.4,
+  "categories_covered": [
+    "api_key",
+    "password",
+    "internal_tools"
+  ],
+  "failure_breakdown": {
+    "Label-style secret phrasing": 28,
+    "Context-aware score suppression": 18,
+    "Other": 0
+  },
+  "summary_table_iv": {
+    "total_prompts": 1000,
+    "correctly_blocked": 954,
+    "missed": 46,
+    "accuracy": "95.4%",
+    "categories": "API keys, passwords, internal tool/service mentions"
+  },
+  "table_v_failure_modes": [
+    {
+      "pattern": "Label-style secret phrasing",
+      "count": 28,
+      "mechanism": "Regex requires an assignment operator (e.g., \"password=\"); a secret introduced as a label (e.g., \"Secret: ...\") with no \"=\" is missed."
+    },
+    {
+      "pattern": "Context-aware score suppression",
+      "count": 18,
+      "mechanism": "Query-style phrasing (e.g., \"Help me debug...\") legitimately lowers false positives, but occasionally suppresses the score of a genuine secret below the block threshold."
+    }
+  ],
+  "sample_failures": [
+    {
+      "id": 11,
+      "text": "Please review our Stripe webhook handler. Secret: secret_key_1_sample_val. Verify syntax.",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Label-style secret phrasing"
+    },
+    {
+      "id": 26,
+      "text": "What is an example of an API token like 9f7a2c5e8b1d4f6a0c3e5b7d1 in our Stripe webhook handler?",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Context-aware score suppression"
+    },
+    {
+      "id": 46,
+      "text": "Please review our CI/CD deployment pipeline. Secret: secret_key_2_sample_val. Verify syntax.",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Label-style secret phrasing"
+    },
+    {
+      "id": 81,
+      "text": "Please review our Docker compose environment. Secret: secret_key_3_sample_val. Verify syntax.",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Label-style secret phrasing"
+    },
+    {
+      "id": 82,
+      "text": "What is an example of an API token like 9f7a2c5e8b1d4f6a0c3e5b7d2 in our CI/CD deployment pipeline?",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Context-aware score suppression"
+    },
+    {
+      "id": 116,
+      "text": "Please review our Node.js Express authentication middleware. Secret: secret_key_4_sample_val. Verify syntax.",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Label-style secret phrasing"
+    },
+    {
+      "id": 136,
+      "text": "What is an example of an API token like 9f7a2c5e8b1d4f6a0c3e5b7d3 in our Docker compose environment?",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Context-aware score suppression"
+    },
+    {
+      "id": 151,
+      "text": "Please review our GitHub Actions workflow. Secret: secret_key_5_sample_val. Verify syntax.",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Label-style secret phrasing"
+    },
+    {
+      "id": 186,
+      "text": "Please review our PostgreSQL database connector. Secret: secret_key_6_sample_val. Verify syntax.",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Label-style secret phrasing"
+    },
+    {
+      "id": 191,
+      "text": "What is an example of an API token like 9f7a2c5e8b1d4f6a0c3e5b7d4 in our Node.js Express authentication middleware?",
+      "blocked": false,
+      "riskScore": 0,
+      "findingsCount": 0,
+      "failureMode": "Context-aware score suppression"
+    }
+  ]
+}

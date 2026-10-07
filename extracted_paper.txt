@@ -1,0 +1,199 @@
+ShadowAI Detection Pipeline: Browser-Level Detection and Risk Assessment of Unauthorized AI Usage
+
+Sreegokul S1, Roopesh S N2, Ram Sakthi Sharumathi M3, Sanjeev Kumar P4, Saravana Kumar M5
+
+1Department of Computer Science and Engineering (IoT and Cyber Security including Blockchain Technology), SNS College of Engineering, Tamil Nadu, India.
+
+2Department of Computer Science and Engineering (IoT and Cyber Security including Blockchain Technology), SNS College of Engineering, Tamil Nadu, India.
+
+3Department of Computer Science and Engineering (IoT and Cyber Security including Blockchain Technology), SNS College of Engineering, Tamil Nadu, India.
+
+4Department of Computer Science and Engineering (IoT and Cyber Security including Blockchain Technology), SNS College of Engineering, Tamil Nadu, India.
+
+5Department of Computer Science and Engineering (IoT and Cyber Security including Blockchain Technology), SNS College of Engineering, Tamil Nadu, India.
+
+Abstract- The unauthorized use of public generative-AI interfaces by employees—commonly termed “Shadow AI”—is creating a rapidly escalating and often irreversible data-leakage risk, since sensitive information pasted into such tools cannot be retrieved once submitted. Existing enterprise safeguards operate primarily at the network or domain level, relying on blocklists or discovery platforms that expose breaches only after the fact; because these approaches monitor destinations rather than content, they fail to identify unlisted or newly launched AI tools in real time. To address this gap, we present the Shadow AI Prompt Guardian, a Manifest V3 Chrome extension that intercepts and analyzes prompt content locally, across multiple AI platforms, prior to submission. The detection engine combines regex-based pattern matching, Shannon entropy analysis, and context-aware scoring to identify API keys, passwords, personally identifiable information (PII), and other confidential data. A central design requirement is fully client-side operation, with no network calls, telemetry, or raw-data storage. Evaluated on a 140-prompt categorized dataset spanning five content categories, the system achieved perfect detection performance, with 1.00 accuracy, precision, recall, and F1 score across all categories. A supplementary large-scale stress test using 1,000 combinatorially generated credential-disclosure prompts achieved 95.4% accuracy, surfacing two reproducible failure mechanisms tied to label-style secret phrasing and context-aware score suppression. These results indicate that the proposed approach offers a lightweight, easily deployable, and privacy-preserving alternative to conventional enterprise data-loss-prevention (DLP) browser tools, while the stress test demonstrates the value of adversarial, at-scale evaluation in exposing concrete detection boundaries.
+
+Keywords— Shadow AI, Prompt Security, Data Loss Prevention, Browser Extension, Shannon Entropy, Privacy-Preserving.
+
+I. INTRODUCTION
+
+Enterprises have rapidly adopted Artificial Intelligence (AI) tools to accelerate everyday work, and this adoption has grown sharply over the past several years. Alongside this growth, a distinct security concern known as “Shadow AI” has emerged: the use of AI tools by employees without organizational authorization or oversight. Shadow AI differs materially from conventional shadow IT, because the risk it introduces extends beyond simply storing or processing data in an unapproved location. Industry telemetry corroborates the scale of this exposure: recent enterprise browsing data indicates that a substantial share of the workforce now routes work-related content through public generative-AI interfaces, with the large majority of that traffic occurring outside any managed or monitored channel [1]. High-profile incidents illustrate the practical consequences; in 2023, a major electronics manufacturer temporarily banned employee use of public AI chatbots after engineers inadvertently submitted proprietary source code and internal meeting transcripts through routine prompts [2].
+
+The core danger of Shadow AI lies in its irreversibility: once information is submitted to a public AI model, it cannot be withdrawn. The subsequent handling of that information is governed entirely by the host platform's data policy, which may involve retention, storage, or reuse for model training. Consequently, effective mitigation must prevent sensitive information from leaving the organization in the first place, rather than merely detecting its disclosure after the fact.
+
+Organizations currently rely on a narrow set of mitigation strategies, most commonly blocking access to specific websites or domains, or deploying discovery tools that flag AI usage after it has occurred. Both approaches share a fundamental weakness: they operate on the identity of the destination rather than the content being transmitted. Consequently, any AI platform absent from a maintained blocklist remains fully accessible, and its usage may go entirely unnoticed by the organization. Discovery-oriented tools face a related limitation—by design, they surface unauthorized usage only after data has already left the network, providing no mechanism for real-time prevention. The underlying problem is therefore not which platform employees use, but what information they submit to it.
+This paper presents the Shadow AI Prompt Guardian, a browser extension designed to perform local, real-time content inspection of AI prompts across multiple platforms, including ChatGPT, Claude, Gemini, Perplexity, and Cohere. Rather than bluntly blocking access to AI tools—which hinders employee productivity—the system evaluates prompt content against a multi-layered detection engine and intervenes only when sensitive data is present, thereby preserving productivity while preventing data leakage. The specific technical contributions of this paper are fourfold: (1) a combined detection engine utilizing regex, Shannon entropy, and context-aware scoring; (2) a fully client-side architectural design with zero data exfiltration; (3) a comprehensive evaluation methodology and dataset for measuring browser-based prompt-leak detection; and (4) a large-scale, combinatorially generated adversarial stress test of 1,000 credential-disclosure prompts that surfaces and characterizes concrete failure modes in rule-based detection.
+
+II. RELATED WORK
+
+The challenge of securing corporate data against unauthorized AI adoption has prompted several defensive strategies, which can be grouped into three distinct methodologies.
+First, network and domain-level detection strategies focus on restricting access to known endpoints. Palo Alto Networks Cyberpedia (2026) [3] describes DNS and proxy-based detection mechanisms that rely heavily on known AI domain signatures. However, a significant gap in this approach is its failure against unlisted or newly launched AI tools; the system detects the destination being accessed, entirely ignoring the actual content being transmitted.
+
+Second, SaaS and OAuth discovery platforms attempt to provide visibility into unauthorized tool adoption. Nudge Security (2026) [4] explores discovering Shadow AI usage through the continuous analysis of email integrations and OAuth grants. The primary limitation of this subgroup is its reliance on after-the-fact visibility. By the time usage is discovered, the prompt—and any sensitive data it contained—has already been transmitted, offering no real-time prevention.
+
+Third, browser-based content inspection represents the closest prior art to our proposed system. General Analysis (2026) [5] details browser-extension- and endpoint-based detection approaches currently utilized in commercial products like Harmonic Security and LayerX Security. Building on this, Cyberhaven (2026) [6] notes that data-centric, content-tracking approaches are fundamentally the most effective methods for detecting data leakage to AI. However, a critical gap remains: existing implementations within this category are largely closed-source, commercialized products with limited to no published accuracy benchmarks or openly documented methodologies.
+
+The system proposed in this paper is positioned directly within this third category of browser-based content inspection. However, it is distinctly differentiated by (a) its full client-side execution architecture that eliminates cloud dependencies, and (b) its openly published, reproducible evaluation metrics, filling the benchmark gap explicitly noted in the cited literature above.
+
+III. MATERIALS AND METHODS
+
+A. System Architecture
+
+The Shadow AI Prompt Guardian is implemented as a Manifest V3 Chrome extension [7] built on standard web technologies. A content script, content.js, intercepts outgoing submissions by monitoring form submissions, Fetch API calls, and XMLHttpRequest calls before any data leaves the browser.
+
+Upon intercepting a submission, the system passes the extracted text to detection-engine.js for content analysis. If the analysis determines the content to be high-risk, the submission is blocked and a warning banner is injected into the page, prompting the user to either revise the content or cancel the action; low-risk content is allowed to proceed unimpeded. Because this analysis executes locally and synchronously, the extension introduces no perceptible latency, preserving a seamless user experience while providing continuous, real-time protection. This workflow is illustrated in Fig. 1.
+
+Fig. 1. Workflow of the Shadow AI Prompt Guardian: the content script intercepts a prompt, the detection engine scores it against the risk threshold, and the submission is either blocked with a warning banner or allowed to proceed.
+
+B. Detection Engine Design
+
+The detection engine utilizes a multi-layered approach to maximize recall while suppressing false positives:
+
+• Rule-based secret detection: Incorporates regex patterns specifically tailored for major API key formats (AWS, GitHub, OpenAI, Stripe, GitLab, Slack, Google OAuth, Azure, Heroku, Twilio).
+
+• Password/credential detection: Utilizes pattern matching on typical password assignments, Bearer tokens, Basic Auth headers, and credential file paths.
+
+• PII detection: Combines regex and validation logic to identify emails, phone numbers (US and international), Social Security Numbers (SSNs), and IPv4/IPv6 addresses.
+
+• Confidential term matching: Leverages a user-configurable local dictionary to flag proprietary internal nomenclature.
+
+• Shannon entropy analysis: Identifies highly randomized strings (≥20 characters, ≥4.0 bits/character) that may represent unknown key formats but do not match a predefined regex.
+
+H = - ∑ P(xᵢ) log₂ P(xᵢ)                             (1)
+
+where P(xᵢ) is the probability of character xᵢ appearing in the string. Furthermore, context-aware scoring actively reduces the risk score for educational or query-style phrasing (e.g., "what is an API key") and for code-block contexts. This design choice is explicitly motivated by the false-positive reduction problem noted in the Related Work sources [5], [6].
+
+C. Interception Layer
+
+To ensure comprehensive coverage across diverse Single Page Applications (SPAs) and traditional web frameworks, the system utilizes six distinct interception methods, detailed in Table I.
+
+TABLE I: INTERCEPTION LAYERS
+
+D. Privacy-Preserving Design
+
+A core tenet of this system is strict data privacy. The extension makes absolutely no external API calls, includes zero telemetry, and stores no raw prompt data locally or remotely. Audit logs maintain masked previews only (e.g., AKIA••••••••••••LE). This privacy-preserving design directly addresses the enterprise confidentiality concerns raised regarding cloud-based security tools [5], [6].
+
+E. Evaluation Dataset and Methodology
+
+The system was evaluated against a 140-prompt dataset synthesized to represent real-world enterprise usage. The dataset spans five categories: Clean (45), API Key (30), PII (23), Confidential Terms (23), and Password (19). It includes both direct-pattern matches and paraphrased or edge-case examples to rigorously test the boundaries of the detection engine.
+
+The evaluation metrics utilized for scoring the system are Accuracy, Precision, Recall, and F1 Score, defined as:
+
+Accuracy = (TP + TN) / (TP + TN + FP + FN)                         (2)
+Precision = TP / (TP + FP)                             (3)
+Recall = TP / (TP + FN)                                               (4)
+F1 = 2 × (Precision × Recall) / (Precision + Recall)                  (5)
+
+F. Large-Scale Combinatorial Stress-Test Methodology
+
+To complement the categorized 140-prompt evaluation with a test of scale, a second dataset was generated by combinatorially crossing 15 verb-phrase templates (e.g., “Can you check why this isn’t working?”, “Help me debug an error in…”), 15 technical contexts (e.g., Kubernetes manifest, Stripe webhook handler, CI/CD pipeline), and 8 credential-assignment styles (e.g., “password=”, “Authorization: Bearer”, “Secret: ”), each populated with a randomized credential token, yielding 1,000 distinct prompts. Every generated prompt contains exactly one embedded credential, so this dataset measures recall (miss rate) on positive cases rather than precision on a negative class; it is intentionally narrower in category scope than the primary 140-prompt dataset, covering API keys, passwords, and internal-tool mentions only. This design is intended to probe whether detection performance holds at scale and under greater phrasing diversity than the primary evaluation, not to replace it.
+
+IV. RESULTS AND DISCUSSION
+
+The empirical results of the detection engine across the 140-prompt evaluation dataset are presented in Table II and Table III.
+
+TABLE II: PER-CATEGORY DETECTION PERFORMANCE
+
+TABLE III: CONFUSION MATRIX
+
+The evaluation dataset achieved perfect classification across all five categories. This result reflects the effectiveness of combining deterministic pattern matching with entropy-based detection for structurally distinct data types such as API keys and PII, which typically follow recognizable syntactic formats. However, this result should be interpreted with an important caveat: the evaluation dataset consists of synthetically constructed prompts designed to represent each category clearly. Real-world prompts may contain paraphrased, obfuscated, or contextually embedded sensitive information that departs from the syntactic patterns the current rule-based engine targets—for example, sensitive data described in natural language rather than a recognizable format. This is a known limitation of purely rule-based detection systems and is discussed further in Section VI (Future Work).
+
+Large-Scale Adversarial Stress-Test Results
+
+To probe the boundaries of the 140-prompt evaluation and stress-test the detection engine at scale, a second, combinatorially generated dataset of 1,000 credential-disclosure prompts was constructed by crossing 15 verb-phrase templates, 15 technical contexts, and 8 credential-assignment styles with randomized token values (see Section III-F). Table IV summarizes the results; Table V characterizes the two reproducible failure mechanisms identified. Fig. 2 and Fig. 3 show the extension's blocking interface and popup dashboard, respectively.
+
+TABLE IV: LARGE-SCALE COMBINATORIAL STRESS-TEST SUMMARY
+
+TABLE V: FAILURE MODE BREAKDOWN
+
+Both failure modes are traceable to specific design choices documented in Section III-B rather than to noise: the first reflects the syntactic scope of the current regex layer, and the second is a direct, quantifiable side effect of the context-aware scoring mechanism introduced to reduce false positives. Because both patterns recur consistently across 1,000 independently generated prompts, they represent stable, addressable engineering targets rather than isolated anomalies.
+
+Fig. 2. Warning banner injected in ChatGPT interface showing a blocked submission with flagged API key details.
+
+Fig. 3. Extension popup interface displaying protection toggle switch, active session statistics, and threat logs.
+
+V. LIMITATIONS
+
+While the current architecture proves highly effective against known data structures, it presents specific limitations:
+
+1. Rule-based and entropy detection mechanisms are highly robust on structured secrets, but are limited against paraphrased or semantically described data leaks.
+
+2. Both evaluation datasets are synthetic; no field study utilizing real-world, dynamic user prompts has yet been conducted, though the 1,000-prompt stress test (Section III-F) partially addresses scale.
+
+3. Confidential term matching relies on manually maintained keyword lists, which requires ongoing administrative configuration to remain effective.
+
+4. The large-scale stress test identified two concrete gaps: label-style secret phrasing without an assignment operator is missed by the current regex layer, and context-aware scoring occasionally suppresses genuine secrets embedded in query-style phrasing. Both are addressed in Section VI.
+
+VI. FUTURE WORK
+
+To address the outlined limitations and expand the tool's defensive capabilities, the following enhancements are planned for future iterations:
+
+• Context-window analysis across multi-turn conversations to identify and block slow-drip data leaks that are split across multiple sequential messages.
+
+• Client-side file/attachment scanning (PDF, CSV, DOCX) to inspect documents prior to their upload to AI platforms.
+
+• Integration of a lightweight local ML classifier (e.g., TensorFlow.js) designed specifically to catch paraphrased or semantic leaks not adequately covered by rule-based detection, building on recent advances in LLM-assisted secret and sensitive-data detection [8].
+
+• Implementation of severity-tiered risk classification (Critical/Warning/Info) to reduce alert fatigue for end-users.
+
+• A comprehensive field evaluation utilizing real (anonymized) enterprise user prompt data to empirically validate the synthetic-dataset results achieved in this study.
+
+VII. CONCLUSION
+
+The rapid growth of Shadow AI necessitates content-focused mitigation strategies rather than destination-based ones. This paper presented the Shadow AI Prompt Guardian, a fully client-side system for real-time inspection of AI prompt content, which successfully addresses a security gap left unfilled by conventional approaches such as domain blocking and after-the-fact discovery. By combining regex-based pattern matching, entropy analysis, and context-aware scoring, the system achieved a 1.00 F1 score in identifying secrets and personal information within a synthetic 140-prompt categorized evaluation dataset, and 95.4% accuracy across a supplementary 1,000-prompt combinatorial stress test that surfaced two reproducible, mechanistically explained failure modes. While purely rule-based detection cannot fully address semantically obfuscated data leaks, this work demonstrates that effective, low-latency, and privacy-preserving prompt inspection is achievable entirely within the browser, and that adversarial at-scale testing is a practical way to locate and characterize its remaining limitations. Future work will extend the system with client-side machine learning to improve detection of unstructured and conversational data leaks.
+
+REFERENCES
+
+[1] LayerX Security, "Enterprise AI and SaaS Data Security Report 2025," 2025. [Online]. Available: https://go.layerxsecurity.com/hubfs/LayerX_Enterprise_AI_and_SaaS_Data_Security_Report.pdf
+
+[2] Bloomberg News, "Samsung Bans ChatGPT, Google Bard, Other Generative AI Use by Staff After Leak," 2023. [Online]. Available: https://www.bloomberg.com/news/articles/2023-05-02/samsung-bans-chatgpt-and-other-generative-ai-use-by-staff-after-leak
+
+[3] Palo Alto Networks Cyberpedia, "What Is Shadow AI? Risks, Detection, and Security," 2026. [Online]. Available: https://www.paloaltonetworks.com/cyberpedia/what-is-shadow-ai
+
+[4] Nudge Security, "What is Shadow AI? Risks, Detection, and Governance," 2026 Guide. [Online]. Available: https://www.nudgesecurity.com/guide/shadow-ai
+
+[5] General Analysis, "How to Detect Shadow AI: Browser Extensions, SWG, Network, and Endpoint Controls," 2026. [Online]. Available: https://www.generalanalysis.com/detecting-shadow-ai
+
+[6] Cyberhaven, "What is Shadow AI? Risks, Detection, and Prevention," Data Security Insights, 2026. [Online]. Available: https://www.cyberhaven.com/blog/what-is-shadow-ai
+
+[7] Google Chrome for Developers, "Manifest V3," 2024. [Online]. Available: https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3
+
+[8] S. Ahmed, M. N. Rahman, Z. Wahab, G. Uddin, and R. Shahriyar, "Secret Leak Detection in Software Issue Reports Using LLMs: A Comprehensive Evaluation," arXiv:2410.23657, 2024. [Online]. Available: https://arxiv.org/pdf/2410.23657
+
+--- TABLE 1 ---
+Layer | Method | Purpose
+1 | Fetch API hook | Intercepts programmatic API requests
+2 | XMLHttpRequest hook | Intercepts legacy async requests
+3 | Click event detection | Catches send-button clicks pre-handler
+4 | Enter key detection | Catches keyboard-submitted prompts
+5 | Form submission hook | Catches traditional form-based submission
+6 | MutationObserver | Detects dynamically rendered input fields in SPAs
+
+--- TABLE 2 ---
+Category | Total Prompts | Precision | Recall | F1 Score
+API Key | 30 | 1.00 | 1.00 | 1.00
+Password | 19 | 1.00 | 1.00 | 1.00
+PII | 23 | 1.00 | 1.00 | 1.00
+Confidential Terms | 23 | 1.00 | 1.00 | 1.00
+Clean (Negative Class) | 45 | — | — | —
+Overall | 140 | 1.00 | 1.00 | 1.00
+
+--- TABLE 3 ---
+ | Predicted Block | Predicted Clean
+Actual Block | 95 (True Positive) | 0 (False Negative)
+Actual Clean | 0 (False Positive) | 45 (True Negative)
+
+--- TABLE 4 ---
+Metric | Value
+Total prompts (distinct combinatorial generations) | 1,000
+Correctly blocked (True Positives) | 954
+Missed (False Negatives) | 46
+Accuracy | 95.4%
+Categories covered | API keys, passwords, internal tool/service mentions
+
+--- TABLE 5 ---
+Failure Pattern | Mechanism
+Label-style secret phrasing | Regex requires an assignment operator (e.g., “password=”); a secret introduced as a label (e.g., “Secret: …”, “Authorization: Bearer …” with no “=”) is missed.
+Context-aware score suppression | Query-style phrasing (e.g., “Help me debug…”) legitimately lowers false positives, but occasionally suppresses the score of a genuine secret below the block threshold.
+

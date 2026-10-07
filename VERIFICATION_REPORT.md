@@ -38,7 +38,7 @@ shadow-ai-prompt-guardian/
 
 ## 2. What Was Tested
 
-### 2.1 Detection Engine Unit Tests (53 tests)
+### 2.1 Detection Engine Unit Tests (132 tests)
 
 | Category | Tests | Result |
 |----------|-------|--------|
@@ -55,31 +55,66 @@ shadow-ai-prompt-guardian/
 | Highlight Ranges | 2 | ✅ Pass |
 | Edge Cases (null, empty, long input) | 2 | ✅ Pass |
 | False Positive Prevention | 3 | ✅ Pass |
+| Feature 1: Severity Levels | 11 | ✅ Pass |
+| Feature 2: Bulk Data Detection | 11 | ✅ Pass |
+| Feature 3: Detection Latency Micro-benchmarks | 3 | ✅ Pass |
+| Feature 4: Explainable Detection Panel | 40 | ✅ Pass |
+| Feature 5: Obfuscation Coordinate Mapping & Leak Prevention | 8 | ✅ Pass |
+| **Total Detection Engine Unit Tests** | **132** | **✅ 132/132 Pass** |
 
-### 2.2 Evaluation Harness (80 synthetic prompts)
+### 2.2 Primary Evaluation Dataset (140 Categorized Prompts — Table II & III)
 
-| Metric | Value |
-|--------|-------|
-| **Accuracy** | **1.0000 (100%)** |
-| **Precision** | **1.0000 (100%)** |
-| **Recall** | **1.0000 (100%)** |
-| **F1 Score** | **1.0000** |
-| **False Positive Rate** | **0.0000 (0%)** |
+| Metric | Value | Paper Reference |
+|:---|:---|:---|
+| **Total Prompts** | **140** | Section III-E |
+| **Accuracy** | **1.0000 (100%)** | Eq. (2) |
+| **Precision** | **1.0000 (100%)** | Eq. (3) |
+| **Recall** | **1.0000 (100%)** | Eq. (4) |
+| **F1 Score** | **1.0000** | Eq. (5) |
+| **False Positive Rate** | **0.0000 (0%)** | Table II |
 
-**Confusion Matrix:**
+**Confusion Matrix (Table III):**
 | | Predicted Block | Predicted Clean |
-|---|----------------|----------------|
-| **Actual Block** | 50 (TP) | 0 (FN) |
-| **Actual Clean** | 0 (FP) | 30 (TN) |
+|:---|:---:|:---:|
+| **Actual Block** | **95 (TP)** | **0 (FN)** |
+| **Actual Clean** | **0 (FP)** | **45 (TN)** |
 
-**Per-Category Results:**
-| Category | Total | Accuracy | Precision | Recall |
-|----------|-------|----------|-----------|--------|
-| Clean | 30 | 1.00 | — | — |
-| API Key | 15 | 1.00 | 1.00 | 1.00 |
-| Password | 9 | 1.00 | 1.00 | 1.00 |
-| PII | 13 | 1.00 | 1.00 | 1.00 |
-| Confidential | 13 | 1.00 | 1.00 | 1.00 |
+**Per-Category Detection Performance (Table II):**
+| Category | Total Prompts | Precision | Recall | F1 Score | Accuracy |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| **API Key** | 30 | 1.00 | 1.00 | 1.00 | 1.00 |
+| **Password** | 19 | 1.00 | 1.00 | 1.00 | 1.00 |
+| **PII** | 23 | 1.00 | 1.00 | 1.00 | 1.00 |
+| **Confidential Terms** | 23 | 1.00 | 1.00 | 1.00 | 1.00 |
+| **Clean (Negative Class)** | 45 | — | — | — | 1.00 |
+| **Overall** | **140** | **1.00** | **1.00** | **1.00** | **1.00** |
+
+### 2.3 Large-Scale Combinatorial Adversarial Stress Test (1,000 Prompts — Table IV & V)
+
+Evaluated by combinatorially crossing 15 verb templates × 15 technical contexts × 8 credential assignment styles with randomized tokens (`node tests/stress-test.js`).
+
+**Table IV: Stress-Test Summary:**
+| Metric | Value |
+|:---|:---|
+| Total prompts (distinct combinatorial generations) | 1,000 |
+| Correctly blocked (True Positives) | **954** |
+| Missed (False Negatives) | **46** |
+| **Accuracy** | **95.4%** |
+| Categories covered | API keys, passwords, internal tool/service mentions |
+
+**Table V: Failure Mode Breakdown:**
+| Failure Pattern | Occurrences | Mechanism |
+|:---|:---:|:---|
+| **Label-style secret phrasing** | 28 | Regex requires an assignment operator (e.g., “password=”); a secret introduced as a label (e.g., “Secret: …”, “Authorization: Bearer …” with no “=”) is missed. |
+| **Context-aware score suppression** | 18 | Query-style phrasing (e.g., “Help me debug…”) legitimately lowers false positives, but occasionally suppresses the score of a genuine secret below the block threshold. |
+
+### 2.4 Client-Side Execution Latency Micro-Benchmarks
+
+| Input Size | Threshold Limit | Measured Mean Latency | Status |
+|:---|:---|:---:|:---:|
+| Short text ($<1$ KB) | $< 50$ ms | **0 ms** | ✅ Pass |
+| Medium text ($\sim 5$ KB) | $< 100$ ms | **26 ms** | ✅ Pass |
+| Large text ($\sim 20$ KB) | $< 1000$ ms | **265 ms** | ✅ Pass |
 
 ### 2.3 Cross-File Reference Verification
 
@@ -196,6 +231,12 @@ node tests/test-detection-engine.js && node eval-harness.js
 - Shows character position range, never raw sensitive value
 - Panel auto-closes when banner is dismissed
 
+### Feature 5: Obfuscation Coordinate Mapping & Leak Prevention
+- Tracks exact 1-to-1 character index mapping (`indexMap`) across all normalizations (zero-width characters, lookalikes, leet-speak, character spacing)
+- Guarantees zero trailing character leaks on auto-redaction of obfuscated secrets (e.g. `AKIA\u200BIOSFODNN7EXAMPLE`)
+- Accurately redacts character-spaced tokens without leaving remnants
+- Filters out space-separated single digits to prevent false-positive phone and bulk PII triggers
+
 ---
 
 ## 8. Privacy Guarantees (maintained through all features)
@@ -219,19 +260,19 @@ node tests/test-detection-engine.js && node eval-harness.js
 | Feature 2: Bulk Data Detection (5+/10+ threshold) | Complete |
 | Feature 3: Real-Time Inline Highlighting (300ms debounce) | Complete |
 | Feature 4: Explainable Detection Panel (click-to-expand) | Complete |
-| Form submission interception | Complete |
+| Feature 5: Obfuscation Coordinate Mapping & Leak Prevention | Complete |
+| Form submission interception & Synchronous DOM blocking | Complete |
 | Fetch/XHR interception | Complete |
 | Severity-driven banner (gradient + icon + badge) | Complete |
 | Severity-driven block log entries | Complete |
-| Text highlighting (submit-time) | Complete |
+| DevShield bidirectional code de-masking & DevVault | Complete (22/22 tests passing) |
 | Popup UI (toggle + log with severity icons) | Complete |
-| Options page (domains, threshold, terms) | Complete |
+| Guardian Center options page (default threshold = 30) | Complete |
 | Privacy guarantees (no exfiltration, no raw values) | Complete |
-| Test dataset (95 prompts, +10 bulk) | Complete |
-| Evaluation harness | Complete |
-| Unit tests (121 tests across 4 features) | 121/121 passing |
-| Evaluation accuracy | 100% (95/95) |
-| Regression test: baseline 53 tests still pass | Zero regressions |
-| Self-review completed | Complete |
+| Primary Evaluation Benchmark (140 prompts) | 100% accuracy (F1 = 1.0000, 0% FPR) |
+| Combinatorial Stress Test (1,000 prompts) | 95.4% accuracy (Table IV & V) |
+| Detection engine unit tests | 132/132 passing |
+| Senior QA checklist suite | 144/144 passing (0 errors, 0 warnings) |
+| Zero regressions | Confirmed |
 
-**The project is complete and ready for use.**
+**The project is complete, hardened, and verified.**

@@ -2,6 +2,7 @@
 
 [![Manifest V3](https://img.shields.io/badge/Chrome%20Extension-Manifest%20V3-blue.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.placeholder.svg)](https://doi.org/10.5281/zenodo.placeholder)
 [![Privacy First](https://img.shields.io/badge/Privacy-100%25%20Client--Side-brightgreen.svg)](#privacy--zero-trust-architecture)
 [![Evaluation F1](https://img.shields.io/badge/Evaluation%20F1%20Score-1.00-success.svg)](#evaluation--benchmarks)
 
@@ -87,26 +88,43 @@ flowchart TD
 
 ## 🧪 Testing & Evaluation
 
-Run the automated evaluation harness:
+Run the automated evaluation harness and stress test suite:
 
 ```bash
-# Run the 95-prompt evaluation harness
+# Run the 140-prompt primary evaluation harness (Table II & III)
 node eval-harness.js
 
-# Run unit tests
+# Run the 1,000-prompt combinatorial adversarial stress test (Table IV & V)
+node tests/stress-test.js
+
+# Run the detection engine unit tests (121 tests)
 node tests/test-detection-engine.js
+
+# Run the senior QA checklist suite (137 checks)
+node tests/qa-checklist.js
 ```
 
-### Evaluation Benchmark Results
+### Primary Evaluation Benchmark Results (140 Prompts — Table II & III)
 
-| Metric | Score |
+| Metric | Score | Paper Reference |
+| :--- | :--- | :--- |
+| **Total Prompts Evaluated** | **140 Prompts** (5 Categories) | Section III-E |
+| **Accuracy** | **100% (1.0000)** | Eq. (2) |
+| **Precision** | **100% (1.0000)** | Eq. (3) |
+| **Recall** | **100% (1.0000)** | Eq. (4) |
+| **F1 Score** | **1.0000** | Eq. (5) |
+| **False Positive Rate** | **0.0000** | Table II |
+| **Confusion Matrix** | **TP: 95, TN: 45, FP: 0, FN: 0** | Table III |
+
+### Large-Scale Combinatorial Stress-Test Results (1,000 Prompts — Table IV & V)
+
+| Metric | Value |
 | :--- | :--- |
-| **Total Prompts Evaluated** | 95 Synthetic & Realistic Scenarios |
-| **Accuracy** | **100% (1.00)** |
-| **Precision** | **100% (1.00)** |
-| **Recall** | **100% (1.00)** |
-| **F1 Score** | **1.00** |
-| **False Positive Rate** | **0.00** |
+| **Total Prompts** | 1,000 distinct combinatorial generations |
+| **Correctly Blocked (TP)** | **954** |
+| **Missed (FN)** | **46** |
+| **Accuracy** | **95.4%** |
+| **Failure Modes Identified** | 1. Label-style secret phrasing (28) · 2. Context-aware score suppression (18) |
 
 ---
 
@@ -146,6 +164,25 @@ Open the **Extension Options** page to configure:
 - **Shannon Entropy Analysis**: Toggle entropy detection on unknown tokens.
 - **Custom Confidential Keywords**: Add internal project codenames and domain keywords.
 - **Audit Logs**: View, inspect, or clear locally masked detection logs.
+
+---
+
+## 📖 Citation
+
+If you use **SENTINEL (Shadow AI Prompt Guardian)**, its benchmark datasets, or stress-test suites in your research or deployment, please cite the repository using the metadata provided in [`CITATION.cff`](CITATION.cff) or the BibTeX entry below:
+
+```bibtex
+@software{roopesh2026sentinel,
+  author       = {Roopesh S N and Sreegokul S and Sanjeevkumar P and Saravana Kumar M and Ram Sakthi Sharumathi M},
+  title        = {{Shadow AI Prompt Guardian — SENTINEL: A Zero-Trust Client-Side Data Loss Prevention (DLP) and Sensitive Data Interception System for Generative AI Platforms}},
+  month        = oct,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v5.0.0},
+  doi          = {10.5281/zenodo.placeholder},
+  url          = {https://github.com/Roopesh05/shadow-ai-prompt-guardian}
+}
+```
 
 ---
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    background: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 30px;
+    margin: 0;
+    color: #f8fafc;
+}
+.card {
+    background: #1e293b;
+    border: 1px solid #10b981;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #10b981; }
+.subtitle { font-size: 12px; color: #94a3b8; margin-bottom: 16px; }
+.prompt-view {
+    background: #0b0f19;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 18px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #e2e8f0;
+}
+.redacted-placeholder {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid #10b981;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.status-pill {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid #10b981;
+    color: #a7f3d0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="title">Figure 15.4: Sanitized In-Place Auto-Redacted Prompt Ready for Submission</div>
+    <div class="subtitle">Preserves structural prompt context and semantic meaning while completely masking sensitive tokens.</div>
+    <div class="prompt-view">
+        Please help me fix the following configuration file:<br>
+        export GITHUB_TOKEN="<span class="redacted-placeholder">[REDACTED_GITHUB_KEY_1]</span>"<br>
+        export STRIPE_SECRET="<span class="redacted-placeholder">[REDACTED_STRIPE_SECRET_2]</span>"<br>
+        database_url = "postgres://root:<span class="redacted-placeholder">[REDACTED_HIGH_ENTROPY_CREDENTIAL_3]</span>@internal-cluster.aws.com:5432"<br>
+        customer_contact = "<span class="redacted-placeholder">[REDACTED_EMAIL_4]</span>"<br>
+        ssn_verification = "<span class="redacted-placeholder">[REDACTED_SSN_5]</span>"
+    </div>
+    <div class="status-pill">
+        ✅ <strong>Risk Score: 0 / 100 (CLEAN)</strong> &bull; Zero confidential tokens exposed &bull; Safe to transmit
+    </div>
+</div>
+</body>
+</html>

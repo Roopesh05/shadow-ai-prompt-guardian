@@ -1,0 +1,3424 @@
+
+
+==================== PAGE 1 ====================
+
+VOXENTRAAI
+AI - Powered Citizen Complaint System
+A MINI PROJECT REPORT
+Submitted by
+KIRTHIKA R
+713524CS067
+MADANIKA S
+713524CS075
+MAHANASRI M
+713524CS077
+MUKILA N
+713524CS088
+in partial fulfillment for the award of the degree of
+BACHELOR OF ENGINEERING
+in
+COMPUTER SCIENCE AND ENGINEERING
+SNS COLLEGE OF TECHNOLOGY
+COIMBATORE 641035
+November 2026
+i
+
+
+==================== PAGE 2 ====================
+
+SNS COLLEGE OF TECHNOLOGY
+COIMBATORE 641035
+BONAFIDE CERTIFICATE
+Certified
+that
+this
+mini
+Project
+Report
+titled,
+“VOXENTRAAI
+-
+AI-Powered
+Citizen
+Complaint
+System”
+is
+the
+bonafide
+record
+of
+”Kirthika R, Madanika S, Mahanasri M, Mukila N” who carried out the mini Project
+Work under our supervision. Certified further, that to the best of my knowledge the work
+reported herein does not form part of any other mini project report or dissertation on the basis
+of which a degree or award was conferred on an earlier occasion on this or any other candidate.
+PROJECT GUIDE
+Ms. V. Vaishnavee
+Assistant Professor,
+Department of AI & DS,
+SNS College Of Technology
+Coimbatore-641035.
+HEAD OF THE DEPARTMENT
+Dr. M. Shobana
+Associate Professor & Head,
+Department of CSE,
+SNS College Of Technology
+Coimbatore-641035.
+Submitted for the Viva-Voce examination held at SNS COLLEGE OF TECHNOLOGY, held
+on ...............................................
+Examiner 1
+Examiner 2
+ii
+
+
+==================== PAGE 3 ====================
+
+ABSTRACT
+VoxentraAI is an AI-powered citizen complaint management and emergency response system
+designed to provide a centralized platform for reporting local issues through voice and text.
+Citizens can report problems such as accidents, theft, damaged roads, water issues, electricity
+failures, garbage accumulation, drainage problems, streetlight failures, public safety concerns,
+and other emergencies. The system converts voice input into text using speech-to-text tech-
+nology and uses artificial intelligence to understand the complaint. VoxentraAI automatically
+classifies complaints, extracts important information such as complaint description and loca-
+tion, detects the priority level, and asks the user for clarification when the provided information
+is unclear. After confirmation, the system registers the complaint with a unique complaint ID
+and automatically routes it to the appropriate department. The system also provides complaint
+status monitoring, follow-up notifications, escalation of overdue complaints, suspicious com-
+plaint handling, and AI-generated responses. The frontend of VoxentraAI is developed using
+React, TypeScript, TSX, Vite, CSS, and Node.js. The backend is developed using Python,
+FastAPI, and Uvicorn. PostgreSQL is used for database management. The system aims to
+improve communication between citizens and authorities and support faster complaint handling
+and emergency response.
+iii
+
+
+==================== PAGE 4 ====================
+
+TABLE OF CONTENTS
+CHAPTER NO.
+TITLE
+PAGE NO.
+ABSTRACT
+iii
+LIST OF TABLES
+xii
+LIST OF FIGURES
+xiii
+LIST OF SYMBOLS
+xiv
+1.
+INTRODUCTION
+1
+1.1 Background
+1
+1.2 Project Overview
+1
+1.3 Motivation
+1
+1.4 Objectives
+1
+1.5 Scope
+2
+2.
+PROBLEM IDENTIFICATION
+4
+2.1 Existing Scenario
+4
+2.2 Existing System
+4
+2.3 Existing System Drawbacks
+4
+2.4 Problem Statement
+4
+2.5 Proposed Solution
+5
+3.
+EMPATHIZE AND DEFINE
+6
+3.1 Empathy Study
+6
+3.2 User Identification
+6
+3.3 Primary Users
+6
+iv
+
+
+==================== PAGE 5 ====================
+
+3.4 Secondary Users
+6
+3.5 User Needs
+6
+3.6 Pain Points
+7
+3.7 User Persona
+8
+3.8 User Expectations
+8
+3.9 Refined Problem Definition
+8
+4.
+IDEATION
+9
+4.1 Idea Generation
+9
+4.2 Brainstorming
+9
+4.3 Evaluation of Ideas
+9
+4.4 Selected Idea
+10
+4.5 Key Features Identified
+10
+4.6 Final Concept
+10
+5.
+REQUIREMENTS ANALYSIS
+11
+5.1 Introduction
+11
+5.2 Functional Requirements
+11
+5.3 Non-Functional Requirements
+12
+5.4 Hardware Requirements
+14
+5.5 Software Requirements
+14
+5.6 User Roles and Permissions
+16
+5.6.1
+Citizen
+16
+5.6.2
+Administrator
+16
+5.7 System Constraints
+17
+5.8 Requirement Summary
+17
+6.
+TECHNOLOGY STACK
+18
+v
+
+
+==================== PAGE 6 ====================
+
+6.1 Introduction
+19
+6.2 Frontend Technologies
+19
+6.2.1
+React
+19
+6.2.2
+TypeScript
+19
+6.2.3
+TSX
+19
+6.2.4
+Vite
+20
+6.2.5
+CSS
+20
+6.3 Backend Technologies
+20
+6.3.1
+Python
+20
+6.3.2
+FastAPI
+20
+6.3.3
+Uvicorn
+20
+6.4 Database Technology
+20
+6.4.1PostgreSQL
+20
+6.5 Artificial Intelligence
+20
+6.6 Speech-to-Text Technology
+21
+6.7 Technology Integration
+21
+6.8 Technology Selection
+21
+7.
+SYSTEM DESIGN
+22
+7.1 System Architecture
+22
+7.2 Introduction
+25
+7.3 System Architecture
+25
+7.4 Working Flow
+25
+7.5 System Components
+27
+7.5.1
+Citizen Module
+27
+7.5.1
+Citizen Module
+27
+vi
+
+
+==================== PAGE 7 ====================
+
+7.5.2
+Complaint Processing Module
+27
+7.5.3
+AI Module
+27
+7.5.4
+Department Routing Module
+27
+7.5.5
+Administrator Module
+27
+7.5.6
+Notification Module
+27
+7.5.7
+Escalation Module
+28
+7.6 Complaint Processing Flow
+28
+7.7 System Design Considerations
+28
+7.8 Data Flow
+28
+8.
+DATABASE DESIGN
+31
+8.1 Introduction
+31
+8.2 Database Objectives
+31
+8.3 Main Database Entities
+31
+8.4 User Table
+32
+8.5 Complaint Table
+32
+8.6 Department Table
+32
+8.7 Location Table
+33
+8.8 Notification Table
+33
+8.9 Database Relationships
+33
+8.10 Database Security
+34
+8.11 Database Summary
+34
+9.
+MODULE DESCRIPTION
+35
+9.1 Introduction
+35
+9.2 User and Authentication Module
+36
+9.2.1
+Citizen Functions
+36
+9.2.2
+Administrator Functions
+36
+vii
+
+
+==================== PAGE 8 ====================
+
+9.3 Voice Complaint Module
+37
+9.4 Text Complaint Module
+37
+9.5 Speech-to-Text Module
+38
+9.6 AI Complaint Understanding Module
+38
+9.7 Complaint Classification Module
+38
+9.8 Priority Detection Module
+39
+9.9 Information Extraction Module
+39
+9.10 Complaint Registration Module
+39
+9.11 Department Routing Module
+40
+9.12 Complaint Tracking Module
+41
+9.13 Notification Module
+41
+9.14 Follow-up and Escalation Module
+42
+9.15 Suspicious Complaint Handling Module
+42
+9.16 AI Response Module
+42
+9.17 Administrator Dashboard Module
+43
+9.18 Module Integration
+43
+10.
+IMPLEMENTATION AND WORKING PRINCIPLE
+45
+10.1 Introduction
+45
+10.2 Frontend Implementation
+45
+10.3 Backend and database Implementation
+46
+10.4 Voice and Text Complaint Processing
+47
+10.5 AI Processing and Complaint Confirmation
+48
+10.6 Complaint Registration and Department Routing
+48
+10.7 Complaint Status and Notifications
+49
+10.8 Escalation and Emergency Complaint Handling
+50
+10.9 Complete Working Principle
+51
+10.10 Complaint Processing Workflow
+53
+10.11 Implementation Summary
+54
+11.
+TESTING
+56
+viii
+
+
+==================== PAGE 9 ====================
+
+11.1 Introduction
+56
+11.2 Objectives of Testing
+56
+11.3 Types of Testing
+56
+11.3.1 Unit Testing
+56
+11.3.2 Integration Testing
+56
+11.3.3 Functional Testing
+57
+11.3.4 User Interface Testing
+57
+11.3.5 Database Testing
+57
+11.3.6 Performance Testing
+58
+11.5 Authentication Testing
+58
+11.6 Complaint Submission Testing
+58
+11.7 AI Processing Testing
+58
+11.8 Database Testing
+58
+11.9 Testing Result
+58
+11.10 Conclusion of Testing
+58
+12.
+PROJECT EVALUATION
+59
+12.1 Introduction
+59
+12.2 Objective Evaluation
+59
+12.3 Usability Evaluation
+60
+12.4 Functional Evaluation
+60
+12.5 Performance Evaluation
+60
+12.6 Reliability Evaluation
+60
+12.7 Security Evaluation
+60
+12.8 Scalability Evaluation
+61
+12.9 Advantages
+61
+12.10 Limitations
+61
+12.11 Overall Evaluation
+61
+ix
+
+
+==================== PAGE 10 ====================
+
+13.
+CONCLUSION AND FUTURE ENHANCEMENTS
+62
+13.1 Conclusion
+62
+13.2 Future Enhancements
+63
+17.
+PROJECT LINK AND QR CODE
+65
+17.1 Introduction
+65
+17.2 Frontend Deployment
+65
+17.3 Project Access
+65
+17.4 QR Code
+65
+17.6 Summary
+66
+APPENDIX I - RESULTS AND SCREENSHOTS
+68
+APPENDIX II - CORE FUNCTIONALITY CODE
+82
+REFERENCES
+90
+x
+
+
+==================== PAGE 11 ====================
+
+List of Tables
+2.1
+Comparison of Proposed Solutions
+5
+3.1
+User Pain Points and Proposed Solutions
+7
+5.1
+Functional Requirements of VoxentraAI
+12
+5.2
+Non-Functional Requirements of VoxentraAI
+13
+5.3
+Complaint Categories and Description
+15
+5.4
+Complaint Priority Levels
+16
+5.5
+User Roles and Permissions
+17
+6.1
+Technology Stack Used in VoxentraAI
+18
+8.4
+User Table
+32
+8.5
+Complaint Table
+32
+8.6
+Department Table
+32
+8.7
+Location Table
+33
+8.8
+Notification Table
+33
+9.1
+VoxentraAI N1-N10 Module Description
+35
+11.1
+Functional Test Cases
+57
+15.1
+Project Objective Evaluation
+65
+xi
+
+
+==================== PAGE 12 ====================
+
+List of Figures
+1.1
+Overview of Architecture of VoxentraAI
+2
+7.1
+System Architecture of VoxentraAI
+23
+7.2
+VoxentraAI System Architecture
+24
+7.3
+System Workflow
+26
+7.4
+Data Flow Diagram
+29
+7.5
+Use Case Diagram
+30
+8.1
+Entity Relationship Diagram of VoxentraAI
+34
+10.1
+Complaint Processing Workflow
+54
+15.3.1
+User Login Screen
+67
+15.3.2
+Citizen Dashboard
+68
+15.3.3
+Complaint Submission Screen
+69
+15.3.4
+AI Processing Screen
+71
+15.3.5
+Admin Dashboard
+71
+15.3.6
+Complaint Management Screen
+72
+15.3.7
+Notification Screen
+73
+xii
+
+
+==================== PAGE 13 ====================
+
+List of Symbols, Abbreviations and Nomenclature
+AI
+Artificial Intelligence
+API
+Application Programming Interface
+CSS
+Cascading Style Sheets
+ER
+Entity Relationship
+NLP
+Natural Language Processing
+STT
+Speech-to-Text
+TTS
+Text-to-Speech
+UI
+User Interface
+UX
+User Experience
+DBMS
+Database Management System
+xiii
+
+
+==================== PAGE 14 ====================
+
+Chapter 1
+Introduction
+1.1
+Background
+Citizens often face difficulties in reporting local problems to the appropriate authorities. Is-
+sues such as damaged roads, water leakage, electricity failures, garbage accumulation, theft,
+accidents, and other emergencies may require immediate attention. However, the absence of a
+centralized intelligent platform can result in delayed reporting and slow response.
+1.2
+Project Overview
+VoxentraAI is an AI-powered voice and text based citizen complaint management system. The
+system allows citizens to report complaints through voice or text. The complaint is processed
+using artificial intelligence to understand the problem, classify it, extract important information,
+detect priority, and route it to the appropriate department.
+1.3
+Motivation
+The main motivation behind VoxentraAI is to simplify the process of reporting local issues.
+Citizens should not have to determine which department is responsible for a particular problem.
+The system uses AI to understand the complaint and automatically assist in routing it to the
+appropriate authority.
+1.4
+Objectives
+The main objectives of VoxentraAI are:
+• To provide a centralized platform for citizen complaints.
+• To allow complaint reporting through voice and text.
+• To automatically understand and classify complaints using AI.
+• To extract important information such as location and complaint description.
+• To detect the priority level of complaints.
+• To automatically route complaints to the appropriate department.
+1
+
+
+==================== PAGE 15 ====================
+
+• To provide complaint status monitoring.
+• To provide follow-up and escalation for unresolved complaints.
+• To generate AI-based responses to citizens.
+• To improve communication between citizens and authorities.
+1.5
+Scope
+The scope of VoxentraAI includes citizen complaint registration, voice input processing, speech-
+to-text conversion, complaint classification, information extraction, location detection, priority
+detection, department routing, complaint monitoring, follow-up, escalation, administrative man-
+agement, and reporting.
+Figure 1.1: Overview of VoxentraAI
+Figure 1.1 presents the overall overview of VoxentraAI, an intelligent complaint management
+2
+
+
+==================== PAGE 16 ====================
+
+system designed to simplify the process of reporting and managing civic issues. The system
+allows citizens to submit their complaints through voice or text input.
+The submitted complaint is processed by the system to understand the complaint, identify
+its category, extract relevant information, and determine its priority. Based on the processed
+information, the complaint is registered and routed to the appropriate department for further
+action.
+VoxentraAI also provides complaint tracking and notifications, allowing citizens to monitor the
+progress of their complaints. Delayed or unresolved complaints can be escalated for further
+action. Thus, the overview in Figure 1.1 represents the major components and overall workflow
+of the VoxentraAI system.
+3
+
+
+==================== PAGE 17 ====================
+
+Chapter 2
+Problem Identification
+2.1
+Existing Scenario
+Citizens currently use different methods to report local problems and emergencies. They may
+need to contact different departments, visit government offices, use separate applications, or
+make phone calls. This makes the complaint reporting process difficult and time-consuming.
+2.2
+Existing System
+The existing complaint reporting process mainly depends on manual reporting methods and
+separate platforms. Citizens are often required to identify the appropriate department before
+submitting a complaint. In many cases, complaints may not be properly classified or prioritized.
+2.3
+Existing System Drawbacks
+The existing complaint reporting process has several drawbacks:
+• No centralized complaint reporting platform.
+• Difficulty in identifying the correct department.
+• Manual complaint classification.
+• Delay in emergency response.
+• Limited voice-based reporting.
+• Difficulty in tracking complaint status.
+• Lack of automatic follow-up.
+• Lack of intelligent priority detection.
+2.4
+Problem Statement
+Citizens have no centralized intelligent platform to report local issues such as accidents, theft,
+damaged roads, water problems, electricity failures, garbage accumulation, and emergencies.
+This makes it difficult for authorities to receive, classify, prioritize, and respond to complaints
+quickly.
+4
+
+
+==================== PAGE 18 ====================
+
+2.5
+Proposed Solution
+VoxentraAI provides a centralized AI-powered system where citizens can report complaints
+using voice or text. The system processes the complaint using artificial intelligence, extracts
+relevant information, detects priority, registers the complaint, and routes it to the appropriate
+department.
+Table 2.1: Comparison of Proposed Solutions
+S.No
+Feature
+Traditional Method
+VoxentraAI
+1
+Complaint Registration
+Manual
+Digital and voice-based
+2
+Complaint
+Classifica-
+tion
+Manual
+AI-based
+3
+Department Routing
+Manual
+Automated
+4
+Priority Detection
+Manual
+AI-assisted
+5
+Complaint Tracking
+Limited
+Available
+6
+Notifications
+Limited
+Automated
+7
+Escalation
+Manual
+Automated
+8
+Voice Input
+Not available
+Supported
+9
+Centralized Records
+Limited
+Database-based
+10
+Response Monitoring
+Difficult
+Systematic
+Table 2.1 presents a comparison of the proposed solutions based on their key features and
+capabilities. The comparison highlights the differences between the existing solutions and the
+proposed VoxentraAI system.
+5
+
+
+==================== PAGE 19 ====================
+
+Chapter 3
+Empathize and Define
+3.1
+Empathy Study
+The empathy study focuses on understanding the difficulties faced by citizens when reporting
+local problems and emergencies. The main purpose is to identify the problems, expectations,
+and needs of users who require a simple and quick method to report complaints.
+3.2
+User Identification
+The primary users of VoxentraAI are citizens who need to report local issues or emergencies. The
+secondary users are government officials and department administrators who receive, manage,
+and resolve complaints.
+3.3
+Primary Users
+Citizens are the primary users of the system. They can report complaints using voice or text
+and monitor the status of their submitted complaints.
+3.4
+Secondary Users
+Government officials and administrators are the secondary users. They can view complaints,
+assign complaints to departments, update complaint status, manage users, and monitor unre-
+solved complaints.
+3.5
+User Needs
+The major user needs identified during the empathy study are:
+• Simple and easy complaint reporting.
+• Voice-based complaint reporting.
+• Text-based complaint reporting.
+• Fast complaint registration.
+6
+
+
+==================== PAGE 20 ====================
+
+• Automatic department identification.
+• Complaint status tracking.
+• Emergency priority handling.
+• Notifications and follow-up.
+• Quick communication with authorities.
+3.6
+Pain Points
+Citizens may experience the following difficulties while reporting local problems:
+• Not knowing which department to contact.
+• Difficulty explaining complaints through lengthy forms.
+• Delayed responses from authorities.
+• Lack of complaint tracking.
+• Repeated follow-up calls.
+• Difficulty reporting during emergencies.
+• Lack of clear information about complaint progress.
+Table 3.1: User Pain Points and Proposed Solutions
+S.No
+User Pain Point
+Proposed Solution
+1
+Difficulty in reporting local issues
+Centralized
+complaint
+reporting
+platform
+2
+Lack of proper complaint catego-
+rization
+AI-based complaint classification
+3
+Time-consuming manual complaint
+entry
+Voice-based complaint input
+4
+Complaints sent to wrong depart-
+ments
+Automatic department routing
+5
+No clear complaint priority
+AI-based priority detection
+6
+Lack of complaint status tracking
+Complaint tracking facility
+7
+Delayed response to critical com-
+plaints
+Priority-based escalation and notifi-
+cations
+8
+Difficulty
+understanding
+citizen
+complaints
+AI and speech-to-text processing
+7
+
+
+==================== PAGE 21 ====================
+
+Table 3.1 presents the major user pain points identified during the analysis and the corresponding
+proposed solutions. It highlights the difficulties faced by citizens while reporting and tracking
+complaints and shows how VoxentraAI addresses these issues through an intelligent and user-
+friendly approach.
+3.7
+User Persona
+A typical VoxentraAI user is a citizen who wants to report a local problem quickly without
+knowing which department is responsible. The user may prefer speaking instead of typing and
+expects the complaint to be automatically understood, registered, and routed to the appropriate
+authority.
+3.8
+User Expectations
+Users expect the system to provide a simple interface, fast complaint registration, accurate
+complaint classification, automatic department routing, complaint tracking, notifications, and
+quick responses during emergency situations.
+3.9
+Refined Problem Definition
+There is a need for a centralized and intelligent complaint management platform that allows
+citizens to report issues through voice or text, understands their complaints, extracts important
+information, determines priority, routes complaints to the correct department, and provides
+continuous status updates.
+8
+
+
+==================== PAGE 22 ====================
+
+Chapter 4
+Ideation
+4.1
+Idea Generation
+Based on the problems identified during the empathy and definition stage, several possible
+solutions were considered.
+The main goal was to develop a system that makes complaint
+reporting simple, fast, and accessible to citizens.
+The following ideas were considered:
+• Mobile-based complaint application.
+• Web-based complaint portal.
+• Voice-based complaint reporting system.
+• Centralized AI-powered complaint management system.
+• Automated emergency reporting and response system.
+4.2
+Brainstorming
+The brainstorming process focused on combining different technologies to improve the com-
+plaint reporting experience. Voice recognition, artificial intelligence, location services, database
+management, and automated notifications were considered as important components of the pro-
+posed system.
+4.3
+Evaluation of Ideas
+The proposed ideas were evaluated based on ease of use, accessibility, response speed, automa-
+tion, scalability, and reliability.
+• A mobile application provides convenient access but requires installation.
+• A web portal provides easy access but may require users to type detailed complaints.
+• A voice-based system improves accessibility and reduces typing effort.
+• An AI-powered system can automatically understand, classify, prioritize, and route com-
+plaints.
+9
+
+
+==================== PAGE 23 ====================
+
+4.4
+Selected Idea
+VoxentraAI was selected as the final solution because it combines voice and text based com-
+plaint reporting with artificial intelligence.
+The system can understand citizen complaints,
+extract important information, classify the complaint, determine its priority, and route it to the
+appropriate department.
+4.5
+Key Features Identified
+The ideation process resulted in the following major features:
+• User registration and login.
+• Voice and text complaint reporting.
+• Speech-to-text conversion.
+• AI-based complaint understanding.
+• Automatic complaint classification.
+• Location and information extraction.
+• Priority detection.
+• Automatic department routing.
+• Complaint status tracking.
+• Follow-up notifications.
+• Escalation of overdue complaints.
+• Suspicious complaint handling.
+• AI-generated responses.
+• Administrator dashboard.
+4.6
+Final Concept
+The final concept of VoxentraAI is an intelligent centralized platform that connects citizens with
+the appropriate authorities. The system reduces the need for citizens to identify departments
+manually and helps authorities process complaints more efficiently.
+10
+
+
+==================== PAGE 24 ====================
+
+Chapter 5
+Requirement Analysis
+5.1
+Introduction
+Requirements analysis defines the functional and non-functional requirements of VoxentraAI. It
+identifies what the system should do and the qualities that the system should maintain to provide
+a reliable and user-friendly complaint management platform.
+5.2
+Functional Requirements
+The functional requirements describe the main operations performed by the system.
+• User registration and login.
+• Admin login and authentication.
+• Voice complaint input.
+• Text complaint input.
+• Speech-to-text conversion.
+• AI-based complaint understanding.
+• Automatic complaint classification.
+• Important information extraction.
+• Location detection.
+• Priority detection.
+• Complaint confirmation.
+• Complaint registration with a unique complaint ID.
+• Automatic department routing.
+• Complaint status monitoring.
+• Follow-up notifications.
+• Escalation of overdue complaints.
+11
+
+
+==================== PAGE 25 ====================
+
+• Suspicious complaint handling.
+• AI-generated responses.
+• Voice response.
+• Administrator dashboard.
+• Complaint reports and monitoring.
+Table 5.1: Functional Requirements of VoxentraAI
+S.No
+Functional Requirement
+Description
+1
+User Registration
+Allows citizens to create an account
+2
+User Login
+Provides secure access to the system
+3
+Complaint Registration
+Allows users to submit complaints
+4
+Voice Input
+Accepts complaints through voice
+5
+Speech-to-Text
+Converts voice complaints into text
+6
+Complaint Classification
+Classifies complaints into appropriate cat-
+egories
+7
+Information Extraction
+Extracts important complaint details
+8
+Priority Detection
+Identifies complaint urgency
+9
+Department Routing
+Sends complaints to the relevant depart-
+ment
+10
+Complaint Tracking
+Allows users to track complaint status
+11
+Notifications
+Provides
+updates
+about
+complaint
+progress
+12
+Escalation
+Escalates unresolved complaints
+Table 5.1 presents the functional requirements of VoxentraAI that define the major operations
+and services provided by the system. These requirements describe how the system accepts
+complaints, processes the submitted information, manages complaints, and supports tracking,
+notifications, and escalation.
+5.3
+Non-Functional Requirements
+The non-functional requirements define the quality and performance characteristics of the
+system.
+• Security: User and complaint information should be protected from unauthorized access.
+12
+
+
+==================== PAGE 26 ====================
+
+• Reliability: The system should process complaints accurately and consistently.
+• Usability: The interface should be simple and easy for citizens to use.
+• Scalability: The system should support an increasing number of users and complaints.
+• Performance: Complaint processing and response should be completed within a reason-
+able time.
+• Maintainability: The system should be easy to update and maintain.
+• Availability: The system should be available whenever citizens need to report an issue.
+Table 5.2: Non-Functional Requirements of VoxentraAI
+Requirement
+Description
+Performance
+The system should process complaints efficiently and
+provide a quick response to users.
+Security
+User accounts and complaint information should be
+protected through authentication and access control.
+Reliability
+The system should provide consistent and accurate
+complaint processing.
+Usability
+The application should be simple and easy for citizens
+and administrators to use.
+Scalability
+The system should support an increasing number of
+users and complaints.
+Maintainability
+The system should be easy to update, improve and
+maintain.
+Availability
+The system should be available whenever users need
+to report complaints.
+Table 5.2 presents the non-functional requirements of VoxentraAI, which define the quality,
+performance, security, reliability, and usability expected from the system. These requirements
+ensure that the system is efficient, secure, scalable, reliable, and easy for users to access and
+operate.
+13
+
+
+==================== PAGE 27 ====================
+
+5.4
+Hardware Requirements
+The basic hardware requirements for developing and running VoxentraAI are:
+• Computer or laptop.
+• Minimum 4 GB RAM.
+• Minimum 10 GB available storage.
+• Microphone for voice input.
+• Internet connection.
+5.5
+Software Requirements
+The software technologies required for VoxentraAI include:
+• Operating System: Windows, Linux, or macOS.
+• Frontend: React, TypeScript, TSX, Vite, and CSS.
+• Backend: Python, FastAPI, and Uvicorn.
+• Database: PostgreSQL.
+• Code Editor: Visual Studio Code.
+• Web Browser: Google Chrome or any modern web browser.
+14
+
+
+==================== PAGE 28 ====================
+
+Table 5.3: Complaint Categories and Description
+Complaint Category
+Description
+Water
+Includes water supply problems, water leakage and
+other water-related issues.
+Roads
+Includes damaged roads, potholes and road-related
+problems.
+Electricity
+Includes power failures, damaged electrical facilities
+and electricity-related complaints.
+Garbage/Sanitation
+Includes garbage accumulation, waste collection and
+sanitation problems.
+Public Safety
+Includes accidents, theft and other public safety con-
+cerns.
+Streetlights
+Includes damaged or non-functioning streetlights.
+Drainage
+Includesblockeddrainagesystems, wateroverflow and
+drainage-related problems.
+Other
+Includes complaints that do not belong to the prede-
+fined categories.
+Table 5.3 presents the major complaint categories supported by VoxentraAI along with their
+descriptions. It shows how different types of civic and emergency complaints are identified and
+categorized for appropriate processing and department routing.
+15
+
+
+==================== PAGE 29 ====================
+
+Table 5.4: Complaint Priority Levels
+Priority Level
+Description
+Low
+Minor issues that do not require immediate attention
+and can be resolved during normal operations.
+Medium
+Issues that require departmental attention within a rea-
+sonable period of time.
+High
+Serious issues that require faster action because they
+may affect many citizens or public services.
+Critical
+Emergency situations that require immediate atten-
+tion, such as major accidents or serious public safety
+threats.
+Table 5.4 presents the different complaint priority levels used in VoxentraAI based on the
+urgency and severity of the reported issue. It helps the system identify critical complaints and
+prioritize them for faster response and appropriate action.
+5.6
+User Roles and Permissions
+VoxentraAI mainly contains two types of users:
+1. Citizen
+2. Administrator
+5.6.1
+Citizen
+Citizens can register and log in to the system, submit complaints through voice or text, confirm
+complaint information, track complaint status, receive notifications, and view responses.
+5.6.2
+Administrator
+Administrators can manage complaints, view complaint details, assign complaints to depart-
+ments, update complaint status, monitor overdue complaints, manage users, and generate re-
+ports.
+16
+
+
+==================== PAGE 30 ====================
+
+Table 5.5: User Roles and Permissions
+User Role
+Permissions
+Citizen
+Can register complaints using voice or text, view com-
+plaint details, track complaint status and receive noti-
+fications.
+Administrator
+Can view, search, filter, manage and update com-
+plaints.
+Department
+Adminis-
+trator
+Can receive assigned complaints, update complaint
+status and manage department-related issues.
+System Administrator
+Can manage users, departments, system settings and
+overall application configuration.
+Table 5.5 presents the different user roles in VoxentraAI and their corresponding permissions.
+It defines the access and activities available to citizens and administrators, ensuring proper
+role-based access and secure management of the system.
+5.7
+System Constraints
+The system may depend on internet connectivity, speech-to-text accuracy, AI processing accu-
+racy, database availability, and the availability of required backend services.
+5.8
+Requirement Summary
+The requirements analysis provides the foundation for designing and implementing VoxentraAI.
+The identified requirements ensure that the system can provide centralized complaint reporting,
+intelligent complaint processing, automatic routing, emergency handling, and continuous com-
+plaint monitoring.
+17
+
+
+==================== PAGE 31 ====================
+
+Chapter 6
+Technology Stack
+Table 6.1: Technology Stack Used in VoxentraAI
+Category
+Technology
+Purpose
+Frontend
+React
+Used for building the user in-
+terface.
+Frontend
+TypeScript
+Used for type-safe application
+development.
+Frontend
+TSX
+Used for creating React com-
+ponents.
+Frontend
+Vite
+Used as the frontend develop-
+ment and build tool.
+Frontend
+CSS
+Used for styling the user inter-
+face.
+Development Environ-
+ment
+Node.js
+Used for frontend develop-
+ment tools and runtime sup-
+port.
+Backend
+Python
+Used for backend develop-
+ment and AI processing.
+Backend
+FastAPI
+Used for developing backend
+APIs.
+Backend
+Uvicorn
+Used as the server for running
+the FastAPI application.
+Database
+PostgreSQL
+Used for storing users, com-
+plaints and other system data.
+AI Technology
+Whisper
+Used for converting voice in-
+put into text.
+Table 6.1 presents the complete technology stack used in the development of VoxentraAI.
+The system combines frontend, backend, database, artificial intelligence, speech processing,
+natural language processing, and communication technologies to provide an efficient complaint
+18
+
+
+==================== PAGE 32 ====================
+
+management platform. Each technology is selected based on its role in developing, processing,
+storing, and managing complaint-related information.
+The frontend technologies are used to create an interactive and user-friendly interface for
+citizens and administrators, while the backend technologies handle application logic, authen-
+tication, complaint processing, and communication between different components. Database
+technologies are used to securely store user details, complaint information, status updates, and
+other system records. AI, machine learning, speech recognition, and natural language pro-
+cessing technologies support intelligent complaint understanding, classification, information
+extraction, and priority detection. Development and version control tools are used to simplify
+coding, testing, maintenance, and project management.
+6.1
+Introduction
+VoxentraAI uses a combination of modern frontend, backend, database, and artificial intelligence
+technologies. These technologies work together to provide an efficient and user-friendly citizen
+complaint management system.
+6.2
+Frontend Technologies
+The frontend is responsible for providing the user interface through which citizens and admin-
+istrators interact with the system.
+6.2.1
+React
+React is used to develop the interactive user interface of VoxentraAI. It allows the application
+to be divided into reusable components and provides a responsive user experience.
+6.2.2
+TypeScript
+TypeScript is used to improve the reliability and maintainability of the frontend code. It provides
+static typing and helps identify errors during development.
+6.2.3
+TSX
+TSX is used to write React components by combining TypeScript with JSX syntax. It allows
+the structure and logic of user interface components to be developed together.
+19
+
+
+==================== PAGE 33 ====================
+
+6.2.4
+Vite
+Vite is used as the frontend development and build tool. It provides fast development server
+startup and efficient application building.
+6.2.5
+CSS
+CSS is used to design and style the user interface. It is responsible for layout, spacing, fonts,
+colors, buttons, forms, and other visual elements.
+6.3
+Backend Technologies
+The backend handles complaint processing, authentication, AI integration, database communi-
+cation, and other server-side operations.
+6.3.1
+Python
+Python is used for backend development because of its simplicity and its extensive support for
+artificial intelligence and web development.
+6.3.2
+FastAPI
+FastAPI is used to develop the backend APIs of VoxentraAI. It provides a modern framework
+for creating fast and efficient web APIs.
+6.3.3
+Uvicorn
+Uvicorn is used as the ASGI server for running the FastAPI application. It handles incoming
+requests and communicates with the backend application.
+6.4
+Database Technology
+6.4.1
+PostgreSQL
+PostgreSQL is used as the database management system for storing user information, complaints,
+departments, complaint status, locations, and other system data.
+6.5
+Artificial Intelligence
+Artificial intelligence is an important component of VoxentraAI. It is used to understand citizen
+complaints, classify them, extract relevant information, detect priority levels, and generate
+20
+
+
+==================== PAGE 34 ====================
+
+suitable responses.
+6.6
+Speech-to-Text Technology
+Speech-to-text technology converts the citizen’s voice input into text. The generated text is then
+processed by the AI component to understand the complaint.
+6.7
+Technology Integration
+The major technologies work together as follows:
+• React provides the frontend interface.
+• TypeScript and TSX support frontend development.
+• Vite manages frontend development and building.
+• CSS provides the visual design.
+• Python and FastAPI provide backend services.
+• Uvicorn runs the backend server.
+• PostgreSQL stores application data.
+• Artificial intelligence processes and understands complaints.
+• Speech-to-text converts voice complaints into text.
+6.8
+Technology Selection
+The selected technologies were chosen because they provide good performance, development
+flexibility, scalability, and integration capabilities. The combination of React, Python, FastAPI,
+PostgreSQL, and artificial intelligence provides a suitable foundation for developing VoxentraAI.
+21
+
+
+==================== PAGE 35 ====================
+
+Chapter 7
+System Design
+7.1
+System Architecture
+The system architecture of VoxentraAI consists of several interconnected components that work
+together to provide an efficient platform for reporting and managing public issues. The archi-
+tecture includes the Citizen Interface, Administrator Interface, Frontend, Backend, Artificial
+Intelligence Processing, Database, and appropriate Government Departments.
+The Citizen Interface allows users to register, log in, report local issues such as accidents, theft,
+damaged roads, garbage problems, and emergencies, upload images, provide location details,
+and track the status of their complaints.
+The Administrator Interface enables authorized administrators to monitor reported issues, verify
+complaints, manage users, assign issues to the appropriate departments, update the status of
+complaints, and generate reports for effective decision-making.
+The Frontend provides a user-friendly interface that connects citizens and administrators with
+the system. The Backend manages the core functionality, including user authentication, com-
+plaint handling, data processing, notifications, and communication between different system
+components.
+The Artificial Intelligence Processing module analyzes complaint descriptions and uploaded
+information to automatically classify and categorize issues. It can also identify the priority level
+of a complaint, helping emergency and critical issues receive faster attention.
+The Database securely stores user information, complaint details, images, locations, complaint
+status, AI-generated results, and administrative records. The appropriate Government Depart-
+ments receive verified and categorized complaints based on the type of issue and take necessary
+action.
+Thus, all these components work together to create a centralized, intelligent, and efficient system
+for connecting citizens with government authorities and improving the response to public issues.
+22
+
+
+==================== PAGE 36 ====================
+
+Figure 7.1: System Architecture of VoxentraAI
+Figure 7.1 illustrates the overall system architecture of VoxentraAI. It shows how the major
+components of the system work together, starting from user complaint submission through voice
+or text input. The complaint is processed using speech-to-text and AI-based analysis, followed
+by classification, information extraction, and priority detection. The processed complaint is
+then registered, routed to the appropriate department, and monitored through status tracking
+and notifications. This architecture provides an integrated workflow for efficient complaint
+management and resolution.
+23
+
+
+==================== PAGE 37 ====================
+
+Citizen
+Voice / Text Input
+Frontend
+React, TypeScript, TSX, Vite, CSS
+Backend
+Python, FastAPI, Uvicorn
+AI Processing
+Speech-to-Text
+Complaint Classification
+Information Extraction
+Priority Detection
+Department Routing
+PostgreSQL Database
+Users
+Complaints
+Departments
+Notifications
+Appropriate Department
+Complaint Status Updates
+and Notifications
+Figure 7.2: VoxentraAI System Architecture
+Figure 7.2 illustrates the detailed system architecture of VoxentraAI and the interaction be-
+tween its major components. The architecture shows how complaints submitted through voice
+or text are processed by the system using speech recognition, AI-based analysis, classification,
+information extraction, and priority detection. The processed complaint is then registered and
+automatically routed to the appropriate department. The system also supports complaint track-
+ing, notifications, and escalation, providing a complete workflow from complaint submission
+to resolution.
+24
+
+
+==================== PAGE 38 ====================
+
+7.2
+Introduction
+System design describes the overall structure and working of VoxentraAI. It explains how
+citizens interact with the system, how complaints are processed using artificial intelligence, and
+how complaints are routed to the appropriate department.
+7.3
+System Architecture
+VoxentraAI follows a client-server architecture consisting of a frontend, backend, artificial
+intelligence processing layer, and database.
+The major components of the system are:
+• Citizen Interface
+• Administrator Interface
+• Frontend Application
+• Backend API
+• AI Processing Module
+• Speech-to-Text Module
+• Complaint Management Module
+• PostgreSQL Database
+• Department Management Module
+• Notification and Escalation Module
+7.4
+Working Flow
+The basic working flow of VoxentraAI is as follows:
+1. The citizen logs into the system.
+2. The citizen enters a complaint using voice or text.
+3. If voice input is provided, the speech-to-text module converts it into text.
+4. The AI module analyses the complaint.
+5. The system identifies the complaint category and extracts important information.
+25
+
+
+==================== PAGE 39 ====================
+
+6. The system detects the priority level of the complaint.
+7. If required information is missing, the system asks the citizen for clarification.
+8. The citizen confirms the complaint details.
+9. The system generates a unique complaint ID.
+10. The complaint is stored in the PostgreSQL database.
+11. The system automatically routes the complaint to the appropriate department.
+12. The department processes the complaint and updates its status.
+13. The citizen can monitor the complaint status.
+14. Follow-up notifications and escalation are provided for overdue complaints.
+Figure 7.3: System Workflow
+26
+
+
+==================== PAGE 40 ====================
+
+Figure 7.3 illustrates the overall workflow of VoxentraAI, showing the sequence of activities
+from complaint submission to final resolution. The workflow begins with voice or text input
+from the citizen, followed by speech-to-text conversion and AI-based complaint processing.
+The system then classifies the complaint, extracts relevant information, determines its priority,
+and registers it. Finally, the complaint is routed to the appropriate department, tracked through
+status updates and notifications, and escalated when necessary until resolution.
+7.5
+System Components
+7.5.1
+Citizen Module
+The citizen module allows users to register, log in, submit complaints, confirm complaint details,
+track complaint status, and receive notifications.
+7.5.2
+Complaint Processing Module
+This module receives complaint information and processes it using artificial intelligence. It
+identifies the category, extracts important information, and determines the priority level.
+7.5.3
+AI Module
+The AI module understands natural language complaints and helps classify them. It can identify
+important details such as complaint type, location, and urgency.
+7.5.4
+Department Routing Module
+This module automatically identifies the appropriate department based on the complaint cate-
+gory and routes the complaint to that department.
+7.5.5
+Administrator Module
+The administrator module allows authorized administrators to manage users, complaints, de-
+partments, assignments, statuses, and reports.
+7.5.6
+Notification Module
+The notification module informs citizens about complaint registration, status changes, follow-
+ups, and other important updates.
+27
+
+
+==================== PAGE 41 ====================
+
+7.5.7
+Escalation Module
+The escalation module identifies overdue complaints and escalates them to the appropriate
+higher authority for further action.
+7.6
+Complaint Processing Flow
+The complaint processing flow can be summarized as:
+Citizen Input →Speech-to-Text →AI Processing →Classification →Priority Detection
+→Confirmation →Complaint Registration →Department Routing
+7.7
+System Design Considerations
+The system is designed with simplicity, scalability, reliability, security, and accessibility in
+mind. The modular architecture allows individual components to be modified or enhanced
+without affecting the complete system.
+7.8
+Data Flow
+Data flows from the citizen interface to the backend through APIs. The backend processes the
+information using the required AI services and stores the resulting complaint information in
+PostgreSQL. Administrators and departments can retrieve the information through the backend
+and update the complaint status.
+28
+
+
+==================== PAGE 42 ====================
+
+Figure 7.4: Data Flow Diagram
+Figure 7.4 illustrates the Data Flow Diagram (DFD) of VoxentraAI and shows how informa-
+tion moves between the citizen, system components, database, and administrator. The process
+begins when a citizen submits a complaint through voice or text input. The system processes the
+complaint using speech recognition and AI-based analysis, extracts the required information,
+and stores the complaint details in the database. The complaint is then classified, prioritized, and
+routed to the appropriate department. The administrator can monitor and update the complaint
+status, while the citizen receives notifications and can track the progress until the complaint is
+resolved.
+29
+
+
+==================== PAGE 43 ====================
+
+Figure 7.5: Use Case Diagram
+Figure 7.5 illustrates the Use Case Diagram of VoxentraAI, showing the interactions between
+the main actors and the system. The Citizen can register and log in, submit complaints through
+voice or text, track complaint status, receive notifications, and provide follow-up information.
+The Administrator can manage users, view and process complaints, update complaint status,
+monitor priority levels, and handle escalation. The diagram represents the major functions
+available to each actor and their interaction with the VoxentraAI system.
+30
+
+
+==================== PAGE 44 ====================
+
+Chapter 8
+Database Design
+8.1
+Introduction
+The database is an important component of VoxentraAI. PostgreSQL is used to store and
+manage information related to users, complaints, departments, locations, complaint status, and
+notifications. The database helps maintain the complaint history and allows authorized users to
+retrieve and update information efficiently.
+8.2
+Database Objectives
+The main objectives of the database are:
+• To store citizen information securely.
+• To store complaint details.
+• To maintain complaint status and history.
+• To store department information.
+• To maintain complaint assignments.
+• To store location details.
+• To manage notifications.
+• To support efficient retrieval of complaint information.
+8.3
+Main Database Entities
+The major entities considered for VoxentraAI are:
+• User
+• Complaint
+• Department
+• Location
+31
+
+
+==================== PAGE 45 ====================
+
+• Complaint Status
+• Notification
+• Complaint Assignment
+8.4
+User Table
+The User table stores information about citizens and administrators.
+Field
+Description
+User ID
+Unique identifier for the user
+Name
+Name of the user
+Email
+Email address of the user
+Phone
+Contact number of the user
+Password
+User authentication information
+Role
+Citizen or Administrator
+8.5
+Complaint Table
+The Complaint table stores information about complaints submitted by citizens.
+Field
+Description
+Complaint ID
+Unique complaint identifier
+User ID
+User who submitted the complaint
+Description
+Complaint description
+Category
+Type of complaint
+Priority
+Priority level of complaint
+Location
+Location of the complaint
+Status
+Current complaint status
+Created Date
+Date of complaint registration
+8.6
+Department Table
+The Department table stores information about departments responsible for handling different
+types of complaints.
+Field
+Description
+Department ID
+Unique department identifier
+Department Name
+Name of the department
+Description
+Department responsibility
+Contact Information
+Department contact details
+32
+
+
+==================== PAGE 46 ====================
+
+8.7
+Location Table
+The Location table stores location-related information associated with complaints.
+Field
+Description
+Location ID
+Unique location identifier
+Address
+Address of the reported issue
+City
+City name
+Latitude
+Geographic latitude
+Longitude
+Geographic longitude
+8.8
+Notification Table
+The Notification table stores notifications sent to citizens.
+Field
+Description
+Notification ID
+Unique notification identifier
+User ID
+Recipient of the notification
+Complaint ID
+Related complaint
+Message
+Notification message
+Date
+Notification date
+Read Status
+Whether the notification was read
+8.9
+Database Relationships
+The major relationships between the entities are:
+• A user can submit multiple complaints.
+• Each complaint belongs to one user.
+• A complaint is assigned to an appropriate department.
+• A complaint is associated with a location.
+• A complaint can have multiple status updates.
+• A user can receive multiple notifications.
+• A notification can be associated with a complaint.
+33
+
+
+==================== PAGE 47 ====================
+
+8.10
+Database Security
+Database security is important because the system stores user and complaint information.
+Access to the database should be restricted to authorized backend services and administrators.
+Authentication and role-based authorization should be used to prevent unauthorized access.
+8.11
+Database Summary
+The PostgreSQL database provides structured storage for the VoxentraAI system. It main-
+tains user information, complaint details, department information, locations, notifications, and
+complaint status. The database supports reliable complaint management and helps authorities
+retrieve information efficiently.
+USER
+User ID
+Name
+Email
+COMPLAINT
+Complaint ID
+Description
+Status
+NOTIFICATION
+Notification ID
+Message
+DEPARTMENT
+Department ID
+Name
+Submits
+Receives
+Assigned To
+Related To
+Figure 8.1: Entity Relationship Diagram of VoxentraAI
+Figure 8.1 illustrates the Entity Relationship Diagram (ERD) of VoxentraAI, showing the rela-
+tionships between the main entities involved in the complaint management system. It represents
+important entities such as users, complaints, departments, notifications, and complaint status,
+along with the relationships between them. The diagram provides a clear view of how data
+is organized and connected within the system to support complaint registration, processing,
+tracking, and resolution.
+34
+
+
+==================== PAGE 48 ====================
+
+Chapter 9
+Module Description
+9.1
+Introduction
+VoxentraAI is divided into multiple modules to make the system organized, scalable, and easy
+to maintain. Each module performs a specific function and communicates with other modules
+to provide complete complaint management.
+Table 9.1: VoxentraAI N1–N10 Module Description
+Module
+Module Name
+Description
+N1
+User Management
+Handles user registration, login and user roles
+N2
+Voice Input
+Accepts complaints through voice input
+N3
+Speech-to-Text
+Converts voice input into text using speech
+recognition
+N4
+AI Understanding
+Understands the meaning and context of com-
+plaints
+N5
+Complaint Classification
+Identifies the appropriate complaint category
+N6
+Information Extraction
+Extracts important information from complaints
+N7
+Priority Detection
+Determines the priority level of complaints
+N8
+Department Routing
+Routes complaints to the appropriate depart-
+ment
+N9
+Tracking and Notification
+Provides complaint tracking and status notifica-
+tions
+N10
+Escalation
+Escalates delayed or unresolved complaints
+Table 9.1 presents the ten major modules of the VoxentraAI system and their respective functions.
+The modules are organized as N1 to N10, with each module performing a specific role in the
+complaint management process.
+The N1 User Management module handles user registration, login, and user roles. The N2
+Voice Input module accepts complaints through voice input. The N3 Speech-to-Text module
+converts the received voice input into text using speech recognition. The N4 AI Understanding
+module understands the meaning and context of the complaints.
+The N5 Complaint Classification module identifies the appropriate complaint category. The N6
+Information Extraction module extracts important information from the complaints. The N7
+Priority Detection module determines the priority level of complaints based on their urgency.
+35
+
+
+==================== PAGE 49 ====================
+
+The N8 Department Routing module routes complaints to the appropriate department. The N9
+Tracking and Notification module provides complaint tracking and status notifications to users.
+The N10 Escalation module escalates delayed or unresolved complaints for further action.
+Together, these N1–N10 modules form the core functional structure of VoxentraAI and support
+the complete complaint management process from user access and complaint submission to
+routing, tracking, and escalation.
+9.2
+User and Authentication Module
+This module manages user registration, login, logout, and authentication in the VoxentraAI
+system. It provides a secure mechanism for users to create and access their accounts using valid
+credentials. During registration, the system collects the required user information and stores
+it securely in the database. During login, the entered credentials are verified before granting
+access to the system.
+The module also implements role-based access control to differentiate between citizens and
+administrators. Citizens can access features such as complaint registration, complaint tracking,
+notifications, and profile management, while administrators can manage complaints, depart-
+ments, users, and system activities. Unauthorized users are prevented from accessing restricted
+functionalities. The module also maintains user sessions and ensures that users are properly
+logged out when they leave the system. This improves system security, protects user informa-
+tion, and ensures that each user can access only the functionalities permitted for their role.
+9.2.1
+Citizen Functions
+Citizens can:
+• Register an account.
+• Log in and log out.
+• Submit complaints.
+• View submitted complaints.
+• Track complaint status.
+• Receive notifications.
+9.2.2
+Administrator Functions
+Administrators can:
+• Log in securely.
+36
+
+
+==================== PAGE 50 ====================
+
+• View registered users.
+• Manage complaints.
+• Manage departments.
+• Monitor complaint status.
+• View reports.
+9.3
+Voice Complaint Module
+The voice complaint module allows citizens to report issues by speaking instead of typing. This
+makes the system easier to use, especially when users are unable or unwilling to type a detailed
+complaint. It provides a convenient and natural way for citizens to communicate their problems
+with the system.
+The citizen can record a complaint using the voice input option provided in the application. The
+recorded speech is processed using speech-to-text technology and converted into readable text.
+The converted text is displayed to the user for verification before submitting the complaint.
+The generated text is then sent to the AI processing module for further analysis. The AI identifies
+the complaint category, extracts important information, determines the priority level, and helps
+route the complaint to the appropriate department. This module reduces the effort required for
+manual typing and improves accessibility for different types of users.
+9.4
+Text Complaint Module
+The text complaint module allows citizens to enter their complaints directly using a text input
+field. It provides a simple and flexible method for users who prefer typing their problems instead
+of using voice input.
+The citizen can enter a detailed description of the issue, including relevant information such
+as the problem location, type of issue, and additional details. The system accepts the entered
+text and performs basic validation to ensure that the complaint contains sufficient information
+before processing it.
+The entered complaint is processed by the AI module in the same way as voice-generated text.
+The AI analyzes the complaint, identifies the category, extracts important information, detects
+the priority level, and determines the appropriate department for handling the issue.
+The text complaint module also allows users to review and modify their complaint before
+final submission. After confirmation, the complaint is registered in the system and a unique
+complaint ID is generated. This ID can be used by the citizen to track the status and progress
+of the complaint.
+37
+
+
+==================== PAGE 51 ====================
+
+9.5
+Speech-to-Text Module
+The speech-to-text module converts the citizen’s voice into text. This text becomes the input for
+further AI processing.
+The basic process is:
+Voice Input →Speech-to-Text →Complaint Text
+9.6
+AI Complaint Understanding Module
+The AI complaint understanding module analyses the complaint written or spoken by the citizen.
+It identifies the main meaning of the complaint and extracts useful information.
+The module can identify:
+• Complaint type.
+• Complaint description.
+• Location.
+• Urgency.
+• Important keywords.
+9.7
+Complaint Classification Module
+The complaint classification module categorizes complaints into suitable categories. Example
+categories include:
+• Accident.
+• Theft.
+• Road damage.
+• Water problem.
+• Electricity problem.
+• Garbage problem.
+• Drainage problem.
+• Streetlight problem.
+38
+
+
+==================== PAGE 52 ====================
+
+• Public safety issue.
+• Other emergencies.
+Classification helps the system determine which department should handle the complaint.
+9.8
+Priority Detection Module
+The priority detection module determines the urgency of a complaint.
+Complaints can be
+categorized based on their severity and potential impact.
+Possible priority levels include:
+• Low
+• Medium
+• High
+• Emergency
+Emergency complaints can be given higher priority so that they can be handled quickly.
+9.9
+Information Extraction Module
+This module extracts important information from the complaint. It can identify details such as
+location, problem type, description, and other relevant information.
+If important information is missing or unclear, the system can ask the citizen for clarification
+before registering the complaint.
+9.10
+Complaint Registration Module
+After the citizen confirms the complaint details, the system registers the complaint and generates
+a unique complaint ID.
+The complaint record may contain:
+• Complaint ID.
+• Citizen details.
+• Complaint description.
+• Category.
+• Location.
+39
+
+
+==================== PAGE 53 ====================
+
+• Priority.
+• Date and time.
+• Complaint status.
+9.11
+Department Routing Module
+The department routing module is responsible for identifying and assigning each complaint to
+the appropriate department. After the complaint is analyzed by the AI processing module, the
+system determines the type and category of the issue and selects the department responsible for
+handling it.
+The routing process helps ensure that complaints reach the correct authority without requiring
+citizens to know which department is responsible. The system can use the complaint category,
+description, location, and priority level to determine the appropriate department.
+For example:
+• Road damage →Road or Municipal Department.
+• Water problem →Water Supply Department.
+• Electricity failure →Electricity Department.
+• Garbage problem →Sanitation Department.
+• Drainage issue →Municipal or Drainage Department.
+• Streetlight failure →Electricity or Municipal Department.
+• Public safety issue →Appropriate Emergency Authority.
+The assigned department receives the complaint along with the important information extracted
+by the AI system. This allows the concerned authority to understand the issue and begin the
+required action. The routing information is also stored with the complaint record for future
+tracking and administrative monitoring.
+This module reduces manual routing, minimizes delays, and improves the efficiency of complaint
+management. It also helps ensure that urgent complaints are directed to the appropriate authority
+for faster response.
+40
+
+
+==================== PAGE 54 ====================
+
+9.12
+Complaint Tracking Module
+The complaint tracking module allows citizens to monitor the progress of their complaints from
+the time of submission until final resolution. Each registered complaint is provided with a
+unique complaint ID, which can be used by the citizen to view the current status and related
+updates.
+The system maintains the complaint status throughout the processing lifecycle. Whenever an
+administrator or department updates the complaint, the latest status is reflected in the citizen
+interface. This provides transparency and allows citizens to understand the current stage of their
+complaint.
+Typical complaint statuses include:
+• Submitted.
+• Under Review.
+• Assigned.
+• In Progress.
+• Resolved.
+• Closed.
+The citizen can view important information such as the complaint ID, complaint description,
+assigned department, priority level, current status, and recent updates. The system can also
+provide notifications whenever the complaint status changes.
+If a complaint remains unresolved for a long period, the tracking information can be used by
+the follow-up and escalation module to identify overdue complaints. This helps administrators
+monitor pending cases and take necessary action.
+Overall, the complaint tracking module improves transparency, provides continuous status
+information, and helps citizens stay informed about the progress of their complaints without
+repeatedly contacting the authorities.
+9.13
+Notification Module
+The notification module keeps citizens informed about the progress of their complaints. It
+provides timely notifications whenever there is an important change in the complaint status.
+Notifications may be generated when a complaint is successfully registered, assigned to a
+department, accepted by an authority, updated, resolved, or requires additional information
+from the citizen.
+41
+
+
+==================== PAGE 55 ====================
+
+The system can notify citizens about important actions such as department assignment, status
+changes, follow-up requests, and complaint resolution. This reduces the need for citizens to
+repeatedly check the system and improves communication between citizens and authorities.
+Notifications can be displayed through the application interface and can be linked with the
+corresponding complaint ID for easy reference.
+9.14
+Follow-up and Escalation Module
+The follow-up and escalation module monitors the progress of complaints after they are assigned
+to the responsible department. The system keeps track of the expected resolution time and
+identifies complaints that remain unresolved beyond the specified period.
+When a complaint becomes overdue, the system can generate a follow-up notification to the
+concerned department. If the complaint continues to remain unresolved, it can be escalated to a
+higher-level authority for further action. This mechanism helps reduce unnecessary delays and
+ensures that important complaints receive appropriate attention.
+9.15
+Suspicious Complaint Handling Module
+The suspicious complaint handling module helps identify complaints that may contain inap-
+propriate, misleading, incomplete, or suspicious information.
+The system can analyze the
+complaint details and identify cases that require additional verification before being processed
+further.
+Suspicious complaints are flagged and made available to the administrator for review. The
+administrator can verify the complaint information and decide whether to approve, reject, or
+request additional details from the citizen. This helps prevent misuse of the complaint system
+and improves the reliability of registered complaints.
+9.16
+AI Response Module
+The AI response module generates suitable responses based on the complaint details, processing
+results, and current complaint status. It helps provide citizens with clear information about the
+progress of their complaints.
+The module can generate responses for events such as successful complaint registration, de-
+partment assignment, requests for clarification, complaint updates, delays, and resolution.
+AI-generated responses reduce the need for manual communication and provide citizens with
+quick and understandable information. The responses are generated based on the information
+available in the system and are associated with the relevant complaint.
+42
+
+
+==================== PAGE 56 ====================
+
+9.17
+Administrator Dashboard Module
+The administrator dashboard provides a centralized interface for monitoring and managing the
+activities of the VoxentraAI system. It allows administrators to view complaints, monitor their
+status, review suspicious complaints, and track department-wise activities.
+The dashboard provides an overall summary of the complaint management process. Adminis-
+trators can monitor:
+• Total number of registered complaints.
+• Pending complaints.
+• Complaints currently in progress.
+• Resolved complaints.
+• Emergency and high-priority complaints.
+• Overdue complaints.
+• Suspicious or flagged complaints.
+• Department-wise complaint distribution.
+• Complaint status and processing progress.
+The administrator can also review individual complaint details and take appropriate actions
+when required.
+This dashboard helps authorities monitor system activities efficiently and
+identify complaints that require immediate attention.
+9.18
+Module Integration
+All modules of VoxentraAI are integrated to provide a complete and efficient citizen complaint
+management workflow. The process begins when a citizen submits a complaint through voice
+or text input. Voice complaints are converted into text using speech-to-text technology, while
+text complaints are directly passed to the AI processing module.
+The AI module analyzes the complaint to understand its meaning, identify the complaint
+category, extract important information, determine the priority level, and identify the appropriate
+department. If the information is incomplete or unclear, the system can request clarification
+from the citizen before registering the complaint.
+After confirmation, the complaint is registered with a unique complaint ID and routed to the
+appropriate department. The notification module informs the citizen about important updates.
+43
+
+
+==================== PAGE 57 ====================
+
+The follow-up and escalation module monitors unresolved complaints and ensures that delayed
+complaints receive further attention.
+The suspicious complaint handling module supports administrators in reviewing potentially
+inappropriate complaints, while the AI response module provides suitable responses to citizens.
+Administrators can monitor the complete process through the administrator dashboard.
+Thus, the integration of all modules provides a centralized, intelligent, and user-friendly sys-
+tem for complaint registration, processing, monitoring, communication, and resolution. The
+complete workflow helps improve transparency, reduce response delays, and strengthen com-
+munication between citizens and authorities.
+44
+
+
+==================== PAGE 58 ====================
+
+Chapter 10
+Implementation and Working Principle
+10.1
+Introduction
+The implementation of VoxentraAI combines the frontend, backend, database, artificial intelli-
+gence, and speech-to-text components into a single complaint management system. The system
+is designed to provide citizens with a simple method of reporting local issues and enables
+authorities to manage complaints efficiently.
+The implementation follows a modular approach in which each component performs a specific
+function. The frontend provides the user interface, while the backend manages application
+logic and communication between different components. PostgreSQL is used for storing system
+information, and the AI component is used to understand and process citizen complaints.
+The complete implementation supports complaint registration through both voice and text. After
+receiving the complaint, the system processes the information, identifies the complaint category,
+extracts relevant details, determines the priority, and routes the complaint to the appropriate
+department. The citizen can then track the complaint through its different processing stages.
+10.2
+Frontend Implementation
+The frontend of VoxentraAI is developed using React, TypeScript, TSX, Vite, and CSS. It
+provides the user interface through which citizens and administrators interact with the system.
+React is used to develop reusable interface components, while TypeScript provides structured
+and type-safe development. TSX is used to combine component logic with the user interface
+structure. Vite is used as the development and build tool, and CSS is used to design the layout
+and appearance of the application.
+The frontend provides interfaces for:
+• User registration and login.
+• Citizen dashboard.
+• Complaint submission.
+• Voice complaint input.
+• Text complaint input.
+• Complaint confirmation.
+45
+
+
+==================== PAGE 59 ====================
+
+• Complaint tracking.
+• Notifications.
+• Administrator dashboard.
+The citizen interface is designed to make complaint submission simple and accessible. Users
+can select either voice or text input based on their preference. The dashboard provides access
+to submitted complaints, their current status, notifications, and other relevant information.
+The administrator interface provides additional functionality for monitoring and managing
+complaints.
+Administrators can view complaints, check their priority, monitor department
+assignments, update complaint status, and review complaints that require attention.
+10.3
+Backend and Database Implementation
+The backend is developed using Python, FastAPI, and Uvicorn. It provides APIs for communi-
+cation between the frontend, AI processing components, and PostgreSQL database.
+FastAPI is used to create the backend APIs required for handling user requests and complaint-
+related operations. Uvicorn is used as the application server for running the FastAPI application.
+The backend acts as the central processing layer between the user interface and the database.
+The backend is responsible for:
+• User authentication.
+• Receiving complaint data.
+• Processing complaint requests.
+• Communicating with AI services.
+• Storing complaint information.
+• Retrieving complaint information.
+• Updating complaint status.
+• Managing department assignments.
+• Handling notifications.
+The backend validates the information received from the frontend before performing database
+operations. It also manages the flow of information between the complaint processing module
+and other system components.
+PostgreSQL is used to store and manage the system data. The database contains information
+about users, complaints, departments, locations, notifications, and complaint status.
+46
+
+
+==================== PAGE 60 ====================
+
+The backend communicates with PostgreSQL whenever information needs to be stored, re-
+trieved, or updated. This provides centralized data management and ensures that complaint
+information is available for both citizens and administrators.
+Database operations are performed according to the requirements of each module. For example,
+when a new complaint is submitted, the complaint details are inserted into the database. When
+a citizen checks the complaint status, the backend retrieves the latest information from the
+database.
+10.4
+Voice and Text Complaint Processing
+The voice complaint feature allows citizens to speak their complaint through a microphone. This
+provides an alternative to typing and makes the complaint submission process more convenient.
+The voice complaint process is:
+1. The citizen selects the voice complaint option.
+2. The system receives the voice input.
+3. The speech-to-text component converts the voice into text.
+4. The generated text is displayed for confirmation.
+5. The text is sent to the AI processing module.
+The converted text is checked by the citizen before further processing. This allows the user to
+identify and correct errors that may occur during speech-to-text conversion.
+Citizens can also directly type their complaint into the system. The text-based approach is
+useful when users prefer entering detailed information manually.
+The text complaint process is:
+1. The citizen enters the complaint.
+2. The system receives the complaint text.
+3. The AI module analyses the text.
+4. Important information is extracted.
+5. The complaint category and priority are identified.
+6. The citizen confirms the extracted information.
+Both voice-generated and manually entered complaints follow the same AI processing workflow
+after the complaint is available as text. This provides a consistent processing mechanism for
+different input methods.
+47
+
+
+==================== PAGE 61 ====================
+
+10.5
+AI Processing and Complaint Confirmation
+The AI processing workflow is one of the main components of VoxentraAI. It is responsible
+for understanding the complaint and converting the unstructured citizen input into structured
+information that can be processed by the system.
+The process includes:
+1. Receiving the complaint text.
+2. Understanding the complaint.
+3. Identifying the complaint category.
+4. Extracting important information.
+5. Identifying the location.
+6. Detecting the priority level.
+7. Checking whether required information is available.
+8. Asking for clarification if necessary.
+9. Generating a structured complaint.
+The AI processing component helps identify the main problem described by the citizen. It can
+determine whether the complaint is related to roads, water supply, electricity, garbage, drainage,
+streetlights, public safety, or other supported categories.
+The system also extracts relevant information from the complaint, such as the issue description
+and location. The priority level can be determined based on the nature and urgency of the
+reported problem.
+Before registering the complaint, the system presents the extracted information to the citizen.
+The citizen can verify the complaint details and confirm whether the information is correct.
+If the information is incorrect or incomplete, the citizen can provide additional details. The
+updated information is processed again before the complaint is finally registered. This confir-
+mation step helps improve the accuracy of the complaint record.
+10.6
+Complaint and Department Routing
+After confirmation, the backend registers the complaint in the PostgreSQL database. A unique
+complaint ID is generated for every registered complaint.
+This ID is used to identify the
+complaint throughout its lifecycle.
+The complaint record contains important details such as:
+48
+
+
+==================== PAGE 62 ====================
+
+• Complaint ID.
+• Citizen information.
+• Complaint description.
+• Complaint category.
+• Location.
+• Priority level.
+• Date and time.
+• Complaint status.
+After the complaint is registered, the system identifies the appropriate department based on the
+complaint category. The routing process reduces the need for manual department selection by
+the citizen.
+For example, a road-related complaint can be routed to the responsible road or municipal
+department, while an electricity-related complaint can be routed to the electricity department.
+Similarly, water-related complaints can be directed to the water supply department and garbage-
+related complaints can be directed to the sanitation department.
+The department assignment is stored along with the complaint record. Administrators can view
+the assigned department and monitor the progress of the complaint. If required, the complaint
+can be reviewed or reassigned by an authorized administrator.
+The routing process also considers the priority of the complaint. High-priority or emergency
+complaints can be identified for faster attention. This helps authorities focus on complaints that
+may require immediate action.
+Overall, the complaint and department routing module improves the efficiency of complaint
+distribution, reduces manual effort, and ensures that complaints are directed to the appropriate
+authority for further processing.
+10.7
+Complaint Status and Notifications
+Administrators or authorized department personnel can update the status of complaints.
+The status may progress through:
+Submitted →Under Review →Assigned →In Progress →Resolved →Closed
+Citizens can view the current status through their dashboard.
+The system provides notifications when important changes occur. Citizens can receive updates
+about complaint registration, assignment, progress, resolution, or requests for additional infor-
+mation.
+For unresolved complaints, the system can generate follow-up notifications.
+49
+
+
+==================== PAGE 63 ====================
+
+10.8
+Escalation and Emergency Complaint Handling
+The escalation and emergency complaint handling module is responsible for identifying com-
+plaints that require urgent attention or have remained unresolved beyond the expected resolution
+time. This module helps ensure that important complaints are not ignored or delayed during
+the complaint management process.
+When a complaint is assigned to a department, the system can monitor its progress and resolution
+time. If the complaint is not resolved within the expected period, it can be identified as an overdue
+complaint. The system can then initiate the escalation process and notify the responsible higher
+authority.
+The basic escalation process is:
+1. Monitor complaint resolution time.
+2. Identify overdue complaints.
+3. Generate an escalation notification.
+4. Notify the appropriate higher authority.
+5. Continue monitoring until resolution.
+The escalation mechanism helps administrators identify complaints that require additional
+attention. The complaint details, current status, assigned department, priority level, and delay
+information can be provided to the higher authority for further action.
+The escalation process can be applied based on predefined conditions such as:
+• Complaint remaining unresolved beyond the expected time.
+• Repeated delays in complaint processing.
+• High-priority complaints requiring additional attention.
+• Complaints receiving repeated follow-up requests.
+• Complaints that require intervention from a higher authority.
+Complaints identified as emergencies can receive higher priority. Examples include accidents,
+serious public safety concerns, major electrical failures, dangerous road conditions, and other
+situations requiring immediate attention.
+The AI processing module can assist in identifying the priority of a complaint based on its
+description and available information. Emergency complaints can be highlighted in the admin-
+istrator dashboard so that they can be reviewed and processed quickly.
+The basic emergency complaint handling process is:
+50
+
+
+==================== PAGE 64 ====================
+
+1. Receive the complaint from the citizen.
+2. Analyze the complaint using the AI module.
+3. Identify whether the complaint indicates an emergency.
+4. Assign an appropriate priority level.
+5. Route the complaint to the responsible authority.
+6. Notify the administrator or concerned department.
+7. Monitor the complaint until appropriate action is taken.
+The system can maintain the escalation and emergency details along with the complaint record.
+This allows administrators to track when a complaint was escalated, the reason for escalation,
+and its current status.
+Overall, the escalation and emergency complaint handling module improves the responsiveness
+of the system. It helps prioritize urgent complaints, reduces delays in complaint resolution, and
+ensures that overdue or critical complaints receive appropriate administrative attention.
+10.9
+Complete Working Principle
+The complete working principle of VoxentraAI describes the overall flow of the system from
+complaint submission to final resolution. The system integrates the citizen interface, speech-
+to-text component, artificial intelligence, backend services, database, department routing, noti-
+fication system, and administrator dashboard.
+The complete working principle of VoxentraAI can be summarized as follows:
+Citizen →Voice/Text Input →Speech-to-Text →AI Processing →Classification →
+Priority Detection →Confirmation →Complaint Registration →Department Routing
+→Status Tracking →Resolution
+The working process begins when a citizen accesses the VoxentraAI application and chooses
+to submit a complaint. The citizen can either enter the complaint using text or provide the
+complaint through voice input. If voice input is selected, the speech-to-text component converts
+the recorded speech into text.
+The generated or entered text is then passed to the AI processing module. The AI analyzes
+the complaint to understand the reported issue. It identifies the complaint category, extracts
+relevant information such as location and description, and determines the priority level based
+on the nature of the complaint.
+If the complaint information is incomplete or unclear, the system can request additional in-
+formation from the citizen. The citizen is then provided with the extracted complaint details
+51
+
+
+==================== PAGE 65 ====================
+
+for confirmation. The complaint is registered only after the citizen verifies and confirms the
+information.
+After confirmation, the backend creates a complaint record in the PostgreSQL database and
+generates a unique complaint ID. The complaint is then routed to the appropriate department
+based on its category and other relevant information.
+The responsible department can review the complaint and begin the required action.
+The
+complaint status is updated as the processing progresses. Citizens can use their complaint ID
+to track the current status and view important updates.
+The notification module informs citizens whenever significant changes occur. For example,
+notifications can be generated when the complaint is assigned, updated, resolved, or requires
+additional information.
+If a complaint remains unresolved beyond the expected time, the escalation mechanism identifies
+the complaint as overdue and can notify a higher authority. Emergency complaints can also be
+given higher priority so that they receive faster administrative attention.
+The administrator workflow includes:
+1. Administrator logs into the system.
+2. Administrator views the complaint dashboard.
+3. New complaints are reviewed.
+4. Complaint details and priority levels are checked.
+5. Complaints are assigned to appropriate departments.
+6. Complaint progress is monitored.
+7. Complaint status is updated when required.
+8. Overdue complaints are identified and monitored.
+9. Suspicious complaints are reviewed.
+10. Emergency complaints are given appropriate attention.
+11. Reports and complaint statistics are reviewed.
+The database continuously maintains the important information associated with each complaint.
+This includes the complaint ID, citizen information, complaint description, category, location,
+priority, assigned department, status, and relevant timestamps.
+The system maintains the complaint throughout its complete lifecycle. A complaint generally
+moves through different stages such as Submitted, Under Review, Assigned, In Progress, Re-
+solved, and Closed. Each status represents the current stage of complaint processing.
+52
+
+
+==================== PAGE 66 ====================
+
+The complete process enables citizens to submit complaints through voice or text, allows AI to
+process and classify the complaint, and helps authorities manage, route, monitor, and resolve
+complaints efficiently. The integration of these components provides a centralized platform for
+improving complaint management, communication, transparency, and response efficiency.
+10.10
+Complaint Processing Workflow
+The complaint processing workflow of VoxentraAI describes the complete process followed
+from the submission of a citizen complaint to its routing and resolution. The system accepts
+complaints through text or voice input. Voice input is converted into text using speech-to-text
+processing. The AI module then understands the complaint, identifies the category, extracts
+important information and determines the priority. The complaint is automatically routed to
+the appropriate department. The citizen can track the complaint status, while notifications and
+escalation mechanisms help ensure timely action.
+53
+
+
+==================== PAGE 67 ====================
+
+Figure 10.1: Complaint Processing Workflow
+Figure 10.1 illustrates the complaint processing workflow of VoxentraAI, showing the sequence
+of activities from complaint submission to final resolution. The process begins when a citizen
+submits a complaint through voice or text input. The system processes the complaint, under-
+stands its content, classifies it, extracts relevant information, and determines its priority. The
+complaint is then registered and routed to the appropriate department for action. The complaint
+status is tracked throughout the process, and notifications are provided to the citizen until the
+complaint is resolved or escalated when necessary.
+10.11
+Implementation Summary
+The implementation of VoxentraAI integrates the frontend, backend, artificial intelligence,
+speech-to-text, PostgreSQL database, notification, department routing, complaint tracking, and
+escalation components into a unified citizen complaint management system.
+54
+
+
+==================== PAGE 68 ====================
+
+The frontend provides a user-friendly interface for citizens and administrators. Citizens can
+register, log in, submit complaints through voice or text, confirm the processed information,
+and track the progress of their complaints. Administrators can access the dashboard to monitor
+complaints, manage departments, update complaint status, review suspicious complaints, and
+monitor emergency and overdue complaints.
+The backend acts as the central processing layer of the system. It manages communication
+between the frontend, AI services, and database. It handles user authentication, complaint
+registration, data validation, department assignment, status updates, notifications, and other
+system operations.
+The AI processing component improves the complaint management process by analyzing citizen
+input and identifying important information.
+It helps classify complaints, extract relevant
+details, determine priority levels, and support appropriate department routing. The speech-to-
+text component provides an additional input method by converting voice complaints into text
+before AI processing.
+PostgreSQL provides centralized storage for users, complaints, departments, locations, notifi-
+cations, and complaint status information. The database ensures that complaint details can be
+stored, retrieved, and updated throughout the complete complaint lifecycle.
+The notification and escalation components improve communication and monitoring. Citizens
+can receive updates about their complaints, while overdue complaints can be identified for
+follow-up and escalation. Emergency complaints can be given higher priority to support faster
+administrative attention.
+Overall, the implementation provides an integrated workflow starting from complaint submis-
+sion and continuing through AI processing, confirmation, registration, department routing,
+monitoring, notification, escalation, and final resolution. The integration of these components
+makes VoxentraAI a centralized and intelligent platform for improving citizen complaint man-
+agement and communication between citizens and authorities.
+55
+
+
+==================== PAGE 69 ====================
+
+Chapter 11
+Testing
+11.1
+Introduction
+Testing is an important stage in the development of VoxentraAI. It is performed to verify that
+the system functions correctly, satisfies the specified requirements, and provides reliable results
+to users.
+11.2
+Objectives of Testing
+The main objectives of testing are:
+• To identify errors and defects.
+• To verify that each module works correctly.
+• To ensure that user inputs are processed correctly.
+• To verify complaint registration and tracking.
+• To check AI-based complaint processing.
+• To verify voice and text complaint handling.
+• To ensure proper communication between frontend and backend.
+• To verify database operations.
+11.3
+Types of Testing
+The following types of testing are considered for VoxentraAI:
+11.3.1
+Unit Testing
+Unit testing verifies individual components or functions of the application. Each module is
+tested independently to ensure that it performs its intended operation.
+11.3.2
+Integration Testing
+Integration testing verifies the interaction between different modules. For example, the frontend,
+backend, AI processing module, and database are tested together.
+56
+
+
+==================== PAGE 70 ====================
+
+11.3.3
+Functional Testing
+Functional testing verifies whether the system performs the required functions correctly. Login,
+complaint submission, classification, routing, tracking, and notifications are tested.
+Table 11.1: Functional Test Cases
+Test Case ID
+Test Case
+Input
+Expected Result
+TC01
+User Registration
+Valid user details
+Account created successfully
+TC02
+User Login
+Valid credentials
+User logged in successfully
+TC03
+Complaint Submission
+Complaint details
+Complaint registered success-
+fully
+TC04
+Voice Complaint
+Voice input
+Voice converted into text
+TC05
+Complaint
+Classifica-
+tion
+Complaint text
+Correct category identified
+TC06
+Priority Detection
+Complaint details
+Priority assigned correctly
+TC07
+Department Routing
+Classified complaint
+Complaint routed to relevant
+department
+TC08
+Complaint Tracking
+Complaint ID
+Current complaint status dis-
+played
+TC09
+Notification
+Status update
+Notification generated suc-
+cessfully
+TC10
+Escalation
+Delayed complaint
+Complaint escalated appro-
+priately
+Table 11.1 presentsthe functional test cases used toverify the major functions ofVoxentraAI. The
+test cases cover important operations such as user authentication, complaint submission, voice
+processing, complaint classification, priority detection, department routing, status tracking,
+notifications, and escalation. Each test case is used to check whether the corresponding system
+function produces the expected result under the specified conditions.
+11.3.4
+User Interface Testing
+User interface testing verifies that the application is easy to use and that buttons, forms, menus,
+dashboards, and other interface elements work correctly.
+11.3.5
+Database Testing
+Database testing verifies that user details, complaints, departments, locations, and notifications
+are stored and retrieved correctly.
+57
+
+
+==================== PAGE 71 ====================
+
+11.3.6
+Performance Testing
+Performance testing evaluates the response time and behaviour of the system when processing
+user requests and complaints.
+11.4
+Authentication Testing
+Authentication testing verifies that only authorized users can access protected features. Different
+login credentials are tested for citizens and administrators.
+11.5
+Complaint Submission Testing
+Complaint submission testing verifies that citizens can submit complaints through both voice
+and text. The system should validate the input before processing it.
+11.6
+AI Processing Testing
+AI processing is tested using different types of complaint descriptions. The system should
+correctly identify the complaint category, extract important information, and determine the
+priority level.
+11.7
+Database Testing
+Database testing verifies the creation, retrieval, modification, and storage of complaint informa-
+tion. It also ensures that relationships between users, complaints, departments, and notifications
+are maintained correctly.
+11.8
+Testing Result
+The testing process helps verify the major functions of VoxentraAI. The test cases provide a
+structured method for identifying errors and confirming that the implemented features meet the
+expected requirements.
+11.9
+Conclusion of Testing
+Testing improves the reliability and quality of VoxentraAI. By testing individual modules as
+well as the complete integrated system, possible errors can be identified and corrected before
+the system is deployed for actual users.
+58
+
+
+==================== PAGE 72 ====================
+
+Chapter 12
+Project Evaluation
+12.1
+Introduction
+Project evaluation is used to assess the effectiveness, usability, reliability, and overall perfor-
+mance of VoxentraAI. The evaluation focuses on whether the developed system addresses the
+problems identified during the initial stages of the project.
+12.2
+Objective Evaluation
+The project objectives were compared with the major functionalities provided by the system.
+Objective
+Implementation
+Centralized complaint reporting
+Implemented
+through
+the
+VoxentraAI platform
+Voice-based complaint reporting
+Supported through voice in-
+put and speech-to-text pro-
+cessing
+Text-based complaint reporting
+Supported through text input
+AI-based complaint understanding
+Implemented through the AI
+processing module
+Complaint classification
+Complaints are categorized
+based on their type
+Priority detection
+Complaint urgency can be
+identified
+Automatic department routing
+Complaints can be routed ac-
+cording to category
+Complaint tracking
+Citizens can monitor com-
+plaint status
+Follow-up and escalation
+Overdue complaints can be
+monitored and escalated
+AI-generated responses
+System can provide AI-based
+responses
+From the above table presents the evaluation of the major objectives of VoxentraAI and their
+corresponding implementation in the system. The table shows that the proposed system supports
+59
+
+
+==================== PAGE 73 ====================
+
+centralized complaint reporting through voice and text input, along with AI-based complaint un-
+derstanding and classification. It also provides priority detection, automatic department routing,
+complaint tracking, follow-up, escalation, and AI-generated responses. These implementations
+demonstrate that the major objectives of VoxentraAI are addressed through the functionalities
+provided by the system.
+12.3
+Usability Evaluation
+The system is designed to provide a simple and accessible interface.
+Citizens can report
+complaints using either voice or text, reducing the need to complete lengthy forms.
+The use of voice input can also make complaint reporting easier for users who prefer speaking
+rather than typing.
+12.4
+Functional Evaluation
+The major functional components of VoxentraAI were evaluated based on their expected be-
+haviour. User authentication, complaint submission, AI processing, complaint registration,
+department routing, status tracking, and notifications are considered important functions of the
+system.
+12.5
+Performance Evaluation
+The system is designed to process complaints through a structured workflow. The frontend
+communicates with the backend through APIs, while the backend manages AI processing and
+database operations.
+System performance depends on factors such as network connectivity, backend processing time,
+AI response time, database performance, and speech-to-text processing time.
+12.6
+Reliability Evaluation
+Reliability is important because citizens may use the system to report urgent local problems.
+The system maintains complaint information in the database and provides complaint IDs and
+status information to support reliable tracking.
+12.7
+Security Evaluation
+Security is considered for user authentication, role-based access, database access, and complaint
+information. Administrative functions should only be accessible to authorized users.
+60
+
+
+==================== PAGE 74 ====================
+
+12.8
+Scalability Evaluation
+The modular architecture allows individual components to be improved or expanded as the
+number of users and complaints increases. PostgreSQL provides structured data management,
+while FastAPI supports the development of scalable backend APIs.
+12.9
+Advantages
+The major advantages identified during evaluation are:
+• Centralized complaint management.
+• Simple voice and text reporting.
+• Reduced manual classification.
+• Automatic department routing.
+• Priority-based complaint handling.
+• Complaint status tracking.
+• Follow-up and escalation support.
+• Improved communication between citizens and authorities.
+12.10
+Limitations
+The current system may have certain limitations:
+• Speech-to-text accuracy may vary depending on audio quality and language.
+• AI classification may require improvement for unusual or ambiguous complaints.
+• Internet connectivity may be required for certain system operations.
+• Integration with real government department systems may require additional development.
+• Real-world deployment may require additional security and scalability measures.
+12.11
+Overall Evaluation
+Overall, VoxentraAI provides a structured approach to citizen complaint management. The
+combination of voice and text reporting, artificial intelligence, automatic routing, complaint
+tracking, notifications, and escalation addresses several limitations of traditional complaint
+reporting methods.
+61
+
+
+==================== PAGE 75 ====================
+
+Chapter 13
+Conclusion and Future Enhancements
+13.1
+Conclusion
+VoxentraAI is an AI-powered citizen complaint management and emergency response system
+developed to provide a centralized and convenient platform for reporting local issues through
+voice and text. The system addresses common challenges in traditional complaint reporting,
+such as identifying the appropriate department, providing complete complaint information,
+tracking complaint progress, and following up on unresolved issues. By integrating artificial
+intelligence, speech-to-text processing, frontend and backend technologies, and database man-
+agement, VoxentraAI provides a structured workflow for handling citizen complaints.
+The system allows citizens to submit complaints through voice or text input. Voice complaints
+are converted into text using speech-to-text technology and are then processed by the AI module.
+The AI system analyzes the complaint, understands its meaning, classifies the issue, extracts
+important information such as location and description, and identifies the priority level. Before
+registration, the extracted information can be confirmed by the citizen to improve the accuracy
+of the complaint.
+After confirmation, the complaint is registered with a unique complaint ID and routed to
+the appropriate department.
+Citizens can track the status of their complaints and receive
+notifications about important updates.
+The system also supports follow-up and escalation
+mechanisms for overdue complaints and provides additional attention to emergency complaints.
+Administrators can monitor complaints through the dashboard, manage department assignments,
+update complaint status, and review important complaint statistics.
+The development of VoxentraAI provided practical knowledge in frontend development, back-
+end API development, database management, artificial intelligence integration, speech-to-text
+processing, authentication, system design, testing, and project documentation. Overall, the
+project demonstrates how modern web technologies and artificial intelligence can be combined
+to improve communication between citizens and authorities. VoxentraAI provides a strong
+foundation for developing an efficient, transparent, and intelligent civic complaint management
+platform.
+13.2
+Future Enhancements
+Although VoxentraAI provides the essential features required for intelligent citizen complaint
+management, several enhancements can be introduced in future versions. Multilingual support
+can be added to allow citizens to submit complaints in regional and international languages.
+62
+
+
+==================== PAGE 76 ====================
+
+Advanced natural language processing models can also be integrated to improve complaint
+understanding, classification, information extraction, and priority detection.
+The system can be enhanced with GPS and map integration to identify and display the exact
+location of reported issues. Real-time emergency alerts can be introduced to notify the appro-
+priate authorities immediately when critical complaints are detected. A dedicated Android and
+iOS mobile application can also be developed to provide easier access to complaint submission,
+tracking, and notifications.
+Future versions can integrate VoxentraAI with existing government department platforms so
+that complaints can be transferred directly to official systems. This can reduce manual data
+entry and improve coordination between different departments. Advanced analytics and visual-
+ization can also be introduced to provide information about complaint trends, department-wise
+performance, area-wise complaint distribution, average resolution time, overdue complaints,
+and emergency cases.
+Security can be further improved by implementing multi-factor authentication, stronger en-
+cryption, detailed audit logs, improved access control, and advanced fraud or spam detection
+mechanisms. Cloud deployment and scalable infrastructure can also be adopted to support a
+larger number of users and complaints.
+The long-term vision of VoxentraAI is to develop it into a comprehensive intelligent civic
+issue management platform that connects citizens and authorities through artificial intelligence,
+automated complaint processing, real-time communication, location-based services, and data-
+driven decision making. These future enhancements can make the system more accessible,
+reliable, secure, scalable, and effective for large-scale civic complaint management.
+63
+
+
+==================== PAGE 77 ====================
+
+Chapter 14
+Project Link and QR Code
+14.1
+Introduction
+This chapter provides the online access details of the VoxentraAI project. The frontend appli-
+cation has been deployed online for demonstration and testing purposes.
+14.2
+Frontend Deployment
+The frontend of VoxentraAI has been deployed using Vercel. The application can be accessed
+through the following link.
+Frontend Deployment Link
+https://voxentra-ai-eight.vercel.app/
+14.3
+QR Code
+The QR code below provides quick access to the deployed VoxentraAI frontend.
+VoxentraAI Frontend QR Code
+14.4
+Summary
+The deployed frontend provides an online interface for demonstrating the available features of
+VoxentraAI. The deployment link and QR code provide convenient access to the application.
+64
+
+
+==================== PAGE 78 ====================
+
+Appendix I
+Results and Screenshots
+15.1
+Introduction
+The developed VoxentraAI system provides a centralized platform for citizens to report local
+issues and emergencies through voice and text. The system integrates complaint processing,
+artificial intelligence, database management, department routing, status tracking, notifications,
+and administrative management.
+Table 15.1: Project Objective Evaluation
+S.No
+Project Objective
+Evaluation
+1
+Provide centralized complaint reporting
+Successfully achieved
+2
+Support voice-based complaint submis-
+sion
+Successfully implemented
+3
+Automate complaint classification
+Implemented using AI
+4
+Detect complaint priority
+Successfully implemented
+5
+Route complaints to appropriate depart-
+ments
+Successfully implemented
+6
+Enable complaint tracking
+Successfully implemented
+7
+Provide complaint notifications
+Successfully implemented
+8
+Reduce manual complaint processing
+Significantly reduced
+9
+Improve complaint management
+Successfully achieved
+10
+Provide a user-friendly platform
+Successfully achieved
+Table 15.1 presents the evaluation of the major project objectives of VoxentraAI and their im-
+plementation in the developed system. The table highlights how the proposed system addresses
+the identified requirements through features such as voice and text-based complaint reporting,
+AI-based complaint processing, classification, priority detection, department routing, complaint
+tracking, notifications, and escalation. The evaluation shows that the implemented functionali-
+ties support the overall objectives of the VoxentraAI system.
+15.2
+System Results
+The major results achieved by the system include:
+• Citizens can access the complaint management platform.
+65
+
+
+==================== PAGE 79 ====================
+
+• Complaints can be submitted using voice or text.
+• Voice input can be converted into text.
+• Complaint information can be processed using artificial intelligence.
+• Complaints can be classified according to their type.
+• Important information such as location and description can be extracted.
+• Complaint priority can be identified.
+• Complaints can be registered with a unique complaint ID.
+• Complaints can be routed to the appropriate department.
+• Citizens can monitor complaint status.
+• Notifications can be provided for important updates.
+• Overdue complaints can be considered for escalation.
+15.3
+User Interface Screens
+The user interface of VoxentraAI consists of different screens for citizens and administrators.
+Screenshots of the implemented system can be added to this section to demonstrate the actual
+working of the application.
+15.3.1
+Login Screen
+The User Login Screen is the initial authentication interface of the VoxentraAI system. It allows
+registered citizens and administrators to securely access the application using their registered
+credentials. The screen provides input fields for entering the user’s email address and password
+along with a login option.
+The login process verifies the entered credentials before granting access to the system. Based
+on the authenticated user’s role, the system redirects the user to the appropriate dashboard.
+Citizens are directed to the Citizen Dashboard, where they can submit and track complaints,
+while administrators are provided access to the Admin Dashboard for complaint and user
+management.
+The login interface is designed to be simple, clear and user-friendly, enabling users to access
+the system without difficulty.
+Authentication helps protect user information and prevents
+unauthorized access to the complaint management system.
+66
+
+
+==================== PAGE 80 ====================
+
+Figure 15.1: User Login Screen
+Figure 15.3.1 illustrates the User Login Screen of VoxentraAI. The screen allows registered users
+to securely access the system by entering their login credentials. After successful authentication,
+the user can access the available complaint management features and services provided by the
+system.
+15.3.2
+Citizen Dashboard
+The Citizen Dashboard is the main interface provided to citizens after successful login into the
+VoxentraAI system. It acts as a centralized access point for the major complaint management
+features available to users. The dashboard is designed to provide a simple and convenient
+experience for reporting and monitoring local issues.
+The dashboard allows citizens to submit new complaints related to issues such as road damage,
+accidents, theft, water supply, sanitation, street lights and other public concerns. Users can
+provide complaint details through text input and, where supported, voice input. Voice complaints
+can be converted into text and processed by the AI module for further analysis.
+67
+
+
+==================== PAGE 81 ====================
+
+Citizens can also view the complaints they have previously submitted and monitor their current
+status. The system provides information about complaint category, priority, assigned department
+and processing status. This enables citizens to understand the progress of their complaints
+without repeatedly contacting the concerned department.
+The dashboard also provides notifications to inform users about important updates, including
+complaint registration, department assignment, status changes and escalation. By bringing
+complaint submission, tracking and notifications into a single interface, the Citizen Dashboard
+improves accessibility and makes the complaint reporting process more transparent and efficient.
+Figure 15.2: Citizen Dashboard
+Figure 15.3.2 illustrates the Citizen Dashboard of VoxentraAI. The dashboard provides citizens
+with access to the main complaint management features of the system. It allows users to submit
+new complaints, view existing complaints, track their current status, receive notifications, and
+monitor the progress of their reported issues. The dashboard provides a simple and convenient
+interface for citizens to interact with the complaint management system.
+15.3.3
+Complaint Submission Screen
+The Complaint Submission Screen enables citizens to report local issues directly through the
+VoxentraAI system. It provides a structured interface for entering the necessary information
+related to a complaint. The user can describe the issue and provide relevant details such as the
+complaint category, location and other supporting information required for processing.
+68
+
+
+==================== PAGE 82 ====================
+
+The system supports both text-based and voice-based complaint submission. In voice-based
+reporting, the citizen can describe the issue verbally, and the speech-to-text module converts the
+voice input into text. This makes the complaint registration process easier and more accessible
+for users who may find typing inconvenient.
+After the complaint is submitted, the information is processed by the AI module. The system
+analyzes the complaint, identifies the suitable category, extracts important information and
+determines the priority level. Based on the identified category and priority, the complaint is
+then routed to the appropriate government department for further action.
+Figure 15.3: Complaint Submission Screen
+69
+
+
+==================== PAGE 83 ====================
+
+Figure 15.3.3 illustrates the Complaint Submission Screen of VoxentraAI. The screen allows
+citizens to report civic issues by providing the required complaint details through voice or text
+input. The submitted information is processed by the system for further analysis, classification,
+priority detection, and registration.
+This screen provides a simple and convenient way for
+citizens to submit their complaints.
+15.3.4
+AI Processing Screen
+The AI Processing Screen represents the stage where the VoxentraAI system analyzes the
+complaint submitted by the citizen. It provides an interface for displaying the processing status
+while the artificial intelligence module examines the complaint information. This screen helps
+users understand that their complaint is being analyzed before it is forwarded to the appropriate
+department.
+When a complaint is submitted through voice input, the speech-to-text module first converts the
+spoken information into text. The generated text is then passed to the AI processing module
+for further analysis. The AI module understands the content and context of the complaint and
+identifies the important information required for complaint processing.
+The system performs complaint classification to determine the appropriate category of the
+reported issue. It also analyzes the severity and urgency of the complaint to assign a suitable
+priority level. Important details such as the type of issue, location and other relevant information
+can be extracted during this process.
+After the analysis is completed, the system prepares the complaint for automatic department
+routing. The identified category and priority help determine the appropriate department re-
+sponsible for handling the issue. This reduces manual processing and improves the efficiency
+of complaint management.
+70
+
+
+==================== PAGE 84 ====================
+
+Figure 15.4: AI Processing Screen
+Figure 15.3.4 illustrates the AI Processing Screen of VoxentraAI. The screen displays the
+processing of the submitted complaint using AI-based techniques. The system analyses the
+complaint, identifies its category, extracts relevant information, and determines the appropriate
+priority level. This processing helps ensure that the complaint is correctly understood and
+prepared for registration and further department routing.
+15.3.5
+Administrator Dashboard
+The administrator dashboard provides an overview of complaints and allows authorized admin-
+istrators to manage complaints, departments, assignments, and statuses.
+Figure 15.5: Admin Dashboard
+Figure 15.3.5 illustrates the Admin Dashboard of VoxentraAI. The dashboard provides admin-
+istrators with an overview of complaints and their current status. It allows administrators to
+71
+
+
+==================== PAGE 85 ====================
+
+view and manage complaints, monitor priority levels, update complaint status, track department
+assignments, and handle overdue or escalated complaints. The dashboard supports efficient
+monitoring and management of the overall complaint resolution process.
+15.3.6
+Complaint Management Screen
+The complaint management screen allows administrators to view complaint details and update
+complaint status.
+Figure 15.6: Complaint Management Screen
+Figure 15.3.6 illustrates the Complaint Management Screen of VoxentraAI. The screen allows
+administrators to view and manage the complaints submitted by citizens. It provides infor-
+mation such as complaint details, category, priority, assigned department, and current status.
+Administrators can update complaint status, monitor progress, and take appropriate action to
+support timely complaint resolution.
+15.4
+Notification Screen
+The Notification Screen provides citizens with timely updates about their submitted complaints
+in the VoxentraAI system. It keeps users informed about important changes in the complaint
+processing status.
+The system generates notifications for events such as complaint registration, department as-
+signment, status updates, priority changes and complaint resolution. Users can view these
+notifications in an organized manner and easily track the progress of their complaints.
+This feature improves communication and transparency by reducing the need for citizens to
+72
+
+
+==================== PAGE 86 ====================
+
+contact the concerned department repeatedly. Notifications can also inform users about critical
+or delayed complaints and their escalation status.
+Figure 15.7: Notification Screen
+Figure 15.3.7 illustrates the Notification Screen of VoxentraAI. The screen provides citizens
+with important updates related to their submitted complaints. It displays notifications such as
+complaint registration, department assignment, status changes, resolution updates, and escala-
+tion information. This feature helps citizens stay informed about the progress of their complaints
+throughout the complaint management process.
+15.5
+Result Analysis
+The system provides a structured workflow for complaint management. By combining voice
+and text input with artificial intelligence, the system reduces the effort required from citizens to
+describe and route complaints. The centralized architecture also provides administrators with a
+single platform to monitor complaints and manage their progress.
+15.6
+Expected Benefits
+The major benefits of the developed system are:
+• Reduced difficulty in complaint reporting.
+73
+
+
+==================== PAGE 87 ====================
+
+• Improved accessibility through voice input.
+• Faster complaint classification.
+• Automatic department identification.
+• Better complaint tracking.
+• Improved communication between citizens and authorities.
+• Better monitoring of unresolved complaints.
+• Support for faster emergency complaint handling.
+15.7
+Summary
+The results demonstrate the main functionality and workflow of VoxentraAI. Actual application
+screenshots will provide visual evidence of the implemented features and will strengthen the
+project implementationation.
+74
+
+
+==================== PAGE 88 ====================
+
+Appendix II
+Core Functionality Code
+16.1
+Introduction
+This chapter presents the core functionality implemented in VoxentraAI. The system consists of
+frontend, backend, database, artificial intelligence, complaint processing, and routing compo-
+nents. The following sections describe representative code functionalities used in the system.
+16.2
+User Authentication
+User authentication is used to verify the identity of users before providing access to protected
+features. The authentication process checks the credentials provided by the user and identifies
+the user’s role.
+16.3
+Complaint Submission
+The complaint submission functionality receives complaint information from the citizen inter-
+face and sends it to the backend for processing.
+A simplified representation of the complaint submission process is shown below:
+function submitComplaint(complaintData) {
+sendComplaintToBackend(complaintData);
+displayMessage("Complaint submitted successfully");
+}
+16.4
+Voice Input Processing
+The voice input functionality captures audio from the user’s microphone and sends it to the
+speech-to-text component.
+A simplified representation is:
+function processVoiceInput(audio) {
+text = speechToText(audio);
+return text;
+}
+75
+
+
+==================== PAGE 89 ====================
+
+16.5
+Complaint Classification
+The complaint classification functionality identifies the category of a complaint based on the
+information provided by the citizen.
+A simplified representation is:
+function classifyComplaint(text) {
+category = AIModel.classify(text);
+return category;
+}
+16.6
+Priority Detection
+The priority detection functionality determines the urgency of a complaint.
+function detectPriority(complaint) {
+priority = AIModel.detectPriority(complaint);
+return priority;
+}
+16.7
+Complaint Registration
+After the citizen confirms the complaint details, the backend registers the complaint in the
+database and generates a unique complaint ID.
+function registerComplaint(data) {
+complaintID = generateComplaintID();
+database.save(complaintID, data);
+return complaintID;
+}
+16.8
+Department Routing
+The department routing functionality identifies the appropriate department based on the com-
+plaint category.
+function routeComplaint(category) {
+if (category == "Road")
+return "Municipal Department";
+76
+
+
+==================== PAGE 90 ====================
+
+if (category == "Water")
+return "Water Department";
+if (category == "Electricity")
+return "Electricity Department";
+return "General Department";
+}
+16.9
+Complaint Status Update
+The complaint status can be updated by authorized administrators or department personnel.
+function updateStatus(complaintID, status) {
+database.update(complaintID, status);
+}
+16.10
+Notification Generation
+Notifications can be generated when important changes occur in a complaint.
+function sendNotification(userID, message) {
+notification = createNotification(userID, message);
+saveNotification(notification);
+}
+16.11
+Escalation Handling
+The escalation functionality identifies complaints that remain unresolved beyond the expected
+time.
+function checkOverdueComplaint(complaint) {
+if (complaint.isOverdue) {
+escalateComplaint(complaint);
+}
+}
+77
+
+
+==================== PAGE 91 ====================
+
+16.12
+Database Communication
+The backend communicates with PostgreSQL to store and retrieve user, complaint, department,
+and notification information.
+The general database workflow is:
+Frontend
+|
+v
+FastAPI Backend
+|
+v
+Database Query
+|
+v
+PostgreSQL
+|
+v
+Response
+|
+v
+Frontend
+16.13
+API Communication
+The frontend communicates with the backend through APIs. The backend receives requests,
+processes the required operation, communicates with the database or AI services, and returns
+the result to the frontend.
+16.14
+Code Integration
+The individual functionalities work together to form the complete VoxentraAI system. Voice or
+text input is received from the citizen, processed by the backend and AI components, stored in
+the database, and routed to the appropriate department.
+16.15
+Note on Source Code
+The source code presented in this chapter is intended to demonstrate the major implementation
+concepts and core functionalities of the VoxentraAI system. The code snippets included in
+78
+
+
+==================== PAGE 92 ====================
+
+the documentation provide a simplified representation of important components such as user
+authentication, complaint submission, AI processing, database operations, department routing,
+complaint tracking, and notification handling.
+The complete implementation of VoxentraAI consists of multiple frontend and backend files,
+configuration files, database-related components, API endpoints, and supporting modules. Due
+to the size of the complete project, only selected and relevant code segments are presented in
+this report for explanation and documentation purposes.
+The frontend source code contains the components required to create the citizen and admin-
+istrator interfaces. It includes pages and components for user registration, login, dashboards,
+complaint submission, voice input, complaint confirmation, complaint tracking, and notifica-
+tions. The backend source code contains the APIs and application logic required to communicate
+with the frontend, process requests, interact with the AI services, and manage database opera-
+tions.
+The database-related source code and configuration are responsible for storing and retrieving
+information related to users, complaints, departments, locations, notifications, and complaint
+status. The AI processing components handle complaint analysis, classification, information
+extraction, priority detection, and other intelligent processing activities. The speech-to-text
+component supports conversion of voice-based complaints into text for further processing.
+The code included in this report may be simplified or shortened to improve readability and
+focus on the implementation concepts.
+Error handling, configuration details, environment
+variables, dependency files, and supporting utility functions may not be included in every
+example. However, the complete project implementation follows the same overall architecture
+and workflow described throughout this report.
+The complete source code can be maintained separately in the project repository or submitted
+along with the project as part of the project deliverables.
+The repository may contain the
+complete frontend, backend, database configuration, AI processing components, required de-
+pendencies, and supporting files necessary to run and maintain the system.
+The source code is organized into separate modules to improve maintainability, readability, and
+future development. This modular structure also allows individual components to be modified,
+tested, or enhanced without affecting the complete system. The implementation can therefore be
+extended in the future with additional features such as multilingual support, mobile application
+integration, advanced AI models, GPS-based services, government system integration, and
+enhanced security mechanisms.
+Thus, the code presented in this chapter should be considered as a documentation-level rep-
+resentation of the implementation, while the complete source code contains the full working
+implementation of the VoxentraAI system.
+79
+
+
+==================== PAGE 93 ====================
+
+References
+1. T. BeniSteena, P. Perumal, C. Suganthi, R. Asokan, S. Sreeji, and P. Preethi, “Optimizing
+Image Fusion Using Wavelet Transform Based Alternative Direction Multiplier Method,”
+in 2022 2nd International Conference on Advance Computing and Innovative Technolo-
+gies in Engineering (ICACITE), IEEE, 2022.
+2. S. Boersma, K. Kandiah, C. Kahveci, P. Song, X. Nguyen, M. Stroh, and W. Boos,
+“AI-Based Assistance Systems in Smart Distribution Grids: Developing a Workforce
+Management System,” in 2025 IEEE International Conference on Technology Manage-
+ment, Operations and Decisions (ICTMOD), pp. 1–6, 2025.
+3. M. Fernandez and Y. Li, “Multilingual Voice-to-Text Civic Complaint Submission in
+Noisy Urban Environments,” IEEE Transactions on Human-Machine Systems, vol. 54,
+no. 3, pp. 234–243, 2024.
+4. R. Khan, S. Sathe, R. Rambhad, and U. Shinde, “Civic Dock: A Smart, Multilingual,
+Voice-Text-Image Enabled Platform for Effective Civic Complaint Routing and Tracking,”
+in 2025 International Conference on Future Technologies (ICFT), pp. 1–8, 2025.
+5. D. N. Latha, P. Aravind, M. Sathwika, P. SaiLalithya, and Y. AnilKumarReddy, “AI-Based
+Smart Water Quality Monitoring System Using Multi-Sensors & IoT,” Research Digest
+on Engineering Management and Social Innovations, 2026.
+6. M. R., M. M. M., Y. N. G., V. B., and S. B. V., “IoT-Based Smart Waste Management
+with AI-Based Sorting,” International Journal of Scientific Research in Engineering and
+Management, 2025.
+7. C. Nagarajan and M. Madheswaran, “Stability Analysis of Series Parallel Resonant Con-
+verter with Fuzzy Logic Controller Using State Space Techniques,” Electric Power Com-
+ponentsandSystems, vol. 39, no. 8, pp. 780–793, May2011. doi: 10.1080/15325008.2010.541746.
+8. C. Nagarajan and M. Madheswaran, “Experimental Verification and Stability State Space
+Analysis of CLL-T Series Parallel Resonant Converter,” Journal of Electrical Engineer-
+ing, vol. 63, no. 6, pp. 365–372, December 2012. doi: 10.2478/v10187-012-0054-2.
+9. C. Nagarajan and M. Madheswaran, “Performance Analysis of LCL-T Resonant Converter
+with Fuzzy/PID Using State Space Analysis,” Electrical Engineering, vol. 93, no. 3, pp.
+167–178, September 2011. doi: 10.1007/s00202-011-0203-9.
+80
+
+
+==================== PAGE 94 ====================
+
+10. D. Aniket et al., “Smart Complaint Management System with AI-Powered Prioritization
+and Escalation,” International Journal of Creative Research Thoughts (IJCRT), vol. 13,
+no. 10, 2025.
+11. P. Patil, D. D. Bage, S. Khaire, P. Kharat, D. S. Patil, and T. Pachore, “AI-Powered Smart
+Complaint Management System for Rural Area,” International Journal on Emerging
+Trends in Technology, 2025.
+12. A. Saeed, R. M. Asif, A. U. Rehman, S. R. Hassan, S. Bharany, and H. Hamam, “AI-
+Based Energy Management and Prediction System for Smart Cities,” Jordan Journal of
+Electrical Engineering, 2025.
+13. R. Singh, N. Singh, R. Singh, P. Bhatnagar, D. Kaushik, and R. Chauhan, “Blockchain
+and AI-Based Smart HR Management System for Secure and Transparent Employee
+Records,” in 2025 6th International Conference on Data Intelligence and Cognitive
+Informatics (ICDICI), pp. 269–275, 2025.
+14. C. Suganthi, K. Padmanaban, S. V. Sudha, and N. Mekala, “Neuro-quantum Dimensions
+Based Digital Image Processing for Optimal Edge Extraction,” NeuroQuantology, vol.
+20, no. 8, pp. 324–330, July 2022.
+15. C. Suganthi, P. Preethi, R. Asokan, and N. Sarmiladevi, “Deep Fusion CNN Based
+Hybridized Strategy for Image Retrieval in Web: A Novel Data Fusion Technique,”
+Periodico di Mineralogia, vol. 91, no. 4, pp. 188–212, July 2022.
+16. C. Suganthi and A. Gowthaman, “A Neighbor Set Coverage for Hotspot Attack Resolving
+in Wireless Sensor Networks,” International Journal of Engineering Science Invention
+(IJESI), vol. 2, no. 10, pp. 32–38, October 2013.
+17. C. P. and P. Sathiyapriya, “AI-IoT Based Smart Water Management System for Smart City
+and Rural Development,” in 2025 International Conference on Emerging Technologies in
+Engineering Applications (ICETEA), pp. 1–5, 2025.
+18. S. Tamilselvi, R. Prakash, and C. Nagarajan, “Solar System Integrated Smart Grid
+Utilizing Hybrid Coot-Genetic Algorithm Optimized ANN Controller,” Iranian Jour-
+nal of Science and Technology, Transactions of Electrical Engineering, 2025.
+doi:
+10.1007/s40998-025-00917-z.
+81
+
+
+==================== PAGE 95 ====================
+
+19. G. Pawar and S. K. Hore, “TrashTracker India: An AI & IoT-Based Smart Waste Man-
+agement System,” International Journal of Scientific Research in Engineering and Man-
+agement, 2025.
+82

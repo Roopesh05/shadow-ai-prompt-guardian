@@ -9,7 +9,9 @@
   ],
   "host_permissions": [
     "https://*.openai.com/*",
+    "https://openai.com/*",
     "https://*.chatgpt.com/*",
+    "https://chatgpt.com/*",
     "https://*.claude.ai/*",
     "https://*.google.com/*",
     "https://*.gemini.google.com/*",
@@ -33,7 +35,11 @@
     "https://*.github.com/*",
     "https://*.kagi.com/*",
     "https://*.cursor.sh/*",
-    "https://*.amazon.com/*"
+    "https://*.amazon.com/*",
+    "http://localhost/*",
+    "https://localhost/*",
+    "http://127.0.0.1/*",
+    "https://127.0.0.1/*"
   ],
   "background": {
     "service_worker": "js/background.js"
@@ -42,6 +48,9 @@
     {
       "matches": [
         "https://chat.openai.com/*",
+        "https://openai.com/*",
+        "https://*.openai.com/*",
+        "https://chatgpt.com/*",
         "https://*.chatgpt.com/*",
         "https://claude.ai/*",
         "https://*.claude.ai/*",
@@ -76,7 +85,11 @@
         "https://kagi.com/*",
         "https://*.kagi.com/*",
         "https://*.cursor.sh/*",
-        "https://q.aws.amazon.com/*"
+        "https://q.aws.amazon.com/*",
+        "http://localhost/*",
+        "https://localhost/*",
+        "http://127.0.0.1/*",
+        "https://127.0.0.1/*"
       ],
       "js": [
         "js/detection-engine.js",
@@ -91,6 +104,9 @@
     {
       "matches": [
         "https://chat.openai.com/*",
+        "https://openai.com/*",
+        "https://*.openai.com/*",
+        "https://chatgpt.com/*",
         "https://*.chatgpt.com/*",
         "https://claude.ai/*",
         "https://*.claude.ai/*",
@@ -125,7 +141,11 @@
         "https://kagi.com/*",
         "https://*.kagi.com/*",
         "https://*.cursor.sh/*",
-        "https://q.aws.amazon.com/*"
+        "https://q.aws.amazon.com/*",
+        "http://localhost/*",
+        "https://localhost/*",
+        "http://127.0.0.1/*",
+        "https://127.0.0.1/*"
       ],
       "js": ["js/main-world-intercept.js"],
       "world": "MAIN",
@@ -152,6 +172,9 @@
       "resources": ["js/main-world-intercept.js"],
       "matches": [
         "https://chat.openai.com/*",
+        "https://openai.com/*",
+        "https://*.openai.com/*",
+        "https://chatgpt.com/*",
         "https://*.chatgpt.com/*",
         "https://claude.ai/*",
         "https://*.claude.ai/*",
@@ -184,7 +207,11 @@
         "https://kagi.com/*",
         "https://*.kagi.com/*",
         "https://*.cursor.sh/*",
-        "https://q.aws.amazon.com/*"
+        "https://q.aws.amazon.com/*",
+        "http://localhost/*",
+        "https://localhost/*",
+        "http://127.0.0.1/*",
+        "https://127.0.0.1/*"
       ]
     }
   ]

@@ -67,14 +67,23 @@
 
       // OpenAI / Anthropic messages array format
       if (data.messages && Array.isArray(data.messages) && data.messages.length > 0) {
-        var lastMsg = data.messages[data.messages.length - 1];
-        if (lastMsg) {
+        for (var mIdx = data.messages.length - 1; mIdx >= 0; mIdx--) {
+          var lastMsg = data.messages[mIdx];
+          if (!lastMsg) continue;
           var role = lastMsg.role || (lastMsg.author && lastMsg.author.role);
-          if (role && role !== 'user') return null;
+          if (role && role !== 'user') continue;
           if (typeof lastMsg.content === 'string' && lastMsg.content.length > 5)
             return lastMsg.content.trim();
           if (typeof lastMsg.text === 'string' && lastMsg.text.length > 5)
             return lastMsg.text.trim();
+          if (Array.isArray(lastMsg.content)) {
+            var extractedBlocks = lastMsg.content.map(function (c) {
+              if (typeof c === 'string') return c;
+              if (c && typeof c.text === 'string') return c.text;
+              return '';
+            }).filter(Boolean).join('\n').trim();
+            if (extractedBlocks.length > 5) return extractedBlocks;
+          }
           if (lastMsg.content && Array.isArray(lastMsg.content.parts)) {
             var extracted = lastMsg.content.parts.map(function (p) {
               return typeof p === 'string' ? p : (p && p.text ? p.text : '');
@@ -89,8 +98,12 @@
         var lastContent = data.contents[data.contents.length - 1];
         if (lastContent && lastContent.role && lastContent.role !== 'user') return null;
         var parts = lastContent && lastContent.parts;
-        if (parts && parts[0] && parts[0].text && parts[0].text.length > 5)
-          return parts[0].text.trim();
+        if (Array.isArray(parts)) {
+          var geminiText = parts.map(function (p) {
+            return typeof p === 'string' ? p : (p && p.text ? p.text : '');
+          }).filter(Boolean).join('\n').trim();
+          if (geminiText.length > 5) return geminiText;
+        }
       }
 
       // Perplexity / direct prompt
@@ -134,12 +147,13 @@
       }
       window.addEventListener('message', onResponse);
 
+      var targetOrigin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : '*';
       window.postMessage({
         type: 'SAPG_CHECK_PROMPT',
         requestId: requestId,
         promptText: promptText,
         context: context,
-      }, '*');
+      }, targetOrigin);
 
       // Timeout fallback — if content script doesn't respond in 2s, allow the request
       setTimeout(function () {
@@ -202,12 +216,13 @@
 
     var shouldBlock = quickSyncCheck(promptText);
     if (shouldBlock) {
+      var targetOrigin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : '*';
       window.postMessage({
         type: 'SAPG_CHECK_PROMPT',
         requestId: 'sapg_xhr_' + Date.now(),
         promptText: promptText,
         context: '[XHR] ' + (this._sapr_url || '').substring(0, 80),
-      }, '*');
+      }, targetOrigin);
       throw new DOMException('Shadow AI Prompt Guardian: XHR blocked — sensitive content detected.', 'AbortError');
     }
     return origSend.apply(this, arguments);
@@ -227,6 +242,8 @@
       /xoxp-[0-9]{10,}-[0-9]{10,}-[A-Za-z0-9]{20,}/,
       /ya29\.[A-Za-z0-9_-]{10,}/,
       /(?:password|passwd|pwd|secret)\s*[:=]\s*[^\s]{6,}/i,
+      /(?:api_?key|staging_?key|auth_?token)[\s:=-]+[A-Za-z0-9_\-]{16,}/i,
+      /xapp_[a-z0-9_\-]{16,}/i,
       /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
       /\d{3}-\d{2}-\d{4}/,
       /\bAC[a-f0-9]{32}\b/i,
