@@ -3,401 +3,387 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SENTINEL — AI Prompt Guardian</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg-0: #060611;
-      --bg-1: #0d0d1a;
-      --bg-2: #12122a;
-      --bg-3: #1a1a35;
-      --bg-hover: #222244;
-      --border: rgba(99, 102, 241, 0.18);
-      --border-subtle: rgba(255, 255, 255, 0.06);
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
-      --accent-light: rgba(99, 102, 241, 0.15);
-      --accent-border: rgba(99, 102, 241, 0.35);
-      --accent-glow: rgba(99, 102, 241, 0.35);
-      --critical: #f43f5e;
-      --critical-bg: rgba(244, 63, 94, 0.12);
-      --critical-border: rgba(244, 63, 94, 0.25);
-      --warning: #f59e0b;
-      --warning-bg: rgba(245, 158, 11, 0.12);
-      --warning-border: rgba(245, 158, 11, 0.25);
-      --safe: #10b981;
-      --safe-bg: rgba(16, 185, 129, 0.12);
-      --safe-border: rgba(16, 185, 129, 0.25);
-      --text-1: #f1f5f9;
-      --text-2: #94a3b8;
-      --text-3: #64748b;
-      --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Monaco, monospace;
-    }
-
-    body {
-      font-family: var(--font);
-      background: var(--bg-0);
-      color: var(--text-1);
-      width: 380px;
-      min-height: 300px;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ── Header ────────────────────────────────────────────────────── */
-    .header {
-      padding: 14px 16px 12px;
-      background: linear-gradient(135deg, #0d0d1a 0%, #12122a 100%);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-    .header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 0% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    .header-left { display: flex; align-items: center; gap: 10px; z-index: 1; }
-    .sentinel-logo {
-      width: 32px; height: 32px;
-      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      box-shadow: 0 0 16px var(--accent-glow);
-      animation: logo-pulse 3s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    @keyframes logo-pulse {
-      0%, 100% { box-shadow: 0 0 12px var(--accent-glow); }
-      50% { box-shadow: 0 0 24px rgba(99, 102, 241, 0.55); }
-    }
-    .sentinel-logo.danger {
-      background: linear-gradient(135deg, #f43f5e, #dc2626);
-      animation: danger-pulse 0.8s ease-in-out infinite;
-    }
-    @keyframes danger-pulse {
-      0%, 100% { box-shadow: 0 0 12px rgba(244, 63, 94, 0.4); }
-      50% { box-shadow: 0 0 30px rgba(244, 63, 94, 0.85); }
-    }
-    .header-title { font-size: 14px; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; }
-    .header-sub { font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; margin-top: 1px; }
-    .header-right { display: flex; align-items: center; gap: 8px; z-index: 1; }
-    .settings-link {
-      font-size: 11px; font-weight: 600; color: #a5b4fc; text-decoration: none;
-      padding: 4px 10px; border-radius: 6px;
-      background: rgba(99, 102, 241, 0.12);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .settings-link:hover {
-      background: rgba(99, 102, 241, 0.22);
-      color: #ffffff;
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    /* ── Protection Toggle ─────────────────────────────────────────── */
-    .protection-bar {
-      padding: 10px 16px;
-      background: var(--bg-1);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .protection-label {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13px; font-weight: 600; color: var(--text-1);
-      cursor: pointer;
-    }
-    .status-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      transition: all 0.3s ease;
-    }
-    .status-dot.active { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
-    .status-dot.paused { background: var(--text-3); box-shadow: none; }
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 38px;
-      height: 22px;
-      flex-shrink: 0;
-    }
-    .toggle-switch .toggle-input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-      position: absolute;
-    }
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      inset: 0;
-      background-color: #1e1e38;
-      transition: background-color 0.25s ease, border-color 0.25s ease;
-      border-radius: 22px;
-      border: 1px solid rgba(99, 102, 241, 0.3);
-    }
-    .toggle-slider::before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 2px;
-      bottom: 2px;
-      background-color: #f1f5f9;
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border-radius: 50%;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-    }
-    .toggle-switch .toggle-input:checked + .toggle-slider {
-      background-color: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
-    }
-    .toggle-switch .toggle-input:checked + .toggle-slider::before {
-      transform: translateX(16px);
-      background-color: #ffffff;
-    }
-
-    /* ── AI Exposure Score ─────────────────────────────────────────── */
-    .exposure-panel {
-      padding: 14px 16px;
-      background: var(--bg-1);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 14px;
-    }
-    .gauge-wrap { position: relative; flex-shrink: 0; }
-    .gauge-svg { display: block; }
-    .gauge-track { fill: none; stroke: #1a1a35; stroke-width: 5.5; }
-    .gauge-fill {
-      fill: none; stroke-width: 5.5;
-      stroke-linecap: round;
-      transition: stroke-dasharray 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.4s;
-    }
-    .gauge-number {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .gauge-value { font-size: 20px; font-weight: 800; font-family: var(--font-mono); line-height: 1; color: var(--text-1); }
-    .gauge-unit { font-size: 8px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-top: 3px; }
-    .exposure-info { flex: 1; min-width: 0; }
-    .exposure-title { font-size: 13px; font-weight: 700; color: var(--text-1); margin-bottom: 3px; }
-    .exposure-desc { font-size: 11px; color: var(--text-2); line-height: 1.45; }
-    .exposure-stat-row { display: flex; gap: 8px; margin-top: 9px; }
-    .exposure-stat {
-      flex: 1; padding: 5px 6px;
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      text-align: center;
-    }
-    .exposure-stat-val { font-size: 14px; font-weight: 700; font-family: var(--font-mono); color: var(--text-1); }
-    .exposure-stat-lbl { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-top: 1px; }
-
-    /* ── Risk Sparkline ────────────────────────────────────────────── */
-    .sparkline-panel {
-      padding: 10px 16px 12px;
-      background: var(--bg-1);
-      border-bottom: 1px solid var(--border);
-    }
-    .sparkline-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 6px;
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--text-3);
-    }
-    .sparkline-svg { display: block; width: 100%; }
-
-    /* ── Recent Blocks ─────────────────────────────────────────────── */
-    .blocks-panel {
-      padding: 12px 16px 14px;
-      background: var(--bg-0);
-    }
-    .blocks-header {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 8px;
-    }
-    .block-entry {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 10px; background: var(--bg-2); border-radius: 8px;
-      margin-bottom: 6px; border: 1px solid rgba(99, 102, 241, 0.12);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: default;
-    }
-    .block-entry:hover {
-      border-color: rgba(99, 102, 241, 0.35);
-      background: var(--bg-3);
-      transform: translateY(-1px);
-    }
-    .block-sev-dot {
-      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-    }
-    .block-sev-dot.critical { background: var(--critical); box-shadow: 0 0 8px rgba(244, 63, 94, 0.6); }
-    .block-sev-dot.warning { background: var(--warning); box-shadow: 0 0 8px rgba(245, 158, 11, 0.6); }
-    .block-sev-dot.info { background: var(--accent); box-shadow: 0 0 8px rgba(99, 102, 241, 0.6); }
-    .block-cats { flex: 1; font-size: 11px; font-weight: 500; min-width: 0; color: var(--text-1); }
-    .block-meta { text-align: right; flex-shrink: 0; }
-    .block-score { font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: var(--text-2); }
-    .block-score.critical { color: var(--critical); }
-    .block-score.warning { color: var(--warning); }
-    .block-time { font-size: 9px; color: var(--text-3); font-weight: 500; margin-top: 1px; }
-    .cat-badge {
-      display: inline-block; font-size: 9px; font-weight: 600;
-      padding: 2px 6px; border-radius: 4px; margin-right: 4px;
-      text-transform: uppercase; letter-spacing: 0.03em;
-    }
-    .cat-badge.api_key { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
-    .cat-badge.password { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .cat-badge.pii { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
-    .cat-badge.confidential { background: rgba(16, 185, 129, 0.12); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
-    .cat-badge.company { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
-    .no-blocks {
-      text-align: center; color: var(--text-3); font-size: 12px; font-weight: 500;
-      padding: 18px 0;
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      background: var(--bg-1);
-      border: 1px dashed rgba(99, 102, 241, 0.2);
-      border-radius: 8px;
-    }
-    .no-blocks-icon { font-size: 20px; opacity: 0.8; }
-
-    /* ── Footer ────────────────────────────────────────────────────── */
-    .footer {
-      padding: 9px 16px;
-      border-top: 1px solid var(--border);
-      background: var(--bg-1);
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 10px; color: var(--text-3);
-    }
-    .footer-version { font-family: var(--font-mono); color: var(--accent); font-weight: 600; letter-spacing: 0.02em; }
-    .footer-reset {
-      font-size: 10px; font-weight: 600; color: var(--text-2); cursor: pointer;
-      padding: 4px 9px; border-radius: 5px; border: 1px solid var(--border);
-      background: var(--bg-2); font-family: var(--font);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .footer-reset:hover { border-color: rgba(99, 102, 241, 0.35); color: var(--text-1); background: var(--bg-3); }
-
-    /* ── Animations ────────────────────────────────────────────────── */
-    @keyframes slide-in {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .block-entry { animation: slide-in 0.2s ease; }
-  </style>
+  <title>Shadow AI Prompt Guardian</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
-<body>
-  <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <div class="sentinel-logo" id="sentinel-logo">🛡️</div>
-      <div>
-        <div class="header-title">SENTINEL</div>
-        <div class="header-sub">AI Prompt Guardian · v5.0</div>
-      </div>
-    </div>
-    <div class="header-right">
-      <a href="#" class="settings-link" id="settings-link" role="button">⚙ Settings</a>
-    </div>
-  </div>
+<body class="dark-theme">
+  <!-- Ambient CSS Particle Background -->
+  <div class="particles-container" id="popup-particles" aria-hidden="true"></div>
 
-  <!-- Protection Toggle -->
-  <div class="protection-bar">
-    <label class="protection-label" for="toggle-protection">
-      <span class="status-dot active" id="status-dot"></span>
-      <span id="status-text">Protection Active</span>
-    </label>
-    <label class="toggle-switch">
-      <input type="checkbox" class="toggle-input" id="toggle-protection" checked>
-      <span class="toggle-slider"></span>
-    </label>
-  </div>
-
-  <!-- AI Exposure Score -->
-  <div class="exposure-panel">
-    <div class="gauge-wrap">
-      <svg class="gauge-svg" width="72" height="72" viewBox="0 0 72 72">
-        <!-- Track arc: 240deg sweep symmetric around bottom gap -->
-        <g transform="rotate(150 36 36)">
-          <circle class="gauge-track" cx="36" cy="36" r="28"
-            stroke-dasharray="117.3 176" stroke-dashoffset="0" />
-          <circle class="gauge-fill" id="gauge-fill" cx="36" cy="36" r="28"
-            stroke="#10b981"
-            stroke-dasharray="0 176"
-            stroke-dashoffset="0" />
-        </g>
-      </svg>
-      <div class="gauge-number">
-        <div class="gauge-value" id="gauge-value">0</div>
-        <div class="gauge-unit">risk</div>
-      </div>
-    </div>
-    <div class="exposure-info">
-      <div class="exposure-title">Session Exposure Score</div>
-      <div class="exposure-desc" id="exposure-desc">No sensitive data detected this session.</div>
-      <div class="exposure-stat-row">
-        <div class="exposure-stat">
-          <div class="exposure-stat-val" id="stat-checked">0</div>
-          <div class="exposure-stat-lbl">Scanned</div>
+  <div class="popup-wrapper">
+    <!-- ── HEADER ── -->
+    <header class="app-header">
+      <div class="brand-group">
+        <div class="logo-shield">
+          <svg class="shield-svg" width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <circle class="shield-inner-ring" cx="12" cy="12" r="9.5" stroke="#00F5FF" stroke-width="1.2" stroke-dasharray="3 2" />
+            <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10.5 4.5-1 8-5.5 8-10.5V6l-8-4z" fill="url(#popup-shield-grad)" stroke="#00F5FF" stroke-width="1.4"/>
+            <path d="M9 12l2 2 4-4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="popup-shield-grad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#00F5FF" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.95"/>
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
-        <div class="exposure-stat">
-          <div class="exposure-stat-val" id="stat-blocked" style="color: var(--critical)">0</div>
-          <div class="exposure-stat-lbl">Blocked</div>
-        </div>
-        <div class="exposure-stat">
-          <div class="exposure-stat-val" id="stat-platforms">25+</div>
-          <div class="exposure-stat-lbl">Platforms</div>
+        <div class="brand-titles">
+          <h1 class="brand-title">SHADOW AI</h1>
+          <div class="brand-sub">PROMPT GUARDIAN · MV3</div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Risk Sparkline -->
-  <div class="sparkline-panel">
-    <div class="sparkline-header">
-      <span>Risk History (last 20 prompts)</span>
-      <span id="sparkline-max" style="color: var(--text-2)"></span>
-    </div>
-    <svg class="sparkline-svg" id="sparkline-svg" height="32" viewBox="0 0 348 32" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#6366f1" stop-opacity="0.5"/>
-          <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      <path id="spark-area" fill="url(#spark-grad)" />
-      <path id="spark-line" fill="none" stroke="#6366f1" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-
-  <!-- Recent Blocks -->
-  <div class="blocks-panel">
-    <div class="blocks-header">Recent Detections</div>
-    <div id="log-list">
-      <div class="no-blocks">
-        <div class="no-blocks-icon">✅</div>
-        <div>No blocked attempts yet</div>
+      <div class="header-controls">
+        <button class="shield-toggle-pill active" id="header-status-pill" title="Toggle Protection">
+          <span class="status-pulse-dot"></span>
+          <span id="header-status-text">SHIELD ON</span>
+        </button>
+        <button class="icon-btn" id="theme-toggle" title="Toggle Theme" aria-label="Toggle theme">
+          <svg class="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
       </div>
-    </div>
+    </header>
+    <div class="header-shimmer-line"></div>
+
+    <!-- ── TAB BAR ── -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="tab-btn active" data-tab="tab-dashboard" role="tab" aria-selected="true">
+        <span>Dashboard</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-logs" role="tab" aria-selected="false">
+        <span>Scan Log</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-settings" role="tab" aria-selected="false">
+        <span>Settings</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-team" data-tab="tab-team" role="tab" aria-selected="false" style="display:none;">
+        <span>Team</span>
+      </button>
+    </nav>
+
+    <!-- ── TAB CONTENT ── -->
+    <main class="tabs-container">
+      <!-- ════ TAB 1: DASHBOARD ════ -->
+      <section class="tab-pane active" id="tab-dashboard" role="tabpanel">
+        <!-- Large SVG Arc Gauge (220px wide) -->
+        <div class="card arc-gauge-card">
+          <div class="gauge-conic-glow"></div>
+          <div class="arc-gauge-wrapper">
+            <svg class="arc-gauge-svg" width="220" height="130" viewBox="0 0 220 130">
+              <!-- Background Arc Path (180 deg semi-circle: from (20,110) to (200,110) with r=90) -->
+              <path class="arc-bg-track" d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke-width="12" stroke-linecap="round"/>
+              <!-- Active Progress Arc Path -->
+              <path class="arc-progress" id="arc-gauge-progress" d="M 25 115 A 85 85 0 0 1 195 115" fill="none" stroke-width="12" stroke-linecap="round"/>
+            </svg>
+            <div class="gauge-center-readout">
+              <span class="gauge-score-value" id="risk-score-display">0</span>
+              <span class="gauge-score-status" id="risk-status-text">SECURE</span>
+            </div>
+          </div>
+          <p class="gauge-status-desc" id="risk-status-desc">Outbound prompts monitored against sensitive egress.</p>
+        </div>
+
+        <!-- Stats Row (3 Cards with Left Colored Accent Bars) -->
+        <div class="stats-row">
+          <div class="card stat-card accent-cyan">
+            <span class="stat-number" id="stat-scanned">0</span>
+            <span class="stat-label">Scanned</span>
+          </div>
+          <div class="card stat-card accent-red">
+            <span class="stat-number stat-danger" id="stat-blocked">0</span>
+            <span class="stat-label">Blocked</span>
+          </div>
+          <div class="card stat-card accent-purple">
+            <span class="stat-number stat-highlight" id="stat-top-cat">NONE</span>
+            <span class="stat-label">Top Threat</span>
+          </div>
+        </div>
+
+        <!-- Active Target Card -->
+        <div class="card active-target-card">
+          <div class="target-brand">
+            <div class="target-icon-box" id="target-icon-container">
+              <!-- Dynamic Platform SVG inserted by JS -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="target-title">Target Platform</div>
+              <div class="target-name" id="current-platform-name">Detecting...</div>
+            </div>
+          </div>
+          <div class="status-chip chip-idle" id="current-target-chip">
+            <span class="chip-dot"></span>
+            <span id="current-target-status">IDLE</span>
+          </div>
+        </div>
+
+        <!-- Recent Interceptions Header & List -->
+        <div class="section-title-row">
+          <span class="section-title">RECENT INTERCEPTIONS</span>
+          <span class="section-badge" id="recent-count-badge">0 events</span>
+        </div>
+        <div class="recent-list" id="recent-alerts-list">
+          <!-- Populated by JS -->
+          <div class="empty-state">No sensitive prompt interceptions logged yet.</div>
+        </div>
+      </section>
+
+      <!-- ════ TAB 2: SCAN LOG ════ -->
+      <section class="tab-pane" id="tab-logs" role="tabpanel">
+        <!-- Filter Row -->
+        <div class="log-filter-row" id="log-filter-pills">
+          <button class="pill-btn active" data-filter="ALL">ALL</button>
+          <button class="pill-btn" data-filter="CRITICAL">CRITICAL</button>
+          <button class="pill-btn" data-filter="HIGH">HIGH</button>
+          <button class="pill-btn" data-filter="MEDIUM">MEDIUM</button>
+          <button class="pill-btn" data-filter="LOW">LOW</button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" class="search-input" id="log-search-input" placeholder="Search by platform, keyword, or threat...">
+        </div>
+
+        <!-- Scrollable Log Cards List -->
+        <div class="log-scroll-area" id="full-audit-log-list">
+          <div class="empty-state">No matching logs found.</div>
+        </div>
+
+        <!-- Bottom Sticky Export Bar -->
+        <div class="sticky-export-bar">
+          <button class="btn-export" id="btn-export-json">↓ Export JSON</button>
+          <button class="btn-export" id="btn-export-csv">↓ Export CSV</button>
+        </div>
+      </section>
+
+      <!-- ════ TAB 3: SETTINGS ════ -->
+      <section class="tab-pane" id="tab-settings" role="tabpanel">
+        <div class="settings-scroll-area">
+          <!-- Section: Master Toggle -->
+          <div class="settings-section">
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Master Prompt Shield</div>
+                <div class="setting-desc">Real-time outbound pre-flight interception on AI chats</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-master-protection" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section: Detection Categories -->
+          <div class="settings-section">
+            <div class="section-header-divider">
+              <span>DETECTION CATEGORIES</span>
+            </div>
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Personally Identifiable Info (PII)</div>
+                <div class="setting-desc">Aadhaar (Verhoeff), PAN, Email, Phone, Passport</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-cat-pii" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Financial Credentials</div>
+                <div class="setting-desc">Cards (Luhn checked), UPI IDs, Bank Accounts, IFSC</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-cat-financial" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Developer Credentials & API Keys</div>
+                <div class="setting-desc">AWS, OpenAI, Google, GitHub PATs, Passwords, RSA</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-cat-credentials" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Organizational Secrets</div>
+                <div class="setting-desc">Watchlist project codenames, NDA & Confidential terms</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-cat-organizational" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Medical & Legal Identifiers</div>
+                <div class="setting-desc">ICD-10 diagnostic codes, court case / docket numbers</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-cat-medical" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section: Notifications & Performance -->
+          <div class="settings-section">
+            <div class="section-header-divider">
+              <span>NOTIFICATIONS & FEEDBACK</span>
+            </div>
+            <div class="setting-toggle-row">
+              <div>
+                <div class="setting-name">Desktop System Notifications</div>
+                <div class="setting-desc">Alert when HIGH or CRITICAL threats are intercepted</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-notifications" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Section: Keyword Watchlist -->
+          <div class="settings-section">
+            <div class="section-header-divider">
+              <span>KEYWORD WATCHLIST</span>
+            </div>
+            <div class="tag-input-row">
+              <input type="text" class="tag-input" id="input-new-keyword" placeholder="Type keyword and press Enter...">
+              <button class="btn-tag-add" id="btn-add-keyword">+</button>
+            </div>
+            <div class="chips-container" id="watchlist-tags-container"></div>
+          </div>
+
+          <!-- Section: Whitelist URLs -->
+          <div class="settings-section">
+            <div class="section-header-divider">
+              <span>WHITELISTED DOMAINS</span>
+            </div>
+            <div class="tag-input-row">
+              <input type="text" class="tag-input" id="input-new-domain" placeholder="Domain (e.g. internal-ai.corp)...">
+              <button class="btn-tag-add" id="btn-add-domain">+</button>
+            </div>
+            <div class="chips-container" id="whitelist-tags-container"></div>
+          </div>
+
+          <!-- Section: Danger Zone -->
+          <div class="settings-section">
+            <div class="card danger-card">
+              <div>
+                <div class="danger-title">Danger Zone</div>
+                <div class="danger-desc">Purge all local scan logs and reset detection stats.</div>
+              </div>
+              <button class="btn-danger" id="btn-clear-audit-logs">Clear All Logs</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ TAB 4: TEAM DASHBOARD (TL MODE ONLY) ════ -->
+      <section class="tab-pane" id="tab-team" role="tabpanel">
+        <!-- Team Overview Header -->
+        <div class="card team-overview-header">
+          <div class="team-header-main">
+            <div>
+              <div class="team-code-label">TEAM CODE</div>
+              <div class="team-code-display" id="tl-team-code-display">SH4D0W</div>
+            </div>
+            <div class="team-online-badge">
+              <span class="online-dot"></span>
+              <span id="tl-members-online-count">1 Online</span>
+            </div>
+          </div>
+          <div class="team-sync-bar">
+            <span class="sync-status" id="tl-sync-status">Live Polling (10s)</span>
+            <button class="btn-sync-retry" id="tl-btn-sync-now" title="Force Sync">↻ Sync</button>
+          </div>
+        </div>
+
+        <!-- Members Row -->
+        <div class="members-row-wrapper">
+          <div class="section-title">ACTIVE MEMBERS</div>
+          <div class="members-avatars-row" id="tl-members-list">
+            <!-- Member chips generated by JS -->
+          </div>
+        </div>
+
+        <!-- Summary Cards (Anti-Gravity Float) -->
+        <div class="team-summary-grid">
+          <div class="card summary-box">
+            <div class="summary-val" id="tl-stat-team-today">0</div>
+            <div class="summary-label">Today's Logs</div>
+          </div>
+          <div class="card summary-box">
+            <div class="summary-val" id="tl-stat-active-member">—</div>
+            <div class="summary-label">Top Risk User</div>
+          </div>
+          <div class="card summary-box">
+            <div class="summary-val" id="tl-stat-common-threat">—</div>
+            <div class="summary-label">Common Threat</div>
+          </div>
+          <div class="card summary-box">
+            <div class="summary-val stat-danger" id="tl-stat-team-blocks">0</div>
+            <div class="summary-label">Total Blocks</div>
+          </div>
+        </div>
+
+        <!-- Filter Row for Team Feed -->
+        <div class="team-filter-bar">
+          <select class="team-filter-select" id="tl-filter-member">
+            <option value="ALL">All Members</option>
+          </select>
+          <select class="team-filter-select" id="tl-filter-risk">
+            <option value="ALL">All Risks</option>
+            <option value="CRITICAL">Critical</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+          <select class="team-filter-select" id="tl-filter-platform">
+            <option value="ALL">All Platforms</option>
+            <option value="ChatGPT">ChatGPT</option>
+            <option value="Claude">Claude</option>
+            <option value="Gemini">Gemini</option>
+            <option value="Copilot">Copilot</option>
+            <option value="Perplexity">Perplexity</option>
+          </select>
+        </div>
+
+        <!-- Live Feed from All Members -->
+        <div class="team-live-feed" id="tl-live-feed-list">
+          <div class="empty-state">Waiting for member prompt telemetry...</div>
+        </div>
+
+        <!-- Export All Team Logs -->
+        <div class="sticky-export-bar">
+          <button class="btn-export" id="tl-btn-export-team-json">↓ Export Team Telemetry (JSON)</button>
+        </div>
+      </section>
+    </main>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <span class="footer-version">SENTINEL v5.0</span>
-    <button class="footer-reset" id="btn-clear-log">Clear Log</button>
-  </div>
-
-  <script src="js/popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadow AI Prompt Guardian — Initial Setup</title>
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <!-- Ambient CSS Drift Particles -->
+  <div class="particles-bg" id="particles-container" aria-hidden="true"></div>
+
+  <div class="setup-container">
+    <header class="setup-header">
+      <div class="shield-logo">
+        <svg class="shield-svg" width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <circle class="shield-orbit" cx="12" cy="12" r="11" stroke="#00F5FF" stroke-width="1.2" stroke-dasharray="4 3" />
+          <path d="M12 2L4 6v6c0 5 3.5 9.5 8 10.5 4.5-1 8-5.5 8-10.5V6l-8-4z" fill="url(#setup-grad)" stroke="#00F5FF" stroke-width="1.5"/>
+          <path d="M9 12l2 2 4-4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="setup-grad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#00F5FF" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.95"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1 class="brand-title">SHADOW AI</h1>
+      <p class="brand-subtitle">PROMPT GUARDIAN · v2.0 TL EDITION</p>
+      <div class="shimmer-divider"></div>
+    </header>
+
+    <main class="wizard-card card" id="wizard-card">
+      <!-- ── STEP 1: SELECT ROLE ── -->
+      <section class="wizard-step active" id="step-role-select">
+        <h2 class="step-title">Select Your Operational Role</h2>
+        <p class="step-desc">Configure your guardian persona to establish telemetry routing and defense policies.</p>
+
+        <div class="role-grid">
+          <div class="role-card card" id="btn-select-tl" tabindex="0" role="button">
+            <div class="role-badge tl-badge">TEAM LEADER</div>
+            <div class="role-icon">👑</div>
+            <h3 class="role-name">Team Leader</h3>
+            <p class="role-info">Generates a team code, defines organizational policies, and monitors outbound prompt leak telemetry from all members in real-time.</p>
+            <div class="role-select-btn">Select TL Role →</div>
+          </div>
+
+          <div class="role-card card" id="btn-select-member" tabindex="0" role="button">
+            <div class="role-badge member-badge">TEAM MEMBER</div>
+            <div class="role-icon">👤</div>
+            <h3 class="role-name">Team Member</h3>
+            <p class="role-info">Connects to your Team Leader using a 6-character code. Scans and protects your prompts locally while feeding telemetry to team security.</p>
+            <div class="role-select-btn">Select Member Role →</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── STEP 2A: TEAM LEADER CONFIG ── -->
+      <section class="wizard-step" id="step-tl-config">
+        <button class="back-link" id="btn-back-from-tl">← Change Role</button>
+        <h2 class="step-title">Create Team & Start Monitoring</h2>
+        <p class="step-desc">Your unique team code has been generated. Share this with your engineers to centralize leak defense.</p>
+
+        <div class="code-share-box">
+          <div class="code-label">YOUR TEAM CODE</div>
+          <div class="code-display-row">
+            <span class="code-text" id="display-team-code">SH4D0W</span>
+            <button class="btn-copy" id="btn-copy-code" title="Copy Team Code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>Copy</span>
+            </button>
+          </div>
+          <div class="code-sub">Share this code with your team members</div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-tl-name" class="form-label">Your Name / Call-Sign</label>
+          <input type="text" id="input-tl-name" class="form-input" placeholder="e.g. Alex Vance" maxlength="32">
+        </div>
+
+        <div class="feedback-banner" id="tl-feedback" style="display:none;"></div>
+
+        <button class="btn-primary" id="btn-submit-tl">
+          <span>Create Team & Start Monitoring</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </section>
+
+      <!-- ── STEP 2B: TEAM MEMBER CONFIG ── -->
+      <section class="wizard-step" id="step-member-config">
+        <button class="back-link" id="btn-back-from-member">← Change Role</button>
+        <h2 class="step-title">Connect to Team Leader</h2>
+        <p class="step-desc">Enter the 6-character team code provided by your Team Leader to join the security perimeter.</p>
+
+        <div class="form-group">
+          <label for="input-member-code" class="form-label">Enter 6-Character Team Code</label>
+          <input type="text" id="input-member-code" class="form-input code-input" placeholder="e.g. SH4D0W" maxlength="6" autocomplete="off" spellcheck="false">
+        </div>
+
+        <div class="form-group">
+          <label for="input-member-name" class="form-label">Your Name / Identifier</label>
+          <input type="text" id="input-member-name" class="form-input" placeholder="e.g. Jordan Miller" maxlength="32">
+        </div>
+
+        <div class="feedback-banner" id="member-feedback" style="display:none;"></div>
+
+        <button class="btn-primary" id="btn-submit-member">
+          <span>Join Team</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </section>
+
+      <!-- ── STEP 3: SETUP SUCCESS ── -->
+      <section class="wizard-step" id="step-success">
+        <div class="success-icon-wrap">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00FF88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h2 class="step-title" id="success-headline">Setup Complete</h2>
+        <p class="step-desc" id="success-message">Your guardian is now active and monitoring outbound AI prompts.</p>
+
+        <div class="summary-pill card" id="success-summary">
+          <div class="summary-col">
+            <span class="summary-label">ROLE</span>
+            <span class="summary-val" id="summary-role">TEAM LEADER</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-col">
+            <span class="summary-label">TEAM CODE</span>
+            <span class="summary-val" id="summary-code">SH4D0W</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-finish-setup">
+          <span>Open Guardian Dashboard</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="setup.js"></script>
+</body>
+</html>
